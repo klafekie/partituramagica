@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{60124B27-CC5F-469A-872D-9FF665C0DEB7}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PartituraMagica</RootNamespace>
+    <AssemblyName>ClassLibrary1</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Domain\ActivePartitura.cs" />
+    <Compile Include="Domain\Box.cs" />
+    <Compile Include="Domain\Clipping.cs" />
+    <Compile Include="Domain\CommandBase.cs" />
+    <Compile Include="Domain\IActivePartitura.cs" />
+    <Compile Include="Domain\ICommand.cs" />
+    <Compile Include="Domain\ICommandParameters.cs" />
+    <Compile Include="Domain\IDrawingPanel.cs" />
+    <Compile Include="Domain\IFileSystem.cs" />
+    <Compile Include="Domain\IGreyImage.cs" />
+    <Compile Include="Domain\ILabelProvider.cs" />
+    <Compile Include="Domain\IMainWindow.cs" />
+    <Compile Include="Domain\IPlayablePartitura.cs" />
+    <Compile Include="Domain\IPlayerView.cs" />
+    <Compile Include="Domain\IPageFiles.cs" />
+    <Compile Include="Domain\Page.cs" />
+    <Compile Include="Domain\Part.cs" />
+    <Compile Include="Domain\Partitura.cs" />
+    <Compile Include="Domain\PartituraException.cs" />
+    <Compile Include="Domain\Rect.cs" />
+    <Compile Include="PageEditing\ABCLabelProvider.cs" />
+    <Compile Include="PageEditing\AddBoxCommand.cs" />
+    <Compile Include="PageEditing\AutoFillCommand.cs" />
+    <Compile Include="PageEditing\BoxFinder.cs" />
+    <Compile Include="PageEditing\UnLabelPartCommand.cs" />
+    <Compile Include="PageEditing\LabelPartCommand.cs" />
+    <Compile Include="PageEditing\RemoveBoxCommand.cs" />
+    <Compile Include="PageEditing\SelectItemCommand.cs" />
+    <Compile Include="PageEditing\SplitBoxCommand.cs" />
+    <Compile Include="PageEditing\UpdateBoxCommand.cs" />
+    <Compile Include="PageEditing\UpdatePartPatternCommand.cs" />
+    <Compile Include="PartituraCommands\AddPagesCommand.cs" />
+    <Compile Include="PartituraCommands\CloseApplicationCommand.cs" />
+    <Compile Include="PartituraCommands\ClosePartituraCommand.cs" />
+    <Compile Include="PartituraCommands\NewPartituraCommand.cs" />
+    <Compile Include="PartituraCommands\OpenCommand.cs" />
+    <Compile Include="PartituraCommands\SaveCommand.cs" />
+    <Compile Include="PartituraCommands\ShowPageCommand.cs" />
+    <Compile Include="Playing\IChoiceNavigator.cs" />
+    <Compile Include="Playing\Navigator.cs" />
+    <Compile Include="Playing\ShowPlayerCommand.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
