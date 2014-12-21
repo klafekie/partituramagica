@@ -11,7 +11,7 @@
 //namespace PartituraMagica.Playing
 //{
 //    [TestFixture]
-//    class PlayingTests : /*IPlayCommandParameters*/
+//    class PlayingTests : IPlayCommandParameters
 //    {		
 //        private MockRepository mocks;
 //        private IPlayerView view;

@@ -237,10 +237,10 @@ namespace PartituraMagica
 		{
 			BoxFinder f = new BoxFinder(this.image);
 			Rect[] systems = new Rect[4] { 
-        new Rect(100, 300, 600, 10),
-        new Rect(100, 500, 600, 11),
-        new Rect(100, 1000, 600, 12),
-        new Rect(100, 1200, 600, 13)};
+				new Rect(100, 300, 600, 10),
+				new Rect(100, 500, 600, 11),
+				new Rect(100, 1000, 600, 12),
+				new Rect(100, 1200, 600, 13)};
 			List<Rect> boxes = f.GetBoxes(systems).ToList();
 			Assert.AreEqual(boxes.Count, 4);
 			Assert.AreEqual(boxes[0].Y, 150);
@@ -261,8 +261,8 @@ namespace PartituraMagica
 		{
 			BoxFinder f = new BoxFinder(this.image);
 			Rect[] systems = new Rect[2] { 
-        new Rect(100, 100, 600, 10),				
-        new Rect(100, 2900, 600, 13)};
+				new Rect(100, 100, 600, 10),				
+				new Rect(100, 2900, 600, 13)};
 			List<Rect> boxes = f.GetBoxes(systems).ToList();
 			Assert.AreEqual(boxes.Count, 2);
 			Assert.AreEqual(boxes[0].Y, 0D);
