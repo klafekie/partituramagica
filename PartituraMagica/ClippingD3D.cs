@@ -1,15 +1,10 @@
 using System;
-using System.IO;
-using System.Diagnostics;
 using System.Collections.Generic;
-
+using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.Windows.Forms;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
 using System.Runtime.InteropServices;
-using System.Text;
+using SlimDX;
+using SlimDX.Direct3D9;
 
 namespace PartituraMagica
 {
@@ -19,171 +14,176 @@ namespace PartituraMagica
 	 */
 	internal class ClippingD3D : IDisposable
 	{
-		private Rect coords;
-		private IGreyImage image;
+		//caution: do not change the order of struct members
+		[StructLayout(LayoutKind.Sequential)]
+		private struct PositionedColoredTextured
+		{
+			public float X;
+			public float Y;
+			public float Z;
+			public int Color;
+			public float Tu;
+			public float Tv;
+			public const VertexFormat Format = VertexFormat.Texture1 | VertexFormat.Position | VertexFormat.Diffuse;
+		}
+		private readonly Rect coords;
+		private readonly IGreyImage image;
 
-		private int color = Color.White.ToArgb();
-		private bool invertColors = true;
+		private readonly int color = Color.White.ToArgb();
+		private const bool invertColors = true;
 
-		private Mesh box = null;
-		private double xPos = 0d;
+		private Mesh box;
+		private double xPos;
 
 		private class Cache
 		{
-			Texture texture;
-			float width;
-			float height;
+			private readonly Texture texture;
 			public Texture Texture { get { return texture; } }
-			public float Width { get { return width; } }
-			public float Height { get { return height; } }
 
-			private static Dictionary<string, Cache> loadedPages = new Dictionary<string, Cache>();
+			private static readonly Dictionary<string, Cache> loadedPages = new Dictionary<string, Cache>();
 
-			private Cache(Texture t, float width, float height) {
-				this.texture = t;
-				this.width = width;
-				this.height = height;
+			private Cache(Texture t)
+			{
+				texture = t;
 			}
 
-			public static void Cleanup() {
-				foreach (Cache b in loadedPages.Values) {
+			public static void Cleanup()
+			{
+				foreach (Cache b in loadedPages.Values)
+				{
 					b.texture.Dispose();
 				}
 				loadedPages.Clear();
 			}
 
-			public static Cache Get(IGreyImage image, Device dev) {
-				if (!loadedPages.ContainsKey(image.Path)) {					
-					
+			public static Cache Get(IGreyImage image, Device dev)
+			{
+				if (!loadedPages.ContainsKey(image.Path))
+				{
 					//@todo p2 optimize scaling so that it doesn't flicker for low zoom factors
 					//for this we can use mip mapping and find the optimal filter for the texture
 					//maybe multisampling could help??
 
-                    //we use a fixed size of 2048x2048 cause some graphic adapters only allow
-                    //square textures with a size that is a power of two.
+					//we use a fixed size of 2048x2048 cause some graphic adapters only allow
+					//square textures with a size that is a power of two.
 
 					//@todo p2 if adapter only supports square textures
 					//can be checked with caps.Texturecaps.SquareOnly
 					//if only powers of two are supported:
 					//can be checked with caps.Texturecaps.SupportsPowerTwo
-			
+
 					Trace.TraceInformation("Cache.Get() loading texture from file: " + image.Path);
 					loadedPages[image.Path] = new Cache(
-						TextureLoader.FromFile(dev, image.Path, 
-							(int)2048, (int)2048, 
+						Texture.FromFile(dev, image.Path,
+							2048, 2048,
 							1, //mip levels
 							Usage.None, //
 							Format.Unknown, //take from file
 							Pool.Default, //we don't need to lock (change) the content
 							Filter.Linear, //how to reduce the source image
 							Filter.None, //how to handle transition from one mip map to the smaller/bigger one
-							unchecked((int)0x00000000)),//transparent color 0 = disable
-						2048, 2048);
+							unchecked(0x00000000)));
 					Trace.TraceInformation("success");
 				}
 				return loadedPages[image.Path];
 			}
 		}
 
-		public ClippingD3D(IGreyImage image, Rect coords) {
+		public ClippingD3D(IGreyImage image, Rect coords)
+		{
 			this.image = image;
 			this.coords = new Rect(coords);
 		}
 
-		public float Width {
-			get {
-                return (float)this.coords.Width;
-			}
-		}
+		public float Width { get { return (float) coords.Width; } }
 
-		public float Height {
-			get {
-				return (float)this.coords.Height;
-			}
-		}
+		public float Height { get { return (float) coords.Height; } }
 
-		public double XPos {
-			get {
-				return this.xPos;
-			}
-		}
+		public double XPos { get { return xPos; } }
 
-		public double Right {
-			get {
-				return this.XPos + this.Width;
-			}
-		}		
+		public double Right { get { return XPos + Width; } }
 
-		public void Init(Device dev, float offset) {
-			Cache cache = Cache.Get(this.image, dev);
+		public void Init(Device dev, float offset)
+		{
+			box = Mesh.CreateBox(dev, (float) coords.Width, (float) coords.Height, 0f);
 			
+			xPos = offset;
 
-			this.box = Mesh.Box(dev, (float)this.coords.Width, (float)this.coords.Height, 0f);
-			this.xPos = offset;
-			//VertexFormats format =
-				//VertexFormats.PositionNormal | VertexFormats.Texture1;
-			VertexFormats format =
-							CustomVertex.PositionColoredTextured.Format;
-
-			Mesh tempBox = box.Clone(box.Options.Value, format, dev);
+			Mesh tempBox = box.Clone(dev, box.CreationOptions, PositionedColoredTextured.Format);
 			box.Dispose();
 			box = tempBox;
-			try {
+
+			try
+			{
 				//Debug.WriteLine("offset: " + offset.ToString());
-				CustomVertex.PositionColoredTextured[] verts =
-					(CustomVertex.PositionColoredTextured[])box.VertexBuffer.Lock(
-						0, typeof(CustomVertex.PositionColoredTextured),
-						LockFlags.None, box.NumberVertices);
+				DataStream stream = box.LockVertexBuffer(LockFlags.None);
 
-				//CustomVertex.PositionNormalTextured[] verts =
-				//    (CustomVertex.PositionNormalTextured[])box.VertexBuffer.Lock(
-				//        0, typeof(CustomVertex.PositionNormalTextured),
-				//        LockFlags.None, box.NumberVertices);
-                float width = (float)image.Width * 96F / (float)image.DpiX;
-                float height = (float)image.Height * 96F / (float)image.DpiY;					
-
-				for (int i = 0; i < verts.Length; ++i) {
-
-					float left = (float)this.coords.X / width;
-					float top = (float)this.coords.Y / height;
-					float right = (float)this.coords.Right / width;
-					float bottom = (float)this.coords.Bottom / height;
-
-					verts[i].Color = this.color;
-					verts[i].Tu = verts[i].X >= 0 ? right : left;
-					verts[i].Tv = verts[i].Y >= 0 ? top : bottom;
-					verts[i].X += offset + (float)this.coords.Width / 2F;
-					//	Debug.WriteLine(String.Format("({0}; {1}; {2}) u:{3} v:{4}", verts[i].X, verts[i].Y, verts[i].Z, verts[i].Tu, verts[i].Tv));
+				float width = image.Width * 96F / (float) image.DpiX;
+				float height = image.Height * 96F / (float) image.DpiY;
+				
+				var vertices = new PositionedColoredTextured[box.VertexCount];
+				for (int i = 0; i < box.VertexCount; ++i)
+				{
+					vertices[i] = stream.Read<PositionedColoredTextured>();
+					//var vertice = vertices[i];
+					//Debug.WriteLine(String.Format("({0}; {1}; {2}) u:{3} v:{4}", vertice.X, vertice.Y, vertice.Z, vertice.Tu, vertice.Tv));
 				}
-			} finally {
+				box.UnlockVertexBuffer();
+				stream = box.LockVertexBuffer(LockFlags.None);
+				for (int i = 0; i < box.VertexCount; ++i)
+				{
+					var vertice = vertices[i];
+					float left = (float) coords.X / width;
+					float top = (float) coords.Y / height;
+					float right = (float) coords.Right / width;
+					float bottom = (float) coords.Bottom / height;
+
+					vertice.Color = color;
+					vertice.Tu = vertice.X >= 0 ? right : left;
+					vertice.Tv = vertice.Y >= 0 ? top : bottom;
+					vertice.X += offset + (float) coords.Width / 2F;
+					//Debug.WriteLine(String.Format("({0}; {1}; {2}) u:{3} v:{4}", vertice.X, vertice.Y, vertice.Z, vertice.Tu, vertice.Tv));
+					
+					stream.Write(vertice);
+				}
+			}
+			finally
+			{
 				box.VertexBuffer.Unlock();
 				//				Clock("Created Mesh");
 			}
 			//			PrintClock();
 		}
 
-
-		public void Render(Device dev) {
-			if (this.box == null) return;
-			
-			dev.SetTexture(0, Cache.Get(this.image, dev).Texture);
-						
-			if (this.invertColors) {
-				dev.TextureState[0].ColorOperation = TextureOperation.Subtract;
-			} else {
-				dev.TextureState[0].ColorOperation = TextureOperation.Modulate;
+		public void Render(Device dev)
+		{
+			if (box == null)
+			{
+				return;
 			}
-			dev.TextureState[0].ColorArgument1 = TextureArgument.Diffuse;
-			dev.TextureState[0].ColorArgument2 = TextureArgument.TextureColor;
-			dev.TextureState[0].AlphaOperation = TextureOperation.Disable;
-			this.box.DrawSubset(0);
+
+			dev.SetTexture(0, Cache.Get(image, dev).Texture);
+
+			dev.SetTextureStageState(0, TextureStage.ColorOperation,
+				invertColors ?
+					TextureOperation.Subtract : TextureOperation.Modulate);
+
+			dev.SetTextureStageState(0, TextureStage.ColorArg1, TextureArgument.Diffuse);
+			dev.SetTextureStageState(0, TextureStage.ColorArg2, TextureArgument.Texture); //??
+			dev.SetTextureStageState(0, TextureStage.AlphaOperation, TextureOperation.Disable);
+			box.DrawSubset(0);
 		}
 
-		public void Dispose() {
-			this.box.Dispose();
+		public void Dispose()
+		{
+			if (box != null)
+			{
+				box.Dispose();
+			}
 		}
 
-		public static void Cleanup() {
+		public static void Cleanup()
+		{
 			Cache.Cleanup();
 		}
 	}

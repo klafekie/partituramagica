@@ -1,6 +1,12 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C38A6B95-50A7-4B4F-9777-E14CE25B92F4}"
+	ProjectSection(SolutionItems) = preProject
+		Quickstart.doc = Quickstart.doc
+		ReleaseNotes.doc = ReleaseNotes.doc
+	EndProjectSection
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartituraMagica", "PartituraMagica\PartituraMagica.csproj", "{F4FB7379-8F4F-4EBB-AEE4-74A2C37F5642}"
 	ProjectSection(ProjectDependencies) = postProject
 		{60124B27-CC5F-469A-872D-9FF665C0DEB7} = {60124B27-CC5F-469A-872D-9FF665C0DEB7}
@@ -14,12 +20,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib", "Lib\Lib.csproj", "{60124B27-CC5F-469A-872D-9FF665C0DEB7}"
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "PartituraMagicaSetup", "PartituraMagicaSetup\PartituraMagicaSetup.vdproj", "{E2ABF6AF-3C92-4D5F-9895-DB1C74D4FAB0}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C38A6B95-50A7-4B4F-9777-E14CE25B92F4}"
-	ProjectSection(SolutionItems) = preProject
-		Quickstart.doc = Quickstart.doc
-		ReleaseNotes.doc = ReleaseNotes.doc
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution

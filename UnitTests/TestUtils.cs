@@ -52,8 +52,10 @@ namespace PartituraMagica
 		{
 			CollectionAssert.Contains(panel.rectangles.Values, r);
 			int id = -1;
-			foreach (KeyValuePair<int, Rect> entry in panel.rectangles) {
-				if (entry.Value == r) {
+			foreach (KeyValuePair<int, Rect> entry in panel.rectangles)
+			{
+				if (entry.Value == r)
+				{
 					id = entry.Key;
 					break;
 				}
@@ -112,13 +114,14 @@ namespace PartituraMagica
 			get { return this.mainWindow; }
 		}
 
-        #region ICommandParameters Members
+		#region ICommandParameters Members
 
 
-        public void DisposePlayerView() {
-            throw new NotImplementedException();
-        }
+		public void DisposePlayerView()
+		{
+			throw new NotImplementedException();
+		}
 
-        #endregion
-    };
+		#endregion
+	};
 }

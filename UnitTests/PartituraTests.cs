@@ -25,7 +25,7 @@ namespace PartituraMagica
 			mocks.VerifyAll();
 		}
 
-		
+
 		public void RunAll()
 		{
 			this.Setup();
@@ -39,7 +39,7 @@ namespace PartituraMagica
 			this.TearDown();
 			this.Setup();
 			this.TestWrongImageFileIndicesOnNew();
-			this.TearDown();			
+			this.TearDown();
 		}
 
 		[Test]
@@ -123,8 +123,8 @@ namespace PartituraMagica
 			//now safe to another location and reopen to see that there are still the same pages
 			new SaveCommand(true, this).Execute();
 			Assert.False(activePartitura.Partitura.Dirty);
-			new ClosePartituraCommand(this).Execute(); 
-			new CloseApplicationCommand(this).Execute();			
+			new ClosePartituraCommand(this).Execute();
+			new CloseApplicationCommand(this).Execute();
 
 			new OpenCommand(this).Execute();
 			new ShowPageCommand(0, this).Execute();
@@ -189,14 +189,17 @@ namespace PartituraMagica
 
 			mocks.ReplayAll();
 
-			try {
+			try
+			{
 				new NewPartituraCommand(this).Execute();
 				Assert.Fail("expected exception");
-			} catch (PartituraException pe) {
+			}
+			catch (PartituraException pe)
+			{
 				StringAssert.Contains("index", pe.Message);
 			}
 		}
-		
+
 		//TestExceptions during copy
 	}
 }

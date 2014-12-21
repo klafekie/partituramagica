@@ -13,7 +13,7 @@ namespace PartituraMagica
 {
 	class FakeImage : IGreyImage
 	{
-		
+
 		public int Width
 		{
 			get { return 1000; }
@@ -24,12 +24,15 @@ namespace PartituraMagica
 			get { return 3000; }
 		}
 
-		private BrightnessGetter brightness = (x,y) => 0D;
-		public BrightnessGetter Brightness {
-			get {
+		private BrightnessGetter brightness = (x, y) => 0D;
+		public BrightnessGetter Brightness
+		{
+			get
+			{
 				return brightness;
 			}
-			set {
+			set
+			{
 				brightness = value;
 			}
 		}
@@ -46,7 +49,8 @@ namespace PartituraMagica
 		}
 
 
-		public string Path {
+		public string Path
+		{
 			get { return "any.jpg"; }
 		}
 	}
@@ -130,7 +134,8 @@ namespace PartituraMagica
 		{
 			//first line at y=200
 			//image width should be 1000
-			if (y < 200 || y > 282 || x < 100 || x > 900) return 1F;
+			if (y < 200 || y > 282 || x < 100 || x > 900)
+				return 1F;
 			int mod = y % 20;
 			if (mod == 0)
 				return 0.45F;
@@ -144,7 +149,8 @@ namespace PartituraMagica
 		public double OneSystem6LinesImage(int x, int y)
 		{
 			//first line at y=200
-			if (y < 200 || y > 302) return 1F;
+			if (y < 200 || y > 302)
+				return 1F;
 			int mod = y % 20;
 			if (mod == 0)
 				return 0.45F;
@@ -161,8 +167,10 @@ namespace PartituraMagica
 			//distance between systems == 100
 			//some systems have 6 lines
 
-			if (y < 303) return OneSystemImage(x, y);
-			if (y < 606) return OneSystem6LinesImage(x, y - 303);
+			if (y < 303)
+				return OneSystemImage(x, y);
+			if (y < 606)
+				return OneSystem6LinesImage(x, y - 303);
 			return OneSystemImage(x, y - 606);
 		}
 
@@ -229,10 +237,10 @@ namespace PartituraMagica
 		{
 			BoxFinder f = new BoxFinder(this.image);
 			Rect[] systems = new Rect[4] { 
-				new Rect(100, 300, 600, 10),
-				new Rect(100, 500, 600, 11),
-				new Rect(100, 1000, 600, 12),
-				new Rect(100, 1200, 600, 13)};
+        new Rect(100, 300, 600, 10),
+        new Rect(100, 500, 600, 11),
+        new Rect(100, 1000, 600, 12),
+        new Rect(100, 1200, 600, 13)};
 			List<Rect> boxes = f.GetBoxes(systems).ToList();
 			Assert.AreEqual(boxes.Count, 4);
 			Assert.AreEqual(boxes[0].Y, 150);
@@ -253,8 +261,8 @@ namespace PartituraMagica
 		{
 			BoxFinder f = new BoxFinder(this.image);
 			Rect[] systems = new Rect[2] { 
-				new Rect(100, 100, 600, 10),				
-				new Rect(100, 2900, 600, 13)};
+        new Rect(100, 100, 600, 10),				
+        new Rect(100, 2900, 600, 13)};
 			List<Rect> boxes = f.GetBoxes(systems).ToList();
 			Assert.AreEqual(boxes.Count, 2);
 			Assert.AreEqual(boxes[0].Y, 0D);

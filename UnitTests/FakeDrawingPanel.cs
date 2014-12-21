@@ -31,10 +31,13 @@ namespace PartituraMagica
 
 		public void AddOrUpdateRectangle(int id, Rect coordinates)
 		{
-			if (rectangles.ContainsKey(id)) {
+			if (rectangles.ContainsKey(id))
+			{
 				rectangles[id] = coordinates;
 				lastId = id;
-			} else {
+			}
+			else
+			{
 				AddRectangle(id, coordinates);
 			}
 		}
@@ -62,19 +65,22 @@ namespace PartituraMagica
 			rectangles = new Dictionary<int, Rect>();
 			selection = new Dictionary<int, bool>();
 			labels = new Dictionary<int, string>();
-			imagePath = null;			
+			imagePath = null;
 			lastId = -1;
 		}
 
 		public Point DrawImage(string path)
 		{
 			imagePath = path;
-			return new Point(100,100);
-		}		
+			return new Point(100, 100);
+		}
 
-		public bool IsSelected(Rect theirs) {
-			foreach (KeyValuePair<int, Rect> entry in this.rectangles) {
-				if (theirs == entry.Value) {
+		public bool IsSelected(Rect theirs)
+		{
+			foreach (KeyValuePair<int, Rect> entry in this.rectangles)
+			{
+				if (theirs == entry.Value)
+				{
 					return this.selection[entry.Key];
 				}
 			}
@@ -82,14 +88,15 @@ namespace PartituraMagica
 			return false;
 		}
 
-		public Rect LastRect {
+		public Rect LastRect
+		{
 			get { return this.rectangles[this.lastId]; }
 		}
 
 
 		public void LabelRectangle(int id, string label)
 		{
-			labels[id] = label;			
+			labels[id] = label;
 		}
 
 
@@ -98,7 +105,8 @@ namespace PartituraMagica
 			get { return new FakeImage(); }
 		}
 
-		public IGreyImage GetImage(string path) {
+		public IGreyImage GetImage(string path)
+		{
 			return new FakeImage();
 		}
 	}

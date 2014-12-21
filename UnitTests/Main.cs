@@ -10,7 +10,7 @@ namespace PartituraMagica
 		public static int Main(string[] args)
 		{
 			//new EditingTests().RunAll();			
-			//new PartituraTests().RunAll();			
+			new PartituraTests().RunAll();
 			//new PlayingTests().RunAll();
 			//new NavigatorTests().RunAll();
 			new BoxFinderTests().RunAll();
