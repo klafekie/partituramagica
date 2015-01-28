@@ -19,7 +19,7 @@
 //        private IPlayingContext context;
 //        private IFileSystem fileSystem;
 //        private IDrawingPanel panel;
-		
+
 //        private Page page = null;
 
 //        private Rect r1, r2, r3, r4, r5;
@@ -32,9 +32,9 @@
 //            this.context = mocks.DynamicMock<IPlayingContext>();
 //            this.fileSystem = mocks.DynamicMock<IFileSystem>();
 //            this.panel = mocks.DynamicMock<IDrawingPanel>();
-			
+
 //            this.partitura = new Partitura();
-			
+
 //            Expect.Call(this.context.GetPageCount()).Repeat.Any().Return(3);
 //            this.partitura.GetPage(0).PaintPage(panel, new Point(1000, 2000),
 //                null);
@@ -137,15 +137,15 @@
 //            this.partitura.AddBox(1,  r4, this.panel);
 //            this.partitura.AddBox(2, r5, this.panel);
 
-			
+
 //            Label(0, new Point(r1.X, r1.Y + 5), labeller);
 //            Label(0, new Point(r2.X, r2.Y + 5), labeller);
 //            Label(1, new Point(r3.X, r3.Y + 5), labeller);
 //            Label(1, new Point(r4.X, r4.Y + 5), labeller);
 //            Label(2, new Point(r5.X, r5.Y + 5), labeller);
-			
+
 //            IList<Part> parts = this.partitura.GetAllParts(3);
-			
+
 //            Assert.AreEqual(5, parts.Count);
 //            Assert.AreEqual(r1, parts[0][0].Coords);
 //            Assert.AreEqual(0, parts[0][0].PageIndex);
@@ -218,7 +218,7 @@
 //                return this.page;
 //            }
 //        }
-			
+
 
 //        public INavigator Navigator
 //        {

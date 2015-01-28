@@ -5,8 +5,8 @@ using System.Text;
 
 namespace PartituraMagica
 {
-	public class PartituraException : Exception
-	{
-		public PartituraException(string message) : base(message) {}
-	}
+    public class PartituraException : Exception
+    {
+        public PartituraException(string message) : base(message) { }
+    }
 }

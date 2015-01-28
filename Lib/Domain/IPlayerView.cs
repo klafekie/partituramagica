@@ -43,5 +43,3 @@ namespace PartituraMagica
 		event LineEndEvent LineEndReached;
 	}
 }
-   
-   

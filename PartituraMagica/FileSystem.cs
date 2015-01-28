@@ -7,93 +7,93 @@ using Microsoft.Win32;
 
 namespace PartituraMagica
 {
-	internal class FileSystem : IFileSystem
-	{
-		public ICollection<string> GetMatchingFileNames(string path, string pattern)
-		{
-			return Directory.GetFiles(path, pattern, SearchOption.TopDirectoryOnly);
-		}
+    internal class FileSystem : IFileSystem
+    {
+        public ICollection<string> GetMatchingFileNames(string path, string pattern)
+        {
+            return Directory.GetFiles(path, pattern, SearchOption.TopDirectoryOnly);
+        }
 
-		public string ShowOpenDialog(FileType type)
-		{
-			string result;
-			OpenFileDialog dialog = new OpenFileDialog();
-			dialog.Multiselect = false;
+        public string ShowOpenDialog(FileType type)
+        {
+            string result;
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Multiselect = false;
 
-			result = ShowFileDialog(type, dialog);
+            result = ShowFileDialog(type, dialog);
 
-			return result;
-		}
+            return result;
+        }
 
-		private static string ShowFileDialog(FileType type, FileDialog dialog)
-		{
-			if (type == FileType.Image)
-			{
-				dialog.Title = "Open Image File";
-				dialog.Filter = "Image files (*.jpg)|*.jpg";
-			}
-			else
-			{
-				dialog.Title = "Open Partitura File";
-				Debug.Assert(type == FileType.Partitura);
-				dialog.Filter = "Partitura files (*.partitura)|*.partitura";
-			}
+        private static string ShowFileDialog(FileType type, FileDialog dialog)
+        {
+            if (type == FileType.Image)
+            {
+                dialog.Title = "Open Image File";
+                dialog.Filter = "Image files (*.jpg)|*.jpg";
+            }
+            else
+            {
+                dialog.Title = "Open Partitura File";
+                Debug.Assert(type == FileType.Partitura);
+                dialog.Filter = "Partitura files (*.partitura)|*.partitura";
+            }
 
-			dialog.RestoreDirectory = true;
+            dialog.RestoreDirectory = true;
 
-			if (dialog.ShowDialog() == true)
-			{
-				return dialog.FileName;
-			}
-			return null;
-		}
+            if (dialog.ShowDialog() == true)
+            {
+                return dialog.FileName;
+            }
+            return null;
+        }
 
-		public string ShowSaveDialog(FileType type)
-		{
-			SaveFileDialog dialog = new SaveFileDialog();
-			return ShowFileDialog(type, dialog);
-		}
+        public string ShowSaveDialog(FileType type)
+        {
+            SaveFileDialog dialog = new SaveFileDialog();
+            return ShowFileDialog(type, dialog);
+        }
 
-		public DialogResult AskToSave()
-		{
-			//dont use System.windows.forms.MessageBox!
-			MessageBoxResult r =
-				MessageBox.Show("Do you want to save current Partitura?",
-					"Save Changes?", MessageBoxButton.YesNoCancel);
+        public DialogResult AskToSave()
+        {
+            //dont use System.windows.forms.MessageBox!
+            MessageBoxResult r =
+                MessageBox.Show("Do you want to save current Partitura?",
+                    "Save Changes?", MessageBoxButton.YesNoCancel);
 
-			switch (r)
-			{
-				case MessageBoxResult.Yes:
-					return DialogResult.Yes;
-				case MessageBoxResult.No:
-					return DialogResult.No;
-				case MessageBoxResult.Cancel:
-					return DialogResult.Cancel;
-				default:
-					throw new ApplicationException("unexpected return value");
-			}
-		}
+            switch (r)
+            {
+                case MessageBoxResult.Yes:
+                    return DialogResult.Yes;
+                case MessageBoxResult.No:
+                    return DialogResult.No;
+                case MessageBoxResult.Cancel:
+                    return DialogResult.Cancel;
+                default:
+                    throw new ApplicationException("unexpected return value");
+            }
+        }
 
-		/**
-		 * if target file exists, it is always overwritten!
-		 */
+        /**
+         * if target file exists, it is always overwritten!
+         */
 
-		public void Copy(string from, string to)
-		{
-			string extension1 = Path.GetExtension(from).ToLower();
-			string extension2 = Path.GetExtension(to).ToLower();
-			Debug.Assert(extension1 == extension2);
-			File.Copy(from, to, true);
-		}
+        public void Copy(string from, string to)
+        {
+            string extension1 = Path.GetExtension(from).ToLower();
+            string extension2 = Path.GetExtension(to).ToLower();
+            Debug.Assert(extension1 == extension2);
+            File.Copy(from, to, true);
+        }
 
-		public Stream OpenRead(string path)
-		{
-			return File.OpenRead(path);
-		}
+        public Stream OpenRead(string path)
+        {
+            return File.OpenRead(path);
+        }
 
-		public Stream OpenWrite(string path)
-		{
-			return File.Create(path);
-		}
-	}
+        public Stream OpenWrite(string path)
+        {
+            return File.Create(path);
+        }
+    }
 }

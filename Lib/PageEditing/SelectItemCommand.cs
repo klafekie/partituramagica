@@ -7,25 +7,25 @@ using System.Windows;
 
 namespace PartituraMagica
 {
-	public class SelectItemCommand : PartituraCommandBase, ICommand
-	{
-		protected Point pos;
+    public class SelectItemCommand : PartituraCommandBase, ICommand
+    {
+        protected Point pos;
 
-		public bool CanExecute()
-		{
-			return p.Active.CurrentPage != null && p.Active.CurrentPage.GetShapeTypeAt(pos) != Shape.NothingSpecial;
-		}
+        public bool CanExecute()
+        {
+            return p.Active.CurrentPage != null && p.Active.CurrentPage.GetShapeTypeAt(pos) != Shape.NothingSpecial;
+        }
 
-		public SelectItemCommand(Point pos, ICommandParameters p)
-			: base(p)
-		{
-			this.pos = pos;
-		}
+        public SelectItemCommand(Point pos, ICommandParameters p)
+            : base(p)
+        {
+            this.pos = pos;
+        }
 
-		public void Execute()
-		{
-			Debug.Assert(CanExecute());
-			p.Active.CurrentPage.SelectBoxAt(pos, p.Panel);
-		}
-	}
+        public void Execute()
+        {
+            Debug.Assert(CanExecute());
+            p.Active.CurrentPage.SelectBoxAt(pos, p.Panel);
+        }
+    }
 }

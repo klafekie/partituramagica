@@ -3,47 +3,47 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace PartituraMagica
 {
-	public class OpenCommand : PartituraCommandBase, ICommand
-	{
-		private readonly string path;
+    public class OpenCommand : PartituraCommandBase, ICommand
+    {
+        private readonly string path;
 
-		public OpenCommand(ICommandParameters p)
-			: base(p)
-		{
-			path = null;
-		}
+        public OpenCommand(ICommandParameters p)
+            : base(p)
+        {
+            path = null;
+        }
 
-		//for testing purposes
-		public OpenCommand(string path, ICommandParameters p)
-			: base(p)
-		{
-			this.path = path;
-		}
+        //for testing purposes
+        public OpenCommand(string path, ICommandParameters p)
+            : base(p)
+        {
+            this.path = path;
+        }
 
-		public void Execute()
-		{
-			string chosenFile = path ?? p.FileSystem.ShowOpenDialog(FileType.Partitura);
-			if (chosenFile != null)
-			{
-				new ClosePartituraCommand(p).TryExecute();
-				if (!p.Active.IsOpen)
-				{
-					using (Stream str = p.FileSystem.OpenRead(chosenFile))
-					{
-						BinaryFormatter sf = new BinaryFormatter();
-						PartituraMemento mem = (PartituraMemento) sf.Deserialize(str);
-						Partitura partitura = new Partitura(mem);
-						p.Active.Open(chosenFile, partitura);
-					}
-					new ShowPageCommand(0, p).TryExecute();
-					p.MainWindow.PartPattern = p.Active.Partitura.PartPattern;
-				}
-			}
-		}
+        public void Execute()
+        {
+            string chosenFile = path ?? p.FileSystem.ShowOpenDialog(FileType.Partitura);
+            if (chosenFile != null)
+            {
+                new ClosePartituraCommand(p).TryExecute();
+                if (!p.Active.IsOpen)
+                {
+                    using (Stream str = p.FileSystem.OpenRead(chosenFile))
+                    {
+                        BinaryFormatter sf = new BinaryFormatter();
+                        PartituraMemento mem = (PartituraMemento)sf.Deserialize(str);
+                        Partitura partitura = new Partitura(mem);
+                        p.Active.Open(chosenFile, partitura);
+                    }
+                    new ShowPageCommand(0, p).TryExecute();
+                    p.MainWindow.PartPattern = p.Active.Partitura.PartPattern;
+                }
+            }
+        }
 
-		public bool CanExecute()
-		{
-			return true;
-		}
-	}
+        public bool CanExecute()
+        {
+            return true;
+        }
+    }
 }
