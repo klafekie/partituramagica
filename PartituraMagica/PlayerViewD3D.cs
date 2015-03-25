@@ -234,7 +234,7 @@ namespace PartituraMagica
     public void GotoLine(int lineIndex)
     {
       this.currentLine = lineIndex;
-^      this.viewXPos = this._clippingD3Ds[lineIndex].XPos;
+      this.viewXPos = this._clippingD3Ds[lineIndex].XPos;
     }
 
     public void StartScrolling()

@@ -19,25 +19,10 @@ namespace PartituraMagica
             active = new ActivePartitura(fileSystem);
             this.mainWindow = mainWindow;
 
-#if DEBUG
-            //@todo p3 for testing ->
-            try
-            {
-                //string debugQuickLoadFileName = @"D:\eike\PartituraMagica\Examples\aussente.partitura";
-                string debugQuickLoadFileName = @"c:\VisualStudio\PartituraMagica\Examples\aussente.partitura";
-                //string debugQuickLoadFileName = @"C:\Users\jan\Documents\My Partitura Files\aussente.partitura"; // for jed Note-008
-                //string debugQuickLoadFileName = @"C:\Users\jan\Documents\My Partitura Files\Aussente04\aussente4b.partitura"; // for jed Note-008
-                //string debugQuickLoadFileName = @"C:\Users\jan\Documents\My Partitura Files\Holy\Holy.partitura"; // for jed Note-008
-                //string debugQuickLoadFileName = @"C:\Users\jan\Documents\My Partitura Files\Holy20141229a\Holy01b.partitura"; // for jed Note-008
-                new OpenCommand(debugQuickLoadFileName, this).Execute();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                //ignore, testing code...
-            }
-            //<-
-#endif
+            string[] args = Environment.GetCommandLineArgs();
+            if (args.Length == 2) { //first arg is the exe name
+                new OpenCommand(args[1], this).Execute();
+            }            
         }
 
         public IActivePartitura Active { get { return active; } }
