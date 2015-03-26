@@ -72,7 +72,7 @@ namespace PartituraMagica
             }
         }
 
-        internal PageMemento SaveToMemento()
+        internal PageMemento ToMemento()
         {
             this.dirty = false;
             return new PageMemento(this.boxes.Values);

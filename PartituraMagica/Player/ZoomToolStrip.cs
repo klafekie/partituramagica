@@ -24,7 +24,7 @@ namespace PartituraMagica
 
         public float XZoom
         {
-            //get { return xZoom; }
+            get { return xZoom; }
             set
             {
                 if (value == 0F)
@@ -41,7 +41,7 @@ namespace PartituraMagica
 
         public float YZoom
         {
-            //get { return yZoom; }
+            get { return yZoom; }
             set
             {
                 if (value == 0F)

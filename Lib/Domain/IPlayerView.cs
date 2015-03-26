@@ -41,5 +41,7 @@ namespace PartituraMagica
 		 * Event triggered when the view has scrolled until the end of a line.
 		 */
 		event LineEndEvent LineEndReached;
+
+	    PlayerMemento ToMemento();
 	}
 }

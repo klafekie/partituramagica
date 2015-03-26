@@ -1,16 +1,10 @@
-﻿using System;
-using System.Diagnostics;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Soap;
+﻿using System.Diagnostics;
 
 namespace PartituraMagica
 {
     public class SaveCommand : PartituraCommandBase, ICommand
     {
-        private bool saveAs;
+        private readonly bool saveAs;
 
         public SaveCommand(bool saveAs, ICommandParameters p)
             : base(p)

@@ -20,7 +20,7 @@ namespace PartituraMagica
     public partial class PlayerViewD3D : Form, IPlayerView
     {
         private const float LINE_DISTANCE = 10F;
-        private readonly IPageFiles context;
+        private readonly IPageFiles pageFiles;
         private readonly IImageLoader imageLoader;
         private readonly IntPtr ownerHandle;
 
@@ -37,17 +37,17 @@ namespace PartituraMagica
         private readonly Direct3D d3d;
         private readonly ApplicationConfiguration configuration = new ApplicationConfiguration();
 
-        public PlayerViewD3D(IPageFiles context, IImageLoader imageLoader, IntPtr owner)
+        public PlayerViewD3D(IPageFiles pageFiles, IImageLoader imageLoader, IntPtr owner, PlayerMemento memento)
         {
             Trace.WriteLine("ctor of PlayerViewD3D");
             InitializeComponent();
-            //ClientSize = new Size(640, 480);
             WindowState = FormWindowState.Maximized;
 
-            this.context = context;
+            this.pageFiles = pageFiles;
             this.imageLoader = imageLoader;
-            zoomStrip.XZoom = 0.004F;
-            zoomStrip.YZoom = 0.01F;
+            zoomStrip.XZoom = memento.XZoom;
+            zoomStrip.YZoom = memento.YZoom;
+            speedStrip.Speed = memento.Speed;
             ownerHandle = owner;
 
             d3d = new Direct3D();
@@ -114,7 +114,7 @@ namespace PartituraMagica
             _clippingD3Ds.Clear();
             foreach (Clipping c in clips)
             {
-                string path = context.GetImage(c.PageIndex);
+                string path = pageFiles.GetImage(c.PageIndex);
                 IGreyImage image = imageLoader.GetImage(path);
                 ClippingD3D line = new ClippingD3D(image, c.Coords, configuration.InvertColors, configuration.Color);
                 _clippingD3Ds.Add(line);
@@ -196,7 +196,10 @@ namespace PartituraMagica
             {
                 if (viewXPos < _clippingD3Ds.Last().Right)
                 {
-                    viewXPos += speedStrip.Speed;
+                    if (!speedStrip.Paused)
+                    {
+                        viewXPos += speedStrip.Speed;
+                    }
                     if (viewXPos > _clippingD3Ds[currentLine].Right)
                     {
                         if (!OnLineEndReached())
@@ -241,23 +244,16 @@ namespace PartituraMagica
             }
         }
 
-        private void panel1_Paint(object sender, PaintEventArgs e)
-        {
-            Render();
-        }
-
-        private void PlayerViewDX_Activated(object sender, EventArgs e)
-        {
-            rendering = true;
-        }
-
-        private void PlayerViewDX_Deactivate(object sender, EventArgs e)
-        {
-            rendering = false;
-            //Debug.WriteLine("Deactivate() Rendering = false");
-        }
-
         public event LineEndEvent LineEndReached;
+        public PlayerMemento ToMemento()
+        {
+            return new PlayerMemento()
+            {
+                Speed = speedStrip.Speed,
+                XZoom = zoomStrip.XZoom,
+                YZoom = zoomStrip.YZoom
+            };
+        }
 
         protected bool OnLineEndReached()
         {
@@ -306,6 +302,7 @@ namespace PartituraMagica
 
         private void PlayerViewD3D_FormClosing(object sender, FormClosingEventArgs e)
         {
+
             closed = true;
             switch (e.CloseReason)
             {

@@ -54,5 +54,10 @@ namespace PartituraMagica
         {
             throw new NotImplementedException();
         }
+
+        public bool FileExists(string path)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

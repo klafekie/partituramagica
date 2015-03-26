@@ -23,22 +23,7 @@ namespace PartituraMagica
 
         public int JumpsCount { get; set; }
 
-        private float speed = 1F;
-        public float Speed
-        {
-            get { return this.paused ? 0F : this.speed; }
-            set
-            {
-                if (value == 0)
-                {
-                    this.paused = true;
-                }
-                else
-                {
-                    this.speed = value;
-                }
-            }
-        }
+        public float Speed { get; set; }
 
         public SpeedToolStrip()
         {
@@ -64,7 +49,7 @@ namespace PartituraMagica
 
         void btnFaster_Click(object sender, EventArgs e)
         {
-            this.speed *= 1.2F;
+            this.Speed *= 1.2F;
         }
 
         void btnPause_Click(object sender, EventArgs e)
@@ -74,7 +59,7 @@ namespace PartituraMagica
 
         void btnSlower_Click(object sender, EventArgs e)
         {
-            this.speed *= 0.8F;
+            this.Speed *= 0.8F;
         }
 
         public void HandleKeyDown(object sender, KeyEventArgs e)

@@ -82,7 +82,7 @@ namespace PartituraMagica
             using (Stream str = fileSystem.OpenWrite(newPath))
             {
                 BinaryFormatter sf = new BinaryFormatter();
-                sf.Serialize(str, this.Partitura.SaveToMemento());
+                sf.Serialize(str, this.Partitura.ToMemento());
             }
             this.path = newPath;
         }

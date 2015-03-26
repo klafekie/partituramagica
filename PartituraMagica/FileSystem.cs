@@ -95,5 +95,10 @@ namespace PartituraMagica
         {
             return File.Create(path);
         }
+
+        public bool FileExists(string path)
+        {
+            return File.Exists(path);
+        }
     }
 }

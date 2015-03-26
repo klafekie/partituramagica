@@ -48,5 +48,6 @@ namespace PartituraMagica
 
         /** file is created if it doesn't exist */
         Stream OpenWrite(string path);
+        bool FileExists(string path);
     }
 }

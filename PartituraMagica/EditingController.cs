@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
 using System.Windows.Interop;
 
@@ -88,13 +90,48 @@ namespace PartituraMagica
                         WindowInteropHelper h = new WindowInteropHelper(mainWindow);
                         if (playerView == null)
                         {
-                            playerView = new PlayerViewD3D(Active, panel, h.Handle);
+                            playerView = new PlayerViewD3D(Active, panel, h.Handle, LoadPlayer());
+                            playerView.VisibleChanged += (o, args) =>
+                            {
+                                //todo p1 bind to a better event
+                                if (!playerView.Visible)
+                                {
+                                    SavePlayer(playerView);
+                                }
+                            };
                         }
                         return playerView;
                     };
                     return new ShowPlayerCommand(createView, this);
                 default:
                     throw new ArgumentException("unknown command");
+            }
+        }
+
+        private PlayerMemento LoadPlayer()
+        {
+            if (!fileSystem.FileExists(PlayerRuntimePath))
+            {
+                return new PlayerMemento();
+            }
+            using (Stream str = fileSystem.OpenRead(PlayerRuntimePath))
+            {
+                BinaryFormatter sf = new BinaryFormatter();
+                return (PlayerMemento) sf.Deserialize(str);
+            }
+        }
+
+        private string PlayerRuntimePath
+        {
+            get { return active.Path + ".runtime"; }
+        }
+
+        private void SavePlayer(IPlayerView view)
+        {
+            using (Stream str = fileSystem.OpenWrite(PlayerRuntimePath))
+            {
+                BinaryFormatter sf = new BinaryFormatter();
+                sf.Serialize(str, view.ToMemento());
             }
         }
 

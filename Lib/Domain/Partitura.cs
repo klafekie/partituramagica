@@ -21,7 +21,7 @@ namespace PartituraMagica
             this.pages = new ArrayList(pages.Count);
             foreach (Page p in pages)
             {
-                this.pages.Add(p.SaveToMemento());
+                this.pages.Add(p.ToMemento());
             }
         }
         private ArrayList pages;
@@ -74,7 +74,7 @@ namespace PartituraMagica
             }
         }
 
-        public PartituraMemento SaveToMemento()
+        public PartituraMemento ToMemento()
         {
             this.dirty = false;
             return new PartituraMemento(this.pages, this.partPattern);
