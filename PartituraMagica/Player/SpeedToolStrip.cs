@@ -1,16 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using System.Diagnostics;
 
 namespace PartituraMagica
 {
-    //@todo p1 allow to scroll backwards
     /**
      * A custom control that allows to increase/decrease speed 
      * and to pause/resume playing
@@ -24,12 +16,13 @@ namespace PartituraMagica
             set
             {
                 btnPause.Text = value ? "Resume" : "Pause";
-                btnPause.Image = this.imageList1.Images[value ? "resume" : "pause"];
                 btnPause.Checked = value;
                 paused = value;
                 //				OnSpeedChanged(this.Speed);
             }
         }
+
+        public int BackwardJumpsCount { get; set; }
 
         private float speed = 1F;
         public float Speed
@@ -57,22 +50,16 @@ namespace PartituraMagica
         {
             InitializeComponent();
             btnSlower.Click += new EventHandler(btnSlower_Click);
-            btnSlower.Image = this.imageList1.Images["decreaseSpeed"];
             btnPause.Click += new EventHandler(btnPause_Click);
             btnFaster.Click += new EventHandler(btnFaster_Click);
-            btnFaster.Image = this.imageList1.Images["increaseSpeed"];
+            btnJumpBack.Click += BtnJumpBack_Click;
 
-            foreach (ToolStripItem i in this.Items)
-            {
-                ToolStripButton b = i as ToolStripButton;
-                if (b != null)
-                {
-                    b.ImageScaling = ToolStripItemImageScaling.SizeToFit;
-                    b.AutoSize = false;
-                    b.Size = new Size(36, 36);
-                }
-            }
             this.Paused = true;
+        }
+
+        private void BtnJumpBack_Click(object sender, EventArgs e)
+        {
+            this.BackwardJumpsCount++;
         }
 
         void btnFaster_Click(object sender, EventArgs e)
@@ -123,13 +110,6 @@ namespace PartituraMagica
                     this.Paused = false;//use property setter
                     break;
             }
-        }
-
-        //public event Action<float> SpeedChanged;
-        //protected void OnSpeedChanged(float value) {
-        //    if (this.SpeedChanged != null) {
-        //        this.SpeedChanged(value);
-        //    }
-        //}
+        }        
     }
 }

@@ -42,7 +42,7 @@
             this.btnZoomIn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnZoomIn.Name = "btnZoomIn";
             this.btnZoomIn.Size = new System.Drawing.Size(23, 22);
-            this.btnZoomIn.Text = "toolStripButton1";
+            this.btnZoomIn.Text = "Zoom In";
             // 
             // btnZoomOut
             // 
@@ -51,7 +51,7 @@
             this.btnZoomOut.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnZoomOut.Name = "btnZoomOut";
             this.btnZoomOut.Size = new System.Drawing.Size(23, 22);
-            this.btnZoomOut.Text = "toolStripButton2";
+            this.btnZoomOut.Text = "Zoom Out";
             // 
             // btnWider
             // 
@@ -60,7 +60,7 @@
             this.btnWider.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnWider.Name = "btnWider";
             this.btnWider.Size = new System.Drawing.Size(23, 22);
-            this.btnWider.Text = "toolStripButton3";
+            this.btnWider.Text = "Wider";
             // 
             // btnSmaller
             // 
@@ -69,7 +69,7 @@
             this.btnSmaller.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnSmaller.Name = "btnSmaller";
             this.btnSmaller.Size = new System.Drawing.Size(23, 20);
-            this.btnSmaller.Text = "toolStripButton4";
+            this.btnSmaller.Text = "Smaller";
             // 
             // ZoomToolStrip
             // 

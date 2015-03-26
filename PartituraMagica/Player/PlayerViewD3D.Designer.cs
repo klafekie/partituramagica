@@ -19,8 +19,8 @@
             this.components = new System.ComponentModel.Container();
             this.panel1 = new System.Windows.Forms.Panel();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
-            this.partsStrip = new PartituraMagica.ChoiceNavigatorStrip();
             this.speedStrip = new PartituraMagica.SpeedToolStrip();
+            this.partsStrip = new PartituraMagica.ChoiceNavigatorStrip();
             this.zoomStrip = new PartituraMagica.ZoomToolStrip();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -54,8 +54,22 @@
             this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.partsStrip);
             this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.speedStrip);
             this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.zoomStrip);
-            this.toolStripContainer1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.PlayerViewD3D_KeyUp);
             this.toolStripContainer1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.PlayerViewD3D_KeyDown);
+            this.toolStripContainer1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.PlayerViewD3D_KeyUp);
+            // 
+            // speedStrip
+            // 
+            this.speedStrip.BackwardJumpsCount = 0;
+            this.speedStrip.Dock = System.Windows.Forms.DockStyle.None;
+            this.speedStrip.Font = new System.Drawing.Font("Lucida Console", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.speedStrip.Location = new System.Drawing.Point(303, 0);
+            this.speedStrip.MinimumSize = new System.Drawing.Size(0, 43);
+            this.speedStrip.Name = "speedStrip";
+            this.speedStrip.Paused = true;
+            this.speedStrip.Size = new System.Drawing.Size(432, 43);
+            this.speedStrip.Speed = 0F;
+            this.speedStrip.TabIndex = 1;
+            this.speedStrip.Text = "Speed";
             // 
             // partsStrip
             // 
@@ -74,23 +88,13 @@
             this.partsStrip.Size = new System.Drawing.Size(300, 43);
             this.partsStrip.TabIndex = 2;
             // 
-            // speedStrip
-            // 
-            this.speedStrip.Dock = System.Windows.Forms.DockStyle.None;
-            this.speedStrip.Location = new System.Drawing.Point(407, 0);
-            this.speedStrip.Name = "speedStrip";
-            this.speedStrip.Paused = true;
-            this.speedStrip.Size = new System.Drawing.Size(151, 39);
-            this.speedStrip.Speed = 0F;
-            this.speedStrip.TabIndex = 1;
-            this.speedStrip.Text = "Speed";
-            // 
             // zoomStrip
             // 
             this.zoomStrip.Dock = System.Windows.Forms.DockStyle.None;
-            this.zoomStrip.Location = new System.Drawing.Point(303, 0);
+            this.zoomStrip.Location = new System.Drawing.Point(735, 0);
+            this.zoomStrip.MinimumSize = new System.Drawing.Size(0, 43);
             this.zoomStrip.Name = "zoomStrip";
-            this.zoomStrip.Size = new System.Drawing.Size(104, 25);
+            this.zoomStrip.Size = new System.Drawing.Size(38, 43);
             this.zoomStrip.TabIndex = 0;
             this.zoomStrip.Text = "zoomToolStrip1";
             // 
@@ -102,9 +106,9 @@
             this.Controls.Add(this.toolStripContainer1);
             this.Name = "PlayerViewD3D";
             this.Text = "PlayerView";
-            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.PlayerViewD3D_KeyUp);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.PlayerViewD3D_FormClosing);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.PlayerViewD3D_KeyDown);
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.PlayerViewD3D_KeyUp);
             this.toolStripContainer1.ContentPanel.ResumeLayout(false);
             this.toolStripContainer1.TopToolStripPanel.ResumeLayout(false);
             this.toolStripContainer1.TopToolStripPanel.PerformLayout();
