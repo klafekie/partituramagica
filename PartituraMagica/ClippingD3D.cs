@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
@@ -29,8 +30,8 @@ namespace PartituraMagica
         private readonly Rect coords;
         private readonly IGreyImage image;
 
-        private readonly int color = Color.White.ToArgb();
-        private bool invertColors = true; // Todo p2 make color inversion configurable (in editor and in player) [jed].
+        private readonly Color foregroundColor; 
+        private readonly bool invertColors;
 
         /// <summary>
         /// The D3D representation of the contents of this clipping, which can be 'scrolled' by the D3D rendering.
@@ -98,9 +99,11 @@ namespace PartituraMagica
             }
         }
 
-        public ClippingD3D(IGreyImage image, Rect coords)
+        public ClippingD3D(IGreyImage image, Rect coords, bool invertColors, Color foregroundColor)
         {
             this.image = image;
+            this.invertColors = invertColors;
+            this.foregroundColor = foregroundColor;
             this.coords = new Rect(coords);
         }
 
@@ -148,7 +151,7 @@ namespace PartituraMagica
                     float right = (float)coords.Right / width;
                     float bottom = (float)coords.Bottom / height;
 
-                    vertice.Color = color;
+                    vertice.Color = foregroundColor.ToArgb();
                     vertice.Tu = vertice.X >= 0 ? right : left;
                     vertice.Tv = vertice.Y >= 0 ? top : bottom;
                     vertice.X += offset + (float)coords.Width / 2F;

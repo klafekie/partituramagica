@@ -35,6 +35,7 @@ namespace PartituraMagica
         private int currentLine;
         private readonly List<ClippingD3D> _clippingD3Ds = new List<ClippingD3D>(); // [Renamed from 'lines' jed 20150118]
         private readonly Direct3D d3d;
+        private readonly ApplicationConfiguration configuration = new ApplicationConfiguration();
 
         public PlayerViewD3D(IPageFiles context, IImageLoader imageLoader, IntPtr owner)
         {
@@ -42,7 +43,7 @@ namespace PartituraMagica
             InitializeComponent();
             //ClientSize = new Size(640, 480);
             WindowState = FormWindowState.Maximized;
-            
+
             this.context = context;
             this.imageLoader = imageLoader;
             zoomStrip.XZoom = 0.004F;
@@ -98,7 +99,7 @@ namespace PartituraMagica
                     Windowed = true,
                     SwapEffect = SwapEffect.Discard
                 });
-            
+
             device.SetRenderState(RenderState.CullMode, Cull.None);
             device.SetRenderState(RenderState.Lighting, false);
             device.SetRenderState(RenderState.Clipping, false);
@@ -107,7 +108,7 @@ namespace PartituraMagica
             // seems that it is not doing anything when working with images, only for shapes
             device.SetRenderState(RenderState.MultisampleAntialias, false);
         }
-        
+
         public void Init(string partPattern, IEnumerable<Clipping> clips)
         {
             _clippingD3Ds.Clear();
@@ -115,7 +116,7 @@ namespace PartituraMagica
             {
                 string path = context.GetImage(c.PageIndex);
                 IGreyImage image = imageLoader.GetImage(path);
-                ClippingD3D line = new ClippingD3D(image, c.Coords);
+                ClippingD3D line = new ClippingD3D(image, c.Coords, configuration.InvertColors, configuration.Color);
                 _clippingD3Ds.Add(line);
             }
 
@@ -164,7 +165,7 @@ namespace PartituraMagica
                 return;
             }
 
-            device.Clear(ClearFlags.Target, Color.Orange, 1.0f, 0);
+            device.Clear(ClearFlags.Target, configuration.InvertColors ? Color.Black : configuration.Color, 1.0f, 0);
             try
             {
                 device.BeginScene();
@@ -239,7 +240,7 @@ namespace PartituraMagica
                 return (viewXPos - (double)currentLine * LINE_DISTANCE);
             }
         }
-        
+
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
             Render();
