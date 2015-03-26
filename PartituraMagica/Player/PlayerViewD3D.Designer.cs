@@ -19,9 +19,9 @@
             this.components = new System.ComponentModel.Container();
             this.panel1 = new System.Windows.Forms.Panel();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
+            this.zoomStrip = new PartituraMagica.ZoomToolStrip();
             this.speedStrip = new PartituraMagica.SpeedToolStrip();
             this.partsStrip = new PartituraMagica.ChoiceNavigatorStrip();
-            this.zoomStrip = new PartituraMagica.ZoomToolStrip();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
@@ -51,11 +51,21 @@
             // 
             // toolStripContainer1.TopToolStripPanel
             // 
-            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.partsStrip);
-            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.speedStrip);
             this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.zoomStrip);
+            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.speedStrip);
+            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.partsStrip);
             this.toolStripContainer1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.PlayerViewD3D_KeyDown);
             this.toolStripContainer1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.PlayerViewD3D_KeyUp);
+            // 
+            // zoomStrip
+            // 
+            this.zoomStrip.Dock = System.Windows.Forms.DockStyle.None;
+            this.zoomStrip.Location = new System.Drawing.Point(766, 0);
+            this.zoomStrip.MinimumSize = new System.Drawing.Size(0, 43);
+            this.zoomStrip.Name = "zoomStrip";
+            this.zoomStrip.Size = new System.Drawing.Size(7, 43);
+            this.zoomStrip.TabIndex = 0;
+            this.zoomStrip.Text = "zoomToolStrip1";
             // 
             // speedStrip
             // 
@@ -66,7 +76,7 @@
             this.speedStrip.MinimumSize = new System.Drawing.Size(0, 43);
             this.speedStrip.Name = "speedStrip";
             this.speedStrip.Paused = true;
-            this.speedStrip.Size = new System.Drawing.Size(432, 43);
+            this.speedStrip.Size = new System.Drawing.Size(463, 43);
             this.speedStrip.Speed = 0F;
             this.speedStrip.TabIndex = 1;
             this.speedStrip.Text = "Speed";
@@ -88,16 +98,6 @@
             this.partsStrip.Size = new System.Drawing.Size(300, 43);
             this.partsStrip.TabIndex = 2;
             // 
-            // zoomStrip
-            // 
-            this.zoomStrip.Dock = System.Windows.Forms.DockStyle.None;
-            this.zoomStrip.Location = new System.Drawing.Point(735, 0);
-            this.zoomStrip.MinimumSize = new System.Drawing.Size(0, 43);
-            this.zoomStrip.Name = "zoomStrip";
-            this.zoomStrip.Size = new System.Drawing.Size(38, 43);
-            this.zoomStrip.TabIndex = 0;
-            this.zoomStrip.Text = "zoomToolStrip1";
-            // 
             // PlayerViewD3D
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -106,6 +106,7 @@
             this.Controls.Add(this.toolStripContainer1);
             this.Name = "PlayerViewD3D";
             this.Text = "PlayerView";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.PlayerViewD3D_FormClosing);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.PlayerViewD3D_KeyDown);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.PlayerViewD3D_KeyUp);

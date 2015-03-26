@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
@@ -43,7 +42,7 @@ namespace PartituraMagica
             InitializeComponent();
             //ClientSize = new Size(640, 480);
             WindowState = FormWindowState.Maximized;
-
+            
             this.context = context;
             this.imageLoader = imageLoader;
             zoomStrip.XZoom = 0.004F;
@@ -80,24 +79,6 @@ namespace PartituraMagica
 
         private void CreateDevice()
         {
-            //using (SimpleTracer.Start("OnShown()")) {
-            Capabilities caps;
-            int adapter = d3d.Adapters.DefaultAdapter.Adapter;
-            try
-            {
-                caps = d3d.GetDeviceCaps(adapter, DeviceType.Hardware);
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceWarning("Ignoring Exception when getting dev caps for hardware acceleration:");
-                Trace.TraceWarning(ex.ToString());
-                caps = d3d.GetDeviceCaps(adapter, DeviceType.Reference);
-            }
-
-            //CreateFlags createFlags = caps.DeviceCaps.SupportsHardwareTransformAndLight ?
-            //  CreateFlags.HardwareVertexProcessing :
-            //  CreateFlags.MixedVertexProcessing;
-
             /* Experiment jed 20141227, setting BackBuffer size explicitly. Without that, seen that device.ViewPort size was 640 * 480 pixels.
              * Setting the size to the monitor resolution improved quality a lot. But maybe it should be the exact #pixels in the player panel?
              * Values: Laptop jed: 1600*900. Monitor jed: 1680*1050.
@@ -105,34 +86,28 @@ namespace PartituraMagica
             const int bbWidth = 1600;
             const int bbHeight = 900;
 
-            device = new Device(d3d, adapter, DeviceType.Hardware, panel1.Handle, CreateFlags.HardwareVertexProcessing,
+            device = new Device(d3d, d3d.Adapters.DefaultAdapter.Adapter,
+                DeviceType.Hardware, panel1.Handle, CreateFlags.HardwareVertexProcessing,
                 new PresentParameters
                 {
-              // Added BackBufferWidth and BackBufferHeight as experiment for improving vision quality [jed])
-              BackBufferWidth = bbWidth,
+                    // Added BackBufferWidth and BackBufferHeight as experiment for improving vision quality [jed])
+                    BackBufferWidth = bbWidth,
                     BackBufferHeight = bbHeight,
                     PresentationInterval = PresentInterval.One,
                     Multisample = MultisampleType.None, // Options are: None, NonMaskable, and NSamples where N in 2..16.
-              Windowed = true,
+                    Windowed = true,
                     SwapEffect = SwapEffect.Discard
                 });
-
-#if false // [remainder from experimenting jed 201412, to be cleaned up after vision quality is good enough]
-            //device.SetRenderTarget(0, new Surface())
-            //device.Viewport = new Viewport(0, 0, 1600, 900);
-            //device.SetRenderTarget(0, null);
-            Surface renderTarget = device.GetRenderTarget(0);
-#endif
-
-            //device.DeviceResizing += new System.ComponentModel.CancelEventHandler(device_DeviceResizing);
+            
             device.SetRenderState(RenderState.CullMode, Cull.None);
             device.SetRenderState(RenderState.Lighting, false);
             device.SetRenderState(RenderState.Clipping, false);
             device.SetRenderState(RenderState.AlphaBlendEnable, false);
             // Antialiasing: see http://msdn.microsoft.com/en-us/library/windows/desktop/bb173422%28v=vs.85%29.aspx
+            // seems that it is not doing anything when working with images, only for shapes
             device.SetRenderState(RenderState.MultisampleAntialias, false);
         }
-
+        
         public void Init(string partPattern, IEnumerable<Clipping> clips)
         {
             _clippingD3Ds.Clear();
@@ -160,11 +135,6 @@ namespace PartituraMagica
             partsStrip.Current = 0;
             viewXPos = 0;
             currentLine = 0;
-        }
-
-        private void device_DeviceResizing(object sender, CancelEventArgs e)
-        {
-            e.Cancel = true;
         }
 
         private class Win32Window : IWin32Window
@@ -217,7 +187,7 @@ namespace PartituraMagica
 
             if (speedStrip.BackwardJumpsCount > 0)
             {
-                viewXPos = Math.Max(0, viewXPos - speedStrip.BackwardJumpsCount * 250);                
+                viewXPos = Math.Max(0, viewXPos - speedStrip.BackwardJumpsCount * 250);
                 speedStrip.BackwardJumpsCount = 0;
             }
 
@@ -269,14 +239,7 @@ namespace PartituraMagica
                 return (viewXPos - (double)currentLine * LINE_DISTANCE);
             }
         }
-
-        private void PlayerViewDX_Resize(object sender, EventArgs e)
-        {
-            rendering = (WindowState != FormWindowState.Minimized &&
-                                     Visible);
-            //Debug.WriteLine("Resize(): Rendering=" + this.rendering);
-        }
-
+        
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
             Render();
@@ -358,5 +321,5 @@ namespace PartituraMagica
                     break;
             }
         }
-        }
+    }
 }
