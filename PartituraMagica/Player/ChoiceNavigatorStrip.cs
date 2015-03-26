@@ -16,10 +16,10 @@ namespace PartituraMagica
      */
     public partial class ChoiceNavigatorStrip : ToolStrip, IChoiceNavigator
     {
-        private ToolStripItem btnFirst;
-        private ToolStripItem btnLast;
-        private ToolStripItem btnNext;
-        private ToolStripItem btnPrevious;
+        private readonly ToolStripItem btnFirst;
+        private readonly ToolStripItem btnLast;
+        private readonly ToolStripItem btnNext;
+        private readonly ToolStripItem btnPrevious;
 
         private string choiceName;
 

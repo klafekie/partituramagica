@@ -18,11 +18,10 @@ namespace PartituraMagica
                 btnPause.Text = value ? "Resume" : "Pause";
                 btnPause.Checked = value;
                 paused = value;
-                //				OnSpeedChanged(this.Speed);
             }
         }
 
-        public int BackwardJumpsCount { get; set; }
+        public int JumpsCount { get; set; }
 
         private float speed = 1F;
         public float Speed
@@ -32,15 +31,10 @@ namespace PartituraMagica
             {
                 if (value == 0)
                 {
-                    //avoid that speed ever becomes 0, cause we use
-                    //multiplication to increase/decrease it
                     this.paused = true;
                 }
                 else
                 {
-                    //if (this.speed != value) {
-                    //    OnSpeedChanged(this.Speed);//using getter here!
-                    //}
                     this.speed = value;
                 }
             }
@@ -53,13 +47,19 @@ namespace PartituraMagica
             btnPause.Click += new EventHandler(btnPause_Click);
             btnFaster.Click += new EventHandler(btnFaster_Click);
             btnJumpBack.Click += BtnJumpBack_Click;
+            btnJumpForward.Click += BtnJumpForward_Click;
 
             this.Paused = true;
         }
 
+        private void BtnJumpForward_Click(object sender, EventArgs e)
+        {
+            this.JumpsCount--;
+        }
+
         private void BtnJumpBack_Click(object sender, EventArgs e)
         {
-            this.BackwardJumpsCount++;
+            this.JumpsCount++;
         }
 
         void btnFaster_Click(object sender, EventArgs e)
@@ -85,18 +85,18 @@ namespace PartituraMagica
                 case Keys.Add:
                     if (e.Modifiers == Keys.None)
                     {
-                        this.speed *= 1.05F;
+                        btnFaster.PerformClick();
                     }
                     break;
                 case Keys.OemMinus:
                 case Keys.Subtract:
                     if (e.Modifiers == Keys.None)
                     {
-                        this.speed *= 0.95F;
+                        btnSlower.PerformClick();
                     }
                     break;
                 case Keys.Space:
-                    this.Paused = true;
+                    this.paused = true;
                     break;
             }
 
@@ -109,7 +109,19 @@ namespace PartituraMagica
                 case Keys.Space:
                     this.Paused = false;//use property setter
                     break;
+                case Keys.Left:
+                    if (e.Modifiers == Keys.None)
+                    {
+                        btnJumpBack.PerformClick();
+                    }
+                    break;
+                case Keys.Right:
+                    if (e.Modifiers == Keys.None)
+                    {
+                        btnJumpForward.PerformClick();
+                    }
+                    break;
             }
-        }        
+        }
     }
 }

@@ -32,7 +32,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(773, 223);
+            this.panel1.Size = new System.Drawing.Size(1006, 223);
             this.panel1.TabIndex = 1;
             // 
             // toolStripContainer1
@@ -41,11 +41,11 @@
             // toolStripContainer1.ContentPanel
             // 
             this.toolStripContainer1.ContentPanel.Controls.Add(this.panel1);
-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(773, 223);
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(1006, 223);
             this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
             this.toolStripContainer1.Name = "toolStripContainer1";
-            this.toolStripContainer1.Size = new System.Drawing.Size(773, 266);
+            this.toolStripContainer1.Size = new System.Drawing.Size(1006, 266);
             this.toolStripContainer1.TabIndex = 2;
             this.toolStripContainer1.Text = "toolStripContainer1";
             // 
@@ -60,23 +60,23 @@
             // zoomStrip
             // 
             this.zoomStrip.Dock = System.Windows.Forms.DockStyle.None;
-            this.zoomStrip.Location = new System.Drawing.Point(766, 0);
+            this.zoomStrip.Location = new System.Drawing.Point(736, 0);
             this.zoomStrip.MinimumSize = new System.Drawing.Size(0, 43);
             this.zoomStrip.Name = "zoomStrip";
-            this.zoomStrip.Size = new System.Drawing.Size(7, 43);
+            this.zoomStrip.Size = new System.Drawing.Size(104, 43);
             this.zoomStrip.TabIndex = 0;
             this.zoomStrip.Text = "zoomToolStrip1";
             // 
             // speedStrip
             // 
-            this.speedStrip.BackwardJumpsCount = 0;
+            this.speedStrip.JumpsCount = 0;
             this.speedStrip.Dock = System.Windows.Forms.DockStyle.None;
             this.speedStrip.Font = new System.Drawing.Font("Lucida Console", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.speedStrip.Location = new System.Drawing.Point(303, 0);
             this.speedStrip.MinimumSize = new System.Drawing.Size(0, 43);
             this.speedStrip.Name = "speedStrip";
             this.speedStrip.Paused = true;
-            this.speedStrip.Size = new System.Drawing.Size(463, 43);
+            this.speedStrip.Size = new System.Drawing.Size(432, 43);
             this.speedStrip.Speed = 0F;
             this.speedStrip.TabIndex = 1;
             this.speedStrip.Text = "Speed";
@@ -102,7 +102,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(773, 266);
+            this.ClientSize = new System.Drawing.Size(1006, 266);
             this.Controls.Add(this.toolStripContainer1);
             this.Name = "PlayerViewD3D";
             this.Text = "PlayerView";

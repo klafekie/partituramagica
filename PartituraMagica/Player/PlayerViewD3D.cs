@@ -185,10 +185,10 @@ namespace PartituraMagica
 
             device.Present();
 
-            if (speedStrip.BackwardJumpsCount > 0)
+            if (speedStrip.JumpsCount != 0)
             {
-                viewXPos = Math.Max(0, viewXPos - speedStrip.BackwardJumpsCount * 250);
-                speedStrip.BackwardJumpsCount = 0;
+                viewXPos = Math.Max(0, viewXPos - speedStrip.JumpsCount * 250);
+                speedStrip.JumpsCount = 0;
             }
 
             if (!speedStrip.Paused)
