@@ -1,6 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C38A6B95-50A7-4B4F-9777-E14CE25B92F4}"
 	ProjectSection(SolutionItems) = preProject
 		Quickstart.doc = Quickstart.doc
@@ -33,8 +35,8 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{F4FB7379-8F4F-4EBB-AEE4-74A2C37F5642}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F4FB7379-8F4F-4EBB-AEE4-74A2C37F5642}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F4FB7379-8F4F-4EBB-AEE4-74A2C37F5642}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F4FB7379-8F4F-4EBB-AEE4-74A2C37F5642}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4FB7379-8F4F-4EBB-AEE4-74A2C37F5642}.Release|Any CPU.ActiveCfg = Release|x86
+		{F4FB7379-8F4F-4EBB-AEE4-74A2C37F5642}.Release|Any CPU.Build.0 = Release|x86
 		{01283841-F5DC-479F-8001-2998EC631618}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{01283841-F5DC-479F-8001-2998EC631618}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{01283841-F5DC-479F-8001-2998EC631618}.Release|Any CPU.ActiveCfg = Release|Any CPU
