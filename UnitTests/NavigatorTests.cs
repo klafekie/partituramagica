@@ -1,59 +1,21 @@
 ﻿using System;
-using System.Windows;
 using System.Collections.Generic;
-using System.Text;
-
 using NUnit.Framework;
-using Rhino.Mocks;
-using System.IO;
 using PartituraMagica.Playing;
+using Rhino.Mocks;
 
 #pragma warning disable 414
 
 namespace PartituraMagica
 {
     [TestFixture]
-    class NavigatorTests
+    internal class NavigatorTests
     {
-        private MockRepository mocks;
-        private IPlayerView view;
-        private static readonly List<Part> threeParts;
-        private static readonly String ABCCBBA = "ABCCBBA";
-        private static readonly double lA;
-        private static readonly double lB;
-        private static readonly double lC;
-
-        static NavigatorTests()
-        {
-            Part a = new Part();
-            a.Add(new Clipping(0, 10, 10, 100, 10));
-            a.Add(new Clipping(0, 110, 10, 100, 10));//box is split, but not labelled
-            a.Add(new Clipping(0, 10, 20, 100, 10));
-            lA = 300;
-
-            Part b = new Part();//part b stretches over two pages
-            b.Add(new Clipping(0, 10, 30, 10, 10));
-            b.Add(new Clipping(1, 11, 10, 10, 10));
-            b.Add(new Clipping(1, 11, 30, 10, 10));
-            b.Add(new Clipping(2, 12, 30, 10, 10));
-            lB = 40;
-
-            Part c = new Part();//part c consists of a single split box
-            c.Add(new Clipping(2, 22, 30, 10, 10));
-            lC = 10;
-
-            threeParts = new List<Part>();
-            threeParts.Add(a);
-            threeParts.Add(b);
-            threeParts.Add(c);
-
-        }
-
         [SetUp]
         public void Setup()
         {
-            this.mocks = new MockRepository();
-            this.view = mocks.StrictMock<IPlayerView>();
+            mocks = new MockRepository();
+            view = mocks.StrictMock<IPlayerView>();
         }
 
         [TearDown]
@@ -62,17 +24,50 @@ namespace PartituraMagica
             mocks.VerifyAll();
         }
 
+        private MockRepository mocks;
+        private IPlayerView view;
+        private static readonly List<Part> threeParts;
+        private static readonly string ABCCBBA = "ABCCBBA";
+        private static readonly double lA;
+        private static readonly double lB;
+        private static readonly double lC;
+
+        static NavigatorTests()
+        {
+            Part a = new Part();
+            a.Add(new Clipping(0, 10, 10, 100, 10));
+            a.Add(new Clipping(0, 110, 10, 100, 10)); //box is split, but not labelled
+            a.Add(new Clipping(0, 10, 20, 100, 10));
+            lA = 300;
+
+            Part b = new Part(); //part b stretches over two pages
+            b.Add(new Clipping(0, 10, 30, 10, 10));
+            b.Add(new Clipping(1, 11, 10, 10, 10));
+            b.Add(new Clipping(1, 11, 30, 10, 10));
+            b.Add(new Clipping(2, 12, 30, 10, 10));
+            lB = 40;
+
+            Part c = new Part(); //part c consists of a single split box
+            c.Add(new Clipping(2, 22, 30, 10, 10));
+            lC = 10;
+
+            threeParts = new List<Part>();
+            threeParts.Add(a);
+            threeParts.Add(b);
+            threeParts.Add(c);
+        }
+
         public void RunAll()
         {
-            this.Setup();
-            this.EmptyPartsTest();
-            this.TearDown();
-            this.Setup();
-            this.OnePartPatternTest();
-            this.TearDown();
-            this.Setup();
-            this.NextPartTest();
-            this.TearDown();
+            Setup();
+            EmptyPartsTest();
+            TearDown();
+            Setup();
+            OnePartPatternTest();
+            TearDown();
+            Setup();
+            NextPartTest();
+            TearDown();
         }
 
         [Test]
@@ -81,7 +76,7 @@ namespace PartituraMagica
             mocks.ReplayAll();
             try
             {
-                Navigator n = new Navigator(ABCCBBA, new List<Part>(), this.view);
+                Navigator n = new Navigator(ABCCBBA, new List<Part>(), view);
                 n.Start();
                 Assert.Fail("Expected Exception");
             }
@@ -91,23 +86,12 @@ namespace PartituraMagica
             }
         }
 
-        [Test, Ignore]
-        public void OnePartPatternTest()
-        {
-            //view.AppendLine(null);
-            LastCall.IgnoreArguments().Repeat.Times(3);
-            view.GotoLine(0);
-            mocks.ReplayAll();
-
-            Navigator n = new Navigator("A", threeParts, this.view);
-            n.Start();
-        }
-
-        [Test, Ignore]
+        [Test]
+        [Ignore]
         public void NextPartTest()
         {
             //view.AppendLine(null);
-            LastCall.IgnoreArguments().Repeat.Times(3 + 4 + 2 * 1 + 2 * 4 + 3);
+            LastCall.IgnoreArguments().Repeat.Times(3 + 4 + 2*1 + 2*4 + 3);
 
 
             //we "scroll" to the middle of each part before jumping to the next
@@ -181,6 +165,19 @@ namespace PartituraMagica
 
             //////try to go before first part -> no effect
             //n.GoToPreviousPart();
+        }
+
+        [Test]
+        [Ignore]
+        public void OnePartPatternTest()
+        {
+            //view.AppendLine(null);
+            LastCall.IgnoreArguments().Repeat.Times(3);
+            view.GotoLine(0);
+            mocks.ReplayAll();
+
+            Navigator n = new Navigator("A", threeParts, view);
+            n.Start();
         }
     }
 }

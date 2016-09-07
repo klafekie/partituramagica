@@ -1,7 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using NUnit.Framework;
 using Rhino.Mocks;
@@ -9,7 +6,7 @@ using Rhino.Mocks;
 namespace PartituraMagica
 {
     [TestFixture]
-    class TestUtils : ICommandParameters
+    internal class TestUtils : ICommandParameters
     {
         protected Partitura partitura;
         protected FakeDrawingPanel panel;
@@ -20,11 +17,11 @@ namespace PartituraMagica
 
         public virtual void Setup()
         {
-            this.partitura = new Partitura();
+            partitura = new Partitura();
             panel = new FakeDrawingPanel();
             //set pagewidth and height
-            this.partitura.GetPage(0).PaintPage(panel, new Point(1000, 2000),
-                new ABCLabelProvider(this.partitura));
+            partitura.GetPage(0).PaintPage(panel, new Point(1000, 2000),
+                new ABCLabelProvider(partitura));
 
             mocks = new MockRepository();
             fileSystem = mocks.PartialMock<FakeFileSystem>();
@@ -62,7 +59,6 @@ namespace PartituraMagica
             }
 
             Assert.AreEqual(label, panel.labels[id]);
-
         }
 
         protected bool CanUpdate(double oldX, double oldY, double newX, double newY)
@@ -80,41 +76,30 @@ namespace PartituraMagica
         protected void AssertShapeAt(double x, double y, Shape type)
         {
             Assert.AreEqual(
-                this.Active.CurrentPage.GetShapeTypeAt(new Point(x, y)),
+                Active.CurrentPage.GetShapeTypeAt(new Point(x, y)),
                 type);
         }
 
         public IDrawingPanel Panel
         {
-            get
-            {
-                return this.panel;
-            }
+            get { return panel; }
         }
 
         public IActivePartitura Active
         {
-            get
-            {
-                return this.activePartitura;
-            }
+            get { return activePartitura; }
         }
 
         public IFileSystem FileSystem
         {
-            get
-            {
-                return this.fileSystem;
-            }
+            get { return fileSystem; }
         }
 
 
         public IMainWindow MainWindow
         {
-            get { return this.mainWindow; }
+            get { return mainWindow; }
         }
-
-        #region ICommandParameters Members
 
 
         public void DisposePlayerView()
@@ -124,7 +109,5 @@ namespace PartituraMagica
              */
             //throw new NotImplementedException();
         }
-
-        #endregion
-    };
+    }
 }

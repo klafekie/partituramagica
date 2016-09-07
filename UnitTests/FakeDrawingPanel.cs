@@ -1,24 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-//using System.Windows;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
+//using System.Windows;
 
 namespace PartituraMagica
 {
-    class FakeDrawingPanel : IDrawingPanel
+    internal class FakeDrawingPanel : IDrawingPanel
     {
-        public IDictionary<int, Rect> rectangles;
-        public IDictionary<int, bool> selection;
+        public string imagePath;
         public IDictionary<int, string> labels;
         public int lastId;
-        public string imagePath;
+        public IDictionary<int, Rect> rectangles;
+        public IDictionary<int, bool> selection;
 
         public FakeDrawingPanel()
         {
             Clear();
+        }
+
+        public Rect LastRect
+        {
+            get { return rectangles[lastId]; }
         }
 
         public void AddRectangle(int id, Rect coordinates)
@@ -26,7 +28,7 @@ namespace PartituraMagica
             rectangles.Add(id, coordinates);
             selection.Add(id, false);
             labels.Add(id, null);
-            this.lastId = id;
+            lastId = id;
         }
 
         public void AddOrUpdateRectangle(int id, Rect coordinates)
@@ -75,24 +77,6 @@ namespace PartituraMagica
             return new Point(100, 100);
         }
 
-        public bool IsSelected(Rect theirs)
-        {
-            foreach (KeyValuePair<int, Rect> entry in this.rectangles)
-            {
-                if (theirs == entry.Value)
-                {
-                    return this.selection[entry.Key];
-                }
-            }
-            Debug.Assert(false, "Rectangle not present at all");
-            return false;
-        }
-
-        public Rect LastRect
-        {
-            get { return this.rectangles[this.lastId]; }
-        }
-
 
         public void LabelRectangle(int id, string label)
         {
@@ -108,6 +92,19 @@ namespace PartituraMagica
         public IGreyImage GetImage(string path)
         {
             return new FakeImage();
+        }
+
+        public bool IsSelected(Rect theirs)
+        {
+            foreach (KeyValuePair<int, Rect> entry in rectangles)
+            {
+                if (theirs == entry.Value)
+                {
+                    return selection[entry.Key];
+                }
+            }
+            Debug.Assert(false, "Rectangle not present at all");
+            return false;
         }
     }
 }

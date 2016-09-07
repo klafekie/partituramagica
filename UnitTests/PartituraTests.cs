@@ -1,16 +1,11 @@
-﻿using System;
-using System.Windows;
-using System.Collections.Generic;
-using System.Text;
-
+﻿using System.IO;
 using NUnit.Framework;
 using Rhino.Mocks;
-using System.IO;
 
 namespace PartituraMagica
 {
     [TestFixture]
-    class PartituraTests : TestUtils
+    internal class PartituraTests : TestUtils
     {
         [SetUp]
         public override void Setup()
@@ -28,33 +23,18 @@ namespace PartituraMagica
 
         public void RunAll()
         {
-            this.Setup();
-            this.TestNewPartituraCancelled();
-            this.TearDown();
-            this.Setup();
-            this.TestNewPartituraAndSave();
-            this.TearDown();
-            this.Setup();
-            this.TestNewPartituraImagesAlreadyPresent();
-            this.TearDown();
-            this.Setup();
-            this.TestWrongImageFileIndicesOnNew();
-            this.TearDown();
-        }
-
-        [Test]
-        public void TestNewPartituraCancelled()
-        {
-            Expect.Call(fileSystem.ShowSaveDialog(FileType.Partitura))
-                .Return(null);
-
-            mocks.ReplayAll();
-            //user presses cancel in fileSystem for the partitura file
-            new NewPartituraCommand(this).Execute();
-            Assert.AreEqual(panel.rectangles.Count, 0, "panel is cleared");
-            Assert.Null(activePartitura.Partitura);
-            Assert.Null(activePartitura.Path);
-            Assert.False(new SaveCommand(true, this).CanExecute());
+            Setup();
+            TestNewPartituraCancelled();
+            TearDown();
+            Setup();
+            TestNewPartituraAndSave();
+            TearDown();
+            Setup();
+            TestNewPartituraImagesAlreadyPresent();
+            TearDown();
+            Setup();
+            TestWrongImageFileIndicesOnNew();
+            TearDown();
         }
 
         [Test]
@@ -82,7 +62,7 @@ namespace PartituraMagica
             //SaveAsCommand
             Expect.Call(fileSystem.ShowSaveDialog(FileType.Partitura))
                 .Return("c:\\otherDir\\partituraFile.partitura");
-            byte[] buffer = new byte[100000];//uah, only ok cause it is test code...
+            byte[] buffer = new byte[100000]; //uah, only ok cause it is test code...
             Stream s1 = new MemoryStream(buffer);
             Stream s2 = new MemoryStream(buffer);
 
@@ -133,6 +113,21 @@ namespace PartituraMagica
             Assert.AreEqual(panel.imagePath, "c:\\otherDir\\partituraFile-001.jpg");
             new ShowPageCommand(2, this).Execute();
             Assert.AreEqual(panel.imagePath, "c:\\otherDir\\partituraFile-002.jpg");
+        }
+
+        [Test]
+        public void TestNewPartituraCancelled()
+        {
+            Expect.Call(fileSystem.ShowSaveDialog(FileType.Partitura))
+                .Return(null);
+
+            mocks.ReplayAll();
+            //user presses cancel in fileSystem for the partitura file
+            new NewPartituraCommand(this).Execute();
+            Assert.AreEqual(panel.rectangles.Count, 0, "panel is cleared");
+            Assert.Null(activePartitura.Partitura);
+            Assert.Null(activePartitura.Path);
+            Assert.False(new SaveCommand(true, this).CanExecute());
         }
 
         [Test]

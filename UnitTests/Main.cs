@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace PartituraMagica
+﻿namespace PartituraMagica
 {
-    class MainClass
+    internal class MainClass
     {
         public static int Main(string[] args)
         {
