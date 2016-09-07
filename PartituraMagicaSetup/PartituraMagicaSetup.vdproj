@@ -21,14 +21,20 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_19B068E24B47640A1DB1687E19F668AC"
+        "MsmKey" = "8:_2CDB52B051124628988CF1BB31AF3A8B"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_50DF3C680BD3A1429C391FD1CC6B1715"
         "OwnerKey" = "8:_C7318B2D25B4466886010D29B851AED6"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_2CDB52B051124628988CF1BB31AF3A8B"
-        "OwnerKey" = "8:_UNDEFINED"
+        "MsmKey" = "8:_7DC270557D083DAC6669D234C82E433F"
+        "OwnerKey" = "8:_C7318B2D25B4466886010D29B851AED6"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -45,20 +51,14 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_B23E264353E00F7B85F243E2B3889A53"
+        "OwnerKey" = "8:_C7318B2D25B4466886010D29B851AED6"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_C7318B2D25B4466886010D29B851AED6"
         "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_D09663CAB4035D4C1A60908A34683131"
-        "OwnerKey" = "8:_C7318B2D25B4466886010D29B851AED6"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_D67CF0FB02F801F9E8502CAFD7B0B60E"
-        "OwnerKey" = "8:_C7318B2D25B4466886010D29B851AED6"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -88,19 +88,19 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_19B068E24B47640A1DB1687E19F668AC"
+        "OwnerKey" = "8:_7DC270557D083DAC6669D234C82E433F"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_D67CF0FB02F801F9E8502CAFD7B0B60E"
+        "OwnerKey" = "8:_B23E264353E00F7B85F243E2B3889A53"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_D09663CAB4035D4C1A60908A34683131"
+        "OwnerKey" = "8:_50DF3C680BD3A1429C391FD1CC6B1715"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -200,7 +200,7 @@
                 {
                 "Name" = "8:.NET Framework"
                 "Message" = "8:[VSDNETMSG]"
-                "FrameworkVersion" = "8:3.5.21022"
+                "FrameworkVersion" = "8:3.5.21022 "
                 "AllowLaterVersions" = "11:FALSE"
                 "InstallUrl" = "8:http://go.microsoft.com/fwlink/?LinkId=76617"
                 }
@@ -228,14 +228,34 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_19B068E24B47640A1DB1687E19F668AC"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2CDB52B051124628988CF1BB31AF3A8B"
+            {
+            "SourcePath" = "8:..\\Examples\\aussente-001.jpg"
+            "TargetName" = "8:aussente-001.jpg"
+            "Tag" = "8:"
+            "Folder" = "8:_73D1469C95BB477F8BBB23A86D70F00C"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_50DF3C680BD3A1429C391FD1CC6B1715"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
             "AssemblyAsmDisplayName" = "8:ClassLibrary1, Version=1.0.0.74, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_19B068E24B47640A1DB1687E19F668AC"
+                    "_50DF3C680BD3A1429C391FD1CC6B1715"
                     {
                     "Name" = "8:ClassLibrary1.dll"
                     "Attributes" = "3:512"
@@ -259,12 +279,23 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2CDB52B051124628988CF1BB31AF3A8B"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_7DC270557D083DAC6669D234C82E433F"
             {
-            "SourcePath" = "8:..\\Examples\\aussente-001.jpg"
-            "TargetName" = "8:aussente-001.jpg"
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:LearnWPF.Effects, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_7DC270557D083DAC6669D234C82E433F"
+                    {
+                    "Name" = "8:LearnWPF.Effects.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:LearnWPF.Effects.dll"
+            "TargetName" = "8:"
             "Tag" = "8:"
-            "Folder" = "8:_73D1469C95BB477F8BBB23A86D70F00C"
+            "Folder" = "8:_29A4BF8703F5477FA878E619FF4BFF99"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -276,7 +307,7 @@
             "PackageAs" = "3:1"
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_982A435FCDAF4819A30BA7CF50D5366D"
@@ -319,51 +350,20 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_D09663CAB4035D4C1A60908A34683131"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_B23E264353E00F7B85F243E2B3889A53"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:SlimDX, Version=2.0.13.43, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=AMD64"
+            "AssemblyAsmDisplayName" = "8:SlimDX, Version=2.0.13.43, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
-                    "_D09663CAB4035D4C1A60908A34683131"
+                    "_B23E264353E00F7B85F243E2B3889A53"
                     {
                     "Name" = "8:SlimDX.dll"
                     "Attributes" = "3:512"
                     }
                 }
             "SourcePath" = "8:SlimDX.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_29A4BF8703F5477FA878E619FF4BFF99"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_D67CF0FB02F801F9E8502CAFD7B0B60E"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:LearnWPF.Effects, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_D67CF0FB02F801F9E8502CAFD7B0B60E"
-                    {
-                    "Name" = "8:LearnWPF.Effects.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:LearnWPF.Effects.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_29A4BF8703F5477FA878E619FF4BFF99"
@@ -520,12 +520,12 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Partitura Magica"
         "ProductCode" = "8:{EEA6802E-4BE2-4AAB-8D04-E628076DCDA7}"
-        "PackageCode" = "8:{91B0C78D-5C94-4183-B76C-2E22B586B219}"
+        "PackageCode" = "8:{FE4787D9-4A1E-4FCC-9BA6-71C148CB173C}"
         "UpgradeCode" = "8:{D3D32C7C-C176-43D3-A710-AB776A345820}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:FALSE"
-        "DetectNewerInstalledVersion" = "11:TRUE"
+        "DetectNewerInstalledVersion" = "11:FALSE"
         "InstallAllUsers" = "11:FALSE"
         "ProductVersion" = "8:1.0.0"
         "Manufacturer" = "8:Partitura Magica"
@@ -1083,7 +1083,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_C7318B2D25B4466886010D29B851AED6"
             {
-            "SourcePath" = "8:..\\PartituraMagica\\obj\\Release\\PartituraMagica.exe"
+            "SourcePath" = "8:..\\PartituraMagica\\obj\\x86\\Release\\PartituraMagica.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_29A4BF8703F5477FA878E619FF4BFF99"
