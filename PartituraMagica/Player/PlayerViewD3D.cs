@@ -256,10 +256,7 @@ namespace PartituraMagica
         protected bool OnLineEndReached()
         {
             bool cancel = false;
-            if (LineEndReached != null)
-            {
-                LineEndReached(currentLine, ref cancel);
-            }
+            LineEndReached?.Invoke(currentLine, ref cancel);
             return cancel;
         }
 

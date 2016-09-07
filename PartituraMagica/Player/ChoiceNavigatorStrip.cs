@@ -77,8 +77,6 @@ namespace PartituraMagica
          * Last <= Modifiers + End
          * Jump to choice <= Modifiers + digit
          */
-        //@todo p3 this does not allow to jump to choice 10, 11 etc
-        //use a timer?
         public Keys Modifiers { get; set; }
 
         public string[] Choices
