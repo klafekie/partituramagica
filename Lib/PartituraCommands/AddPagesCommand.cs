@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Diagnostics;
-using System.Text;
-using System.Globalization;
-using System.IO;
+﻿using System.Diagnostics;
 
 namespace PartituraMagica
 {
@@ -29,13 +23,15 @@ namespace PartituraMagica
             {
                 int index = p.Active.GetPageCount();
                 string destFile = p.Active.GetImage(index);
-                Debug.Assert(sourceFile != destFile, "cause the index of destFile is always higher than the index of all existing image files");
+                Debug.Assert(sourceFile != destFile,
+                    "cause the index of destFile is always higher than the index of all existing image files");
                 p.FileSystem.Copy(sourceFile, destFile);
 
                 //show the added page
                 new ShowPageCommand(index, p).TryExecute();
                 if (p.Active.CurrentPageIndex == index)
-                {	//show was successfull
+                {
+                    //show was successfull
                     new AutoFillCommand(p).TryExecute();
                 }
             }

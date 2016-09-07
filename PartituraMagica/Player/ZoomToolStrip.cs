@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace PartituraMagica
@@ -13,14 +7,24 @@ namespace PartituraMagica
      * A custom control that allows to change the current horizontal and
      * vertical zoom 
      */
+
     public partial class ZoomToolStrip : ToolStrip
     {
+        private float xZoom;
         //with the help of xZoomdelta and yzoomdelta we implement a 
         //smooth change of the zoom. See GetNextZoom()
-        private int xZoomDelta = 0;
-        private int yZoomDelta = 0;
-        private float xZoom;
+        private int xZoomDelta;
         private float yZoom;
+        private int yZoomDelta;
+
+        public ZoomToolStrip()
+        {
+            InitializeComponent();
+            btnSmaller.Click += btnSmaller_Click;
+            btnWider.Click += btnWider_Click;
+            btnZoomIn.Click += btnZoomIn_Click;
+            btnZoomOut.Click += btnZoomOut_Click;
+        }
 
         public float XZoom
         {
@@ -35,7 +39,7 @@ namespace PartituraMagica
                 {
                     xZoom = value;
                 }
-                this.xZoomDelta = 0;
+                xZoomDelta = 0;
             }
         }
 
@@ -52,53 +56,44 @@ namespace PartituraMagica
                 {
                     yZoom = value;
                 }
-                this.yZoomDelta = 0;
+                yZoomDelta = 0;
             }
         }
 
-        public ZoomToolStrip()
-        {
-            InitializeComponent();
-            this.btnSmaller.Click += new EventHandler(btnSmaller_Click);
-            this.btnWider.Click += new EventHandler(btnWider_Click);
-            this.btnZoomIn.Click += new EventHandler(btnZoomIn_Click);
-            this.btnZoomOut.Click += new EventHandler(btnZoomOut_Click);
-        }
-
-        void btnZoomOut_Click(object sender, EventArgs e)
+        private void btnZoomOut_Click(object sender, EventArgs e)
         {
             ZoomOut(false);
         }
 
         private void ZoomOut(bool xOnly)
         {
-            this.xZoomDelta = -15;
+            xZoomDelta = -15;
             if (!xOnly)
             {
-                this.yZoomDelta = -15;
+                yZoomDelta = -15;
             }
         }
 
         private void ZoomIn(bool xOnly)
         {
-            this.xZoomDelta = 15;
+            xZoomDelta = 15;
             if (!xOnly)
             {
-                this.yZoomDelta = 15;
+                yZoomDelta = 15;
             }
         }
 
-        void btnZoomIn_Click(object sender, EventArgs e)
+        private void btnZoomIn_Click(object sender, EventArgs e)
         {
             ZoomIn(false);
         }
 
-        void btnWider_Click(object sender, EventArgs e)
+        private void btnWider_Click(object sender, EventArgs e)
         {
             ZoomIn(true);
         }
 
-        void btnSmaller_Click(object sender, EventArgs e)
+        private void btnSmaller_Click(object sender, EventArgs e)
         {
             ZoomOut(true);
         }
@@ -128,31 +123,32 @@ namespace PartituraMagica
          * a bit bigger until the actual target zoom value is reached.
          * This results in a nice "animated" zoom in/out behaviour
          */
+
         public void GetNextZoom(out float zoomXRes, out float zoomYRes)
         {
             if (xZoomDelta > 0)
             {
-                this.xZoom *= 1.01F;
+                xZoom *= 1.01F;
                 xZoomDelta--;
             }
             if (xZoomDelta < 0)
             {
-                this.xZoom *= 0.99F;
+                xZoom *= 0.99F;
                 xZoomDelta++;
             }
 
             if (yZoomDelta > 0)
             {
-                this.yZoom *= 1.01F;
+                yZoom *= 1.01F;
                 yZoomDelta--;
             }
             if (yZoomDelta < 0)
             {
-                this.yZoom *= 0.99F;
+                yZoom *= 0.99F;
                 yZoomDelta++;
             }
-            zoomXRes = this.xZoom;
-            zoomYRes = this.yZoom;
+            zoomXRes = xZoom;
+            zoomYRes = yZoom;
         }
     }
 }

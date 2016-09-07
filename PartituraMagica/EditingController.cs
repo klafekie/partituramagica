@@ -8,38 +8,65 @@ namespace PartituraMagica
 {
     internal class EditingController : ICommandParameters, IDisposable
     {
-        private readonly IDrawingPanel panel;
-        private readonly IActivePartitura active;
-        private readonly IFileSystem fileSystem;
         private readonly MainWindow mainWindow;
         private PlayerViewD3D playerView;
 
         public EditingController(MainWindow mainWindow, IDrawingPanel panel)
         {
-            this.panel = panel;
-            fileSystem = new FileSystem();
-            active = new ActivePartitura(fileSystem);
+            Panel = panel;
+            FileSystem = new FileSystem();
+            Active = new ActivePartitura(FileSystem);
             this.mainWindow = mainWindow;
 
             string[] args = Environment.GetCommandLineArgs();
-            if (args.Length == 2) { //first arg is the exe name
+            if (args.Length == 2)
+            {
+                //first arg is the exe name
                 new OpenCommand(args[1], this).Execute();
-            }            
+            }
         }
-
-        public IActivePartitura Active { get { return active; } }
 
         public Page CurrentPage
         {
             get
             {
-                if (active.Partitura != null)
+                if (Active.Partitura != null)
                 {
-                    int index = active.CurrentPageIndex;
-                    return active.Partitura.GetPage(index);
+                    int index = Active.CurrentPageIndex;
+                    return Active.Partitura.GetPage(index);
                 }
                 return null;
             }
+        }
+
+        private string PlayerRuntimePath
+        {
+            get { return Active.Path + ".runtime"; }
+        }
+
+        public IActivePartitura Active { get; }
+
+        public IDrawingPanel Panel { get; }
+
+        public IFileSystem FileSystem { get; }
+
+        public IMainWindow MainWindow
+        {
+            get { return mainWindow; }
+        }
+
+        public void DisposePlayerView()
+        {
+            if (playerView != null)
+            {
+                playerView.Dispose();
+                playerView = null;
+            }
+        }
+
+        public void Dispose()
+        {
+            DisposePlayerView();
         }
 
         public ICommand CreateCommand(string name)
@@ -75,9 +102,9 @@ namespace PartituraMagica
                     takesLong = true;
                     return new AutoFillCommand(this);
                 case "NextPage":
-                    return new ShowPageCommand(active.CurrentPageIndex + 1, this);
+                    return new ShowPageCommand(Active.CurrentPageIndex + 1, this);
                 case "PreviousPage":
-                    return new ShowPageCommand(active.CurrentPageIndex - 1, this);
+                    return new ShowPageCommand(Active.CurrentPageIndex - 1, this);
                 case "Label":
                     return new LabelPartCommand(this);
                 case "UnLabel":
@@ -90,7 +117,7 @@ namespace PartituraMagica
                         WindowInteropHelper h = new WindowInteropHelper(mainWindow);
                         if (playerView == null)
                         {
-                            playerView = new PlayerViewD3D(Active, panel, h.Handle, LoadPlayer());
+                            playerView = new PlayerViewD3D(Active, Panel, h.Handle, LoadPlayer());
                             playerView.VisibleChanged += (o, args) =>
                             {
                                 //todo p1 bind to a better event
@@ -110,25 +137,20 @@ namespace PartituraMagica
 
         private PlayerMemento LoadPlayer()
         {
-            if (!fileSystem.FileExists(PlayerRuntimePath))
+            if (!FileSystem.FileExists(PlayerRuntimePath))
             {
                 return new PlayerMemento();
             }
-            using (Stream str = fileSystem.OpenRead(PlayerRuntimePath))
+            using (Stream str = FileSystem.OpenRead(PlayerRuntimePath))
             {
                 BinaryFormatter sf = new BinaryFormatter();
                 return (PlayerMemento) sf.Deserialize(str);
             }
         }
 
-        private string PlayerRuntimePath
-        {
-            get { return active.Path + ".runtime"; }
-        }
-
         private void SavePlayer(IPlayerView view)
         {
-            using (Stream str = fileSystem.OpenWrite(PlayerRuntimePath))
+            using (Stream str = FileSystem.OpenWrite(PlayerRuntimePath))
             {
                 BinaryFormatter sf = new BinaryFormatter();
                 sf.Serialize(str, view.ToMemento());
@@ -186,31 +208,11 @@ namespace PartituraMagica
 
         public Shape GetShapeAt(Point currentPos)
         {
-            if (!active.IsOpen)
+            if (!Active.IsOpen)
             {
                 return Shape.NothingSpecial;
             }
             return CurrentPage.GetShapeTypeAt(currentPos);
-        }
-
-        public IDrawingPanel Panel { get { return panel; } }
-
-        public IFileSystem FileSystem { get { return fileSystem; } }
-
-        public IMainWindow MainWindow { get { return mainWindow; } }
-
-        public void Dispose()
-        {
-            DisposePlayerView();
-        }
-
-        public void DisposePlayerView()
-        {
-            if (playerView != null)
-            {
-                playerView.Dispose();
-                playerView = null;
-            }
         }
     }
 }

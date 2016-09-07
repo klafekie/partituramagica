@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Windows;
 
 namespace PartituraMagica
@@ -13,9 +9,11 @@ namespace PartituraMagica
      * at that position. Otherwise it is inserted in the middle of the selected box, or as near
      * as possible to the middle if the middle is already occupied by a splitter.
      */
+
     public class SplitBoxCommand : PartituraCommandBase, ICommand
     {
-        private Point pos;
+        private readonly Point pos;
+
         public SplitBoxCommand(Point pos, ICommandParameters p)
             : base(p)
         {

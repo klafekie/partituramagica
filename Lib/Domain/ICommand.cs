@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace PartituraMagica
+﻿namespace PartituraMagica
 {
     /** 
      * Everything that can be done by the user within the 
@@ -14,6 +9,7 @@ namespace PartituraMagica
      * and application logic, simplifies unit testing and allows
      * to implement an "Undo" feature (later)
      */
+
     public interface ICommand
     {
         bool CanExecute();

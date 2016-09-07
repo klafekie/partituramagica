@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Diagnostics;
 
 namespace PartituraMagica
 {
@@ -20,14 +17,14 @@ namespace PartituraMagica
 
         public void Execute()
         {
-            Debug.Assert(this.CanExecute());
+            Debug.Assert(CanExecute());
             string partPattern = p.MainWindow.PartPattern;
             if (partPattern == null || partPattern.Length == 0)
             {
                 partPattern = "A";
             }
             partPattern = partPattern.ToUpper();
-            int max = (int)partPattern.ToCharArray().Max() - 'A';
+            int max = partPattern.ToCharArray().Max() - 'A';
             //foreach (Char i in partPattern) {
             //    max = Math.Max((int)(i - 'A'), max);
             //}

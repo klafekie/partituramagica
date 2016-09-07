@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace PartituraMagica
 {
     /** removes the currently selected box. 
      */
+
     public class RemoveBoxCommand : PartituraCommandBase, ICommand
     {
         public RemoveBoxCommand(ICommandParameters p)
@@ -25,6 +22,5 @@ namespace PartituraMagica
             Debug.Assert(CanExecute());
             p.Active.Partitura.RemoveSelectedBox(p.Active.CurrentPageIndex, p.Panel);
         }
-
     }
 }

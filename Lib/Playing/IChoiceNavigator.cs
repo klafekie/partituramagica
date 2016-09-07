@@ -1,4 +1,5 @@
 ﻿using System;
+
 namespace PartituraMagica
 {
     public delegate void CancellableEvent(ref bool cancel);
@@ -9,8 +10,11 @@ namespace PartituraMagica
      * Choices are represented by strings and the current value
      * is an index
      */
+
     public interface IChoiceNavigator
     {
+        string[] Choices { get; set; }
+        int Current { get; set; }
         event Action<int> ChoiceChanged;
         event Action<int> ChoiceClicked;
         /** going to previous choice can be prevented by listeners
@@ -19,7 +23,5 @@ namespace PartituraMagica
          */
         event CancellableEvent PreviousChoiceClicked;
         event CancellableEvent NextChoiceClicked;
-        string[] Choices { get; set; }
-        int Current { get; set; }
     }
 }

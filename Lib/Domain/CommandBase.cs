@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace PartituraMagica
+﻿namespace PartituraMagica
 {
     public class PartituraCommandBase : CommandBase
     {

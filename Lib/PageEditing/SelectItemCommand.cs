@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Windows;
 
 namespace PartituraMagica
@@ -11,15 +7,15 @@ namespace PartituraMagica
     {
         protected Point pos;
 
-        public bool CanExecute()
-        {
-            return p.Active.CurrentPage != null && p.Active.CurrentPage.GetShapeTypeAt(pos) != Shape.NothingSpecial;
-        }
-
         public SelectItemCommand(Point pos, ICommandParameters p)
             : base(p)
         {
             this.pos = pos;
+        }
+
+        public bool CanExecute()
+        {
+            return p.Active.CurrentPage != null && p.Active.CurrentPage.GetShapeTypeAt(pos) != Shape.NothingSpecial;
         }
 
         public void Execute()

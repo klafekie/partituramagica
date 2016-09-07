@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Windows;
 
 namespace PartituraMagica
 {
     public class AddBoxCommand : PartituraCommandBase, ICommand
     {
-        private Rect r;
+        private readonly Rect r;
+
         public AddBoxCommand(Point pos, ICommandParameters p)
             : base(p)
         {
-            this.r = CreateRect(pos);
+            r = CreateRect(pos);
         }
 
         public AddBoxCommand(Rect r, ICommandParameters p)
@@ -25,7 +22,7 @@ namespace PartituraMagica
         public bool CanExecute()
         {
             return p.Active != null && p.Active.CurrentPage != null &&
-                !p.Active.CurrentPage.Overlaps(this.r);
+                   !p.Active.CurrentPage.Overlaps(r);
         }
 
         public void Execute()
@@ -37,12 +34,11 @@ namespace PartituraMagica
 
         private Rect CreateRect(Point pos)
         {
-            double defaultWidth = 2 * Page.ClickTolerance + 1;
+            double defaultWidth = 2*Page.ClickTolerance + 1;
             double defaultHeight = defaultWidth;
             Rect r = new Rect(pos.X - defaultWidth, pos.Y - defaultHeight,
-                    defaultWidth, defaultHeight);
+                defaultWidth, defaultHeight);
             return r;
         }
-
     }
 }

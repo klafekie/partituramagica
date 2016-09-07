@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Diagnostics;
-
+﻿using System.Diagnostics;
 
 namespace PartituraMagica
 {
@@ -12,7 +7,6 @@ namespace PartituraMagica
         public AutoFillCommand(ICommandParameters p)
             : base(p)
         {
-
         }
 
         public bool CanExecute()
@@ -24,13 +18,13 @@ namespace PartituraMagica
         public void Execute()
         {
             Debug.Assert(CanExecute());
-            this.p.MainWindow.SignalWait(true);
+            p.MainWindow.SignalWait(true);
             BoxFinder b = new BoxFinder(p.Panel.CurrentImage);
             foreach (Rect r in b.Execute())
             {
-                new AddBoxCommand(r, this.p).TryExecute();
+                new AddBoxCommand(r, p).TryExecute();
             }
-            this.p.MainWindow.SignalWait(false);
+            p.MainWindow.SignalWait(false);
         }
     }
 }

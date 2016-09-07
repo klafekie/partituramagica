@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 namespace PartituraMagica
 {
     /// <summary>
@@ -13,74 +8,49 @@ namespace PartituraMagica
     {
         public Clipping(int pageIndex, Rect coords, int id)
         {
-            this.pageIndex = pageIndex;
-            this.coords = coords;
-            this.id = id;
+            PageIndex = pageIndex;
+            Coords = coords;
+            Id = id;
         }
 
         public Clipping(Clipping rhs)
         {
-            this.pageIndex = rhs.pageIndex;
-            this.coords = new Rect(rhs.Coords);
-            this.id = rhs.id;
+            PageIndex = rhs.PageIndex;
+            Coords = new Rect(rhs.Coords);
+            Id = rhs.Id;
         }
 
         //c'tor for testing
         public Clipping(int pageIndex, double x, double y, double width, double height)
         {
-            this.pageIndex = pageIndex;
-            this.coords = new Rect(x, y, width, height);
-            this.id = -1;
+            PageIndex = pageIndex;
+            Coords = new Rect(x, y, width, height);
+            Id = -1;
         }
 
+        public int PageIndex { get; set; }
 
-        private int pageIndex;
-        public int PageIndex
-        {
-            get
-            {
-                return this.pageIndex;
-            }
-            set
-            {
-                this.pageIndex = value;
-            }
-        }
-        private Rect coords;
-        public Rect Coords
-        {
-            get
-            {
-                return this.coords;
-            }
-        }
-        private int id;
+        public Rect Coords { get; private set; }
+
         /// <summary>
         /// ID of this object, used for the connection with the ClippingD3D 
         /// and the editing objects on the drawing panel (Boxes?).
         /// </summary>
-        public int Id
-        {
-            get
-            {
-                return this.id;
-            }
-        }
+        public int Id { get; }
 
         public void AddAboveAndBelow(double deltaY)
         {
-            this.coords = this.coords.AddAboveAndBelow(deltaY);
+            Coords = Coords.AddAboveAndBelow(deltaY);
         }
 
         public void MoveTo(double xPos, double yPos)
         {
-            this.coords = this.coords.MoveTo(xPos, yPos);
+            Coords = Coords.MoveTo(xPos, yPos);
         }
 
         public override string ToString()
         {
-            return this.coords.ToString();
+            return Coords.ToString();
         }
-
     }
 }

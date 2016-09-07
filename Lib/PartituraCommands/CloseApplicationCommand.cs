@@ -1,8 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Diagnostics;
 
 namespace PartituraMagica
 {
@@ -16,7 +12,7 @@ namespace PartituraMagica
         public void Execute()
         {
             Debug.Assert(CanExecute());
-            if (!p.Active.IsOpen || new ClosePartituraCommand(this.p).TryExecute())
+            if (!p.Active.IsOpen || new ClosePartituraCommand(p).TryExecute())
             {
                 p.MainWindow.CloseAndExit();
             }

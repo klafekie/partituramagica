@@ -16,36 +16,18 @@ namespace PartituraMagica.Playing
 
     public class Navigator : IDisposable
     {
-        private class LinePartInfo
-        {
-            public readonly int partIndex; //index of the parts, 0 corresponds to part "A"
-            public readonly int clippingIndex; //index of the clipping relative to the corresponding part
-            public readonly int patternIndex; //the position inside the part pattern, 
-            public readonly int lineIndex; //the position inside the Navigator.lines list
-            public readonly double xPos; //the absolute xPosition of the line on the view
-
-            public LinePartInfo(int partIndex, int clippingIndex, int patternIndex, int lineIndex, double xPos)
-            {
-                this.partIndex = partIndex;
-                this.clippingIndex = clippingIndex;
-                this.patternIndex = patternIndex;
-                this.lineIndex = lineIndex;
-                this.xPos = xPos;
-            }
-        }
-
         private static readonly double MIN_PART_SCROLL = 50D;
         private readonly string partPattern;
         //the original parts as configured by the user
         private readonly IList<Part> parts;
-        private List<LinePartInfo> lines;
         private readonly IPlayerView view;
+        private List<LinePartInfo> lines;
 
         public Navigator(string partPattern, IList<Part> parts, IPlayerView view)
         {
             this.view = view;
             //note that we allow that not all labelled parts occur in the pattern.
-            if (String.IsNullOrEmpty(partPattern))
+            if (string.IsNullOrEmpty(partPattern))
             {
                 partPattern = "A";
             }
@@ -54,6 +36,11 @@ namespace PartituraMagica.Playing
             this.parts = parts;
             CreateLines();
             SetupEvents(true);
+        }
+
+        public void Dispose()
+        {
+            SetupEvents(false);
         }
 
         private int GetPartIndex(int i)
@@ -110,8 +97,8 @@ namespace PartituraMagica.Playing
         private LinePartInfo PatternIndexToLineInfo(int patternIndex)
         {
             return (from l in lines
-                    where l.patternIndex == patternIndex
-                    select l).First();
+                where l.patternIndex == patternIndex
+                select l).First();
         }
 
         private void PreviousPartClicked(ref bool cancel)
@@ -120,7 +107,7 @@ namespace PartituraMagica.Playing
             double currentPartStartPos = PatternIndexToLineInfo(patternIndex).xPos;
 
             //if we have scrolled only a bit, go back to previous part, otherwise restart current part
-            cancel |= (view.XPos > currentPartStartPos + MIN_PART_SCROLL);
+            cancel |= view.XPos > currentPartStartPos + MIN_PART_SCROLL;
         }
 
         private void LineEndReached(int line, ref bool cancel)
@@ -141,11 +128,6 @@ namespace PartituraMagica.Playing
             }
         }
 
-        public void Dispose()
-        {
-            SetupEvents(false);
-        }
-
         private void SetupEvents(bool add)
         {
             if (add)
@@ -159,6 +141,24 @@ namespace PartituraMagica.Playing
                 view.PartNavigator.ChoiceClicked -= PartClicked;
                 view.PartNavigator.PreviousChoiceClicked -= PreviousPartClicked;
                 view.LineEndReached -= LineEndReached;
+            }
+        }
+
+        private class LinePartInfo
+        {
+            public readonly int clippingIndex; //index of the clipping relative to the corresponding part
+            public readonly int lineIndex; //the position inside the Navigator.lines list
+            public readonly int partIndex; //index of the parts, 0 corresponds to part "A"
+            public readonly int patternIndex; //the position inside the part pattern, 
+            public readonly double xPos; //the absolute xPosition of the line on the view
+
+            public LinePartInfo(int partIndex, int clippingIndex, int patternIndex, int lineIndex, double xPos)
+            {
+                this.partIndex = partIndex;
+                this.clippingIndex = clippingIndex;
+                this.patternIndex = patternIndex;
+                this.lineIndex = lineIndex;
+                this.xPos = xPos;
             }
         }
     }

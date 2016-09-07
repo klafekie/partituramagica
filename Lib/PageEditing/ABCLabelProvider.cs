@@ -1,27 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace PartituraMagica
 {
     /** first part is labelled "A", second part "B" etc */
-    class ABCLabelProvider : ILabelProvider
+
+    internal class ABCLabelProvider : ILabelProvider
     {
-        private Partitura partitura;
         private int pageIndex;
+        private readonly Partitura partitura;
 
         public ABCLabelProvider(Partitura partitura)
         {
             this.partitura = partitura;
-            this.pageIndex = -1;
+            pageIndex = -1;
         }
 
         public string GetLabel(int id)
         {
-            Debug.Assert(this.pageIndex >= 0);
-            IList<Part> allParts = this.partitura.GetAllParts(this.pageIndex + 1);
+            Debug.Assert(pageIndex >= 0);
+            IList<Part> allParts = partitura.GetAllParts(pageIndex + 1);
             int pos = -1;
             int partIndex = 0;
             for (; partIndex < allParts.Count; partIndex++)
@@ -36,21 +34,15 @@ namespace PartituraMagica
             if (pos == 0)
             {
                 //only label the first rectangle in each part
-                char result = (char)('A' + partIndex);
+                char result = (char) ('A' + partIndex);
                 return result.ToString();
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         public int PageIndex
         {
-            set
-            {
-                this.pageIndex = value;
-            }
+            set { pageIndex = value; }
         }
     }
 }

@@ -20,22 +20,25 @@ namespace PartituraMagica
     public partial class PlayerViewD3D : Form, IPlayerView
     {
         private const float LINE_DISTANCE = 10F;
-        private readonly IPageFiles pageFiles;
+
+        private readonly List<ClippingD3D> _clippingD3Ds = new List<ClippingD3D>();
+            // [Renamed from 'lines' jed 20150118]
+
+        private readonly ApplicationConfiguration configuration = new ApplicationConfiguration();
+        private readonly Direct3D d3d;
         private readonly IImageLoader imageLoader;
         private readonly IntPtr ownerHandle;
+        private readonly IPageFiles pageFiles;
+        private bool closed = true;
+        private int currentLine;
 
         private Device device;
+        private float lastZoomX;
 
         private bool rendering;
-        private bool closed = true;
 
         //position in view specific coordinates		
         private double viewXPos;
-        private float lastZoomX;
-        private int currentLine;
-        private readonly List<ClippingD3D> _clippingD3Ds = new List<ClippingD3D>(); // [Renamed from 'lines' jed 20150118]
-        private readonly Direct3D d3d;
-        private readonly ApplicationConfiguration configuration = new ApplicationConfiguration();
 
         public PlayerViewD3D(IPageFiles pageFiles, IImageLoader imageLoader, IntPtr owner, PlayerMemento memento)
         {
@@ -52,6 +55,84 @@ namespace PartituraMagica
 
             d3d = new Direct3D();
             CreateDevice();
+        }
+
+        public void Init(string partPattern, IEnumerable<Clipping> clips)
+        {
+            _clippingD3Ds.Clear();
+            foreach (Clipping c in clips)
+            {
+                string path = pageFiles.GetImage(c.PageIndex);
+                IGreyImage image = imageLoader.GetImage(path);
+                ClippingD3D line = new ClippingD3D(image, c.Coords, configuration.InvertColors, configuration.Color);
+                _clippingD3Ds.Add(line);
+            }
+
+            float offset = 0F;
+            foreach (ClippingD3D l in _clippingD3Ds)
+            {
+                l.Init(device, offset);
+                offset += l.Width + LINE_DISTANCE;
+            }
+
+            string[] choices = new string[partPattern.Length];
+            for (int i = 0; i < partPattern.Length; i++)
+            {
+                choices[i] = partPattern[i].ToString();
+            }
+            partsStrip.Choices = choices;
+            partsStrip.Current = 0;
+            viewXPos = 0;
+            currentLine = 0;
+        }
+
+        public void GotoLine(int lineIndex)
+        {
+            currentLine = lineIndex;
+            viewXPos = _clippingD3Ds[lineIndex].XPos;
+        }
+
+        public void StartScrolling()
+        {
+            IWin32Window w = new Win32Window(ownerHandle);
+            rendering = true;
+            speedStrip.Paused = false;
+            closed = false;
+            Enabled = true;
+            Show(w);
+
+            do
+            {
+                Application.DoEvents();
+                Render();
+            } while (!closed);
+            Enabled = false;
+        }
+
+        public double XPos
+        {
+            get
+            {
+                Debug.Assert(lastZoomX > 0F);
+                return viewXPos - (double) currentLine*LINE_DISTANCE;
+            }
+        }
+
+        public event LineEndEvent LineEndReached;
+
+        public PlayerMemento ToMemento()
+        {
+            return new PlayerMemento
+            {
+                Speed = speedStrip.Speed,
+                XZoom = zoomStrip.XZoom,
+                YZoom = zoomStrip.YZoom
+            };
+        }
+
+        public IChoiceNavigator PartNavigator
+        {
+            get { return partsStrip; }
         }
 
         protected override void Dispose(bool disposing)
@@ -95,7 +176,8 @@ namespace PartituraMagica
                     BackBufferWidth = bbWidth,
                     BackBufferHeight = bbHeight,
                     PresentationInterval = PresentInterval.One,
-                    Multisample = MultisampleType.None, // Options are: None, NonMaskable, and NSamples where N in 2..16.
+                    Multisample = MultisampleType.None,
+                    // Options are: None, NonMaskable, and NSamples where N in 2..16.
                     Windowed = true,
                     SwapEffect = SwapEffect.Discard
                 });
@@ -107,47 +189,6 @@ namespace PartituraMagica
             // Antialiasing: see http://msdn.microsoft.com/en-us/library/windows/desktop/bb173422%28v=vs.85%29.aspx
             // seems that it is not doing anything when working with images, only for shapes
             device.SetRenderState(RenderState.MultisampleAntialias, false);
-        }
-
-        public void Init(string partPattern, IEnumerable<Clipping> clips)
-        {
-            _clippingD3Ds.Clear();
-            foreach (Clipping c in clips)
-            {
-                string path = pageFiles.GetImage(c.PageIndex);
-                IGreyImage image = imageLoader.GetImage(path);
-                ClippingD3D line = new ClippingD3D(image, c.Coords, configuration.InvertColors, configuration.Color);
-                _clippingD3Ds.Add(line);
-            }
-
-            float offset = 0F;
-            foreach (ClippingD3D l in _clippingD3Ds)
-            {
-                l.Init(device, offset);
-                offset += l.Width + LINE_DISTANCE;
-            }
-
-            string[] choices = new string[partPattern.Length];
-            for (int i = 0; i < partPattern.Length; i++)
-            {
-                choices[i] = partPattern[i].ToString();
-            }
-            partsStrip.Choices = choices;
-            partsStrip.Current = 0;
-            viewXPos = 0;
-            currentLine = 0;
-        }
-
-        private class Win32Window : IWin32Window
-        {
-            private readonly IntPtr handle;
-
-            public Win32Window(IntPtr w)
-            {
-                handle = w;
-            }
-
-            public IntPtr Handle { get { return handle; } }
         }
 
         private void Render()
@@ -172,8 +213,8 @@ namespace PartituraMagica
                 float zoomY;
                 zoomStrip.GetNextZoom(out lastZoomX, out zoomY);
                 device.SetTransform(TransformState.World,
-                    Matrix.Scaling(lastZoomX, zoomY, 1F) *
-                    Matrix.Translation((float)-viewXPos * lastZoomX, 0, 0));
+                    Matrix.Scaling(lastZoomX, zoomY, 1F)*
+                    Matrix.Translation((float) -viewXPos*lastZoomX, 0, 0));
                 for (int i = 0; i < _clippingD3Ds.Count; i++)
                 {
                     _clippingD3Ds[i].Render(device);
@@ -188,7 +229,7 @@ namespace PartituraMagica
 
             if (speedStrip.JumpsCount != 0)
             {
-                viewXPos = Math.Max(0, viewXPos - speedStrip.JumpsCount * 250);
+                viewXPos = Math.Max(0, viewXPos - speedStrip.JumpsCount*250);
                 speedStrip.JumpsCount = 0;
             }
 
@@ -212,49 +253,6 @@ namespace PartituraMagica
             //}
         }
 
-        public void GotoLine(int lineIndex)
-        {
-            this.currentLine = lineIndex;
-            this.viewXPos = this._clippingD3Ds[lineIndex].XPos;
-        }
-
-        public void StartScrolling()
-        {
-            IWin32Window w = new Win32Window(ownerHandle);
-            rendering = true;
-            speedStrip.Paused = false;
-            closed = false;
-            Enabled = true;
-            Show(w);
-
-            do
-            {
-                Application.DoEvents();
-                Render();
-            } while (!closed);
-            Enabled = false;
-        }
-
-        public double XPos
-        {
-            get
-            {
-                Debug.Assert(lastZoomX > 0F);
-                return (viewXPos - (double)currentLine * LINE_DISTANCE);
-            }
-        }
-
-        public event LineEndEvent LineEndReached;
-        public PlayerMemento ToMemento()
-        {
-            return new PlayerMemento()
-            {
-                Speed = speedStrip.Speed,
-                XZoom = zoomStrip.XZoom,
-                YZoom = zoomStrip.YZoom
-            };
-        }
-
         protected bool OnLineEndReached()
         {
             bool cancel = false;
@@ -264,8 +262,6 @@ namespace PartituraMagica
             }
             return cancel;
         }
-
-        public IChoiceNavigator PartNavigator { get { return partsStrip; } }
 
         private void PlayerViewD3D_KeyDown(object sender, KeyEventArgs e)
         {
@@ -302,7 +298,6 @@ namespace PartituraMagica
 
         private void PlayerViewD3D_FormClosing(object sender, FormClosingEventArgs e)
         {
-
             closed = true;
             switch (e.CloseReason)
             {
@@ -318,6 +313,16 @@ namespace PartituraMagica
                     SpecialClose();
                     break;
             }
+        }
+
+        private class Win32Window : IWin32Window
+        {
+            public Win32Window(IntPtr w)
+            {
+                Handle = w;
+            }
+
+            public IntPtr Handle { get; }
         }
     }
 }

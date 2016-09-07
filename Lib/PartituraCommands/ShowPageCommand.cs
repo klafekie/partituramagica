@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
+﻿using System.Diagnostics;
 using System.Windows;
 
 namespace PartituraMagica
 {
     public class ShowPageCommand : PartituraCommandBase, ICommand
     {
-        private int index;
+        private readonly int index;
 
         public ShowPageCommand(int index, ICommandParameters p)
             : base(p)
@@ -30,7 +26,7 @@ namespace PartituraMagica
         public bool CanExecute()
         {
             return p.Active != null && p.Active.IsOpen &&
-                index >= 0 && index < p.Active.GetPageCount();
+                   index >= 0 && index < p.Active.GetPageCount();
         }
     }
 }

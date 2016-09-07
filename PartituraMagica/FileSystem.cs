@@ -25,29 +25,6 @@ namespace PartituraMagica
             return result;
         }
 
-        private static string ShowFileDialog(FileType type, FileDialog dialog)
-        {
-            if (type == FileType.Image)
-            {
-                dialog.Title = "Open Image File";
-                dialog.Filter = "Image files (*.jpg)|*.jpg";
-            }
-            else
-            {
-                dialog.Title = "Open Partitura File";
-                Debug.Assert(type == FileType.Partitura);
-                dialog.Filter = "Partitura files (*.partitura)|*.partitura";
-            }
-
-            dialog.RestoreDirectory = true;
-
-            if (dialog.ShowDialog() == true)
-            {
-                return dialog.FileName;
-            }
-            return null;
-        }
-
         public string ShowSaveDialog(FileType type)
         {
             SaveFileDialog dialog = new SaveFileDialog();
@@ -99,6 +76,29 @@ namespace PartituraMagica
         public bool FileExists(string path)
         {
             return File.Exists(path);
+        }
+
+        private static string ShowFileDialog(FileType type, FileDialog dialog)
+        {
+            if (type == FileType.Image)
+            {
+                dialog.Title = "Open Image File";
+                dialog.Filter = "Image files (*.jpg)|*.jpg";
+            }
+            else
+            {
+                dialog.Title = "Open Partitura File";
+                Debug.Assert(type == FileType.Partitura);
+                dialog.Filter = "Partitura files (*.partitura)|*.partitura";
+            }
+
+            dialog.RestoreDirectory = true;
+
+            if (dialog.ShowDialog() == true)
+            {
+                return dialog.FileName;
+            }
+            return null;
         }
     }
 }

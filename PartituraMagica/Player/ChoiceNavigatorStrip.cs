@@ -1,12 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using System.Diagnostics;
 
 namespace PartituraMagica
 {
@@ -14,6 +8,7 @@ namespace PartituraMagica
      * This view can be used to navigate arbitrary choices.
      * In our case Parts or (later) Pages
      */
+
     public partial class ChoiceNavigatorStrip : ToolStrip, IChoiceNavigator
     {
         private readonly ToolStripItem btnFirst;
@@ -21,48 +16,49 @@ namespace PartituraMagica
         private readonly ToolStripItem btnNext;
         private readonly ToolStripItem btnPrevious;
 
+        private readonly List<KeyValuePair<string, ToolStripButton>> choiceButtons =
+            new List<KeyValuePair<string, ToolStripButton>>();
+
         private string choiceName;
 
         private string[] choices;
-        private int current = 0;
-        private Keys modifiers;
-        private List<KeyValuePair<string, ToolStripButton>> choiceButtons = new List<KeyValuePair<string, ToolStripButton>>();
+        private int current;
 
         public ChoiceNavigatorStrip()
         {
             InitializeComponent();
-            this.ImageList = this.imageList1;//ImageList property cannot be set in designer.						
+            ImageList = imageList1; //ImageList property cannot be set in designer.						
             //@todo p1 impl Bookmark feature
 
 
-            btnFirst = this.Items.Add("First", this.ImageList.Images["first"]);
-            btnFirst.Click += new EventHandler(btnFirst_Click);
-            btnPrevious = this.Items.Add("Previous", this.ImageList.Images["previous"]);
-            btnPrevious.Click += new EventHandler(btnPrevious_Click);
+            btnFirst = Items.Add("First", ImageList.Images["first"]);
+            btnFirst.Click += btnFirst_Click;
+            btnPrevious = Items.Add("Previous", ImageList.Images["previous"]);
+            btnPrevious.Click += btnPrevious_Click;
 
-            this.Items.Add(new ToolStripSeparator());
-            this.Items.Add(new ToolStripSeparator());
+            Items.Add(new ToolStripSeparator());
+            Items.Add(new ToolStripSeparator());
 
-            btnNext = this.Items.Add("Next", this.ImageList.Images["next"]);
-            btnNext.Click += new EventHandler(btnNext_Click);
-            btnLast = this.Items.Add("Last", this.ImageList.Images["last"]);
-            btnLast.Click += new EventHandler(btnLast_Click);
+            btnNext = Items.Add("Next", ImageList.Images["next"]);
+            btnNext.Click += btnNext_Click;
+            btnLast = Items.Add("Last", ImageList.Images["last"]);
+            btnLast.Click += btnLast_Click;
 
             //this is done before the setter of choices Pattern because we're in the c'tor
-            foreach (ToolStripItem b in this.Items)
+            foreach (ToolStripItem b in Items)
             {
                 b.ImageScaling = ToolStripItemImageScaling.None;
                 b.DisplayStyle = ToolStripItemDisplayStyle.Image;
                 b.AutoSize = true;
                 //b.AutoSize = false;
             }
-
         }
 
         /** 
          * sets the tooltip and button texts to reflect the type of choice
          * you can navigate. E.G. "Part" or "Page"
          */
+
         public string ChoiceName
         {
             get { return choiceName; }
@@ -72,6 +68,18 @@ namespace PartituraMagica
                 Adjust(false);
             }
         }
+
+        /* should be set to a combination of Modifiers. The resulting keyboard shortcuts
+         * for navigating are as follows:
+         * First <= Modifiers + Home
+         * Previous <= Modifiers + Left
+         * Next <= Modifiers + Right
+         * Last <= Modifiers + End
+         * Jump to choice <= Modifiers + digit
+         */
+        //@todo p3 this does not allow to jump to choice 10, 11 etc
+        //use a timer?
+        public Keys Modifiers { get; set; }
 
         public string[] Choices
         {
@@ -106,10 +114,7 @@ namespace PartituraMagica
 
         public int Current
         {
-            get
-            {
-                return current;
-            }
+            get { return current; }
             set
             {
                 bool changed = current != value;
@@ -121,6 +126,14 @@ namespace PartituraMagica
             }
         }
 
+        public event Action<int> ChoiceChanged;
+
+        public event Action<int> ChoiceClicked;
+
+        public event CancellableEvent PreviousChoiceClicked;
+
+        public event CancellableEvent NextChoiceClicked;
+
         private void Adjust(bool choicesChanged)
         {
             if (choicesChanged)
@@ -128,7 +141,7 @@ namespace PartituraMagica
                 //we dont remove the separators if choices is empty.
                 foreach (KeyValuePair<string, ToolStripButton> entry in choiceButtons)
                 {
-                    this.Items.Remove(entry.Value);
+                    Items.Remove(entry.Value);
                 }
                 choiceButtons.Clear();
 
@@ -138,126 +151,103 @@ namespace PartituraMagica
                 {
                     for (int i = choices.Length - 1; i >= 0; i--)
                     {
-                        ToolStripButton b = new ToolStripButton(choices[i].ToString());
-                        b.Click += new EventHandler(b_Click);
+                        ToolStripButton b = new ToolStripButton(choices[i]);
+                        b.Click += b_Click;
                         //b.AutoSize = false;
                         //b.Width = 36;
                         //b.Height = 36;
                         choiceButtons.Add(new KeyValuePair<string, ToolStripButton>(
                             choices[i], b));
-                        this.Items.Insert(insertIndex, b);
+                        Items.Insert(insertIndex, b);
                     }
                     choiceButtons.Reverse();
                 }
             }
-            foreach (KeyValuePair<string, ToolStripButton> entry in this.choiceButtons)
+            foreach (KeyValuePair<string, ToolStripButton> entry in choiceButtons)
             {
                 entry.Value.Checked = false;
             }
 
-            if (this.choiceButtons.Count > current)
+            if (choiceButtons.Count > current)
             {
-                this.choiceButtons[current].Value.Checked = true;
+                choiceButtons[current].Value.Checked = true;
             }
 
-            foreach (KeyValuePair<string, ToolStripButton> entry in this.choiceButtons)
+            foreach (KeyValuePair<string, ToolStripButton> entry in choiceButtons)
             {
                 entry.Value.ToolTipText =
-                    String.Format("Go to {0} {1}", choiceName, entry.Value.Text);
+                    string.Format("Go to {0} {1}", choiceName, entry.Value.Text);
             }
             btnFirst.ToolTipText =
-                String.Format("Go to first {0}", choiceName);
+                string.Format("Go to first {0}", choiceName);
             btnNext.ToolTipText =
-                String.Format("Go to next {0}", choiceName);
+                string.Format("Go to next {0}", choiceName);
             btnPrevious.ToolTipText =
-                String.Format("Go to previous {0}", choiceName);
+                string.Format("Go to previous {0}", choiceName);
             btnLast.ToolTipText =
-                String.Format("Go to last {0}", choiceName);
+                string.Format("Go to last {0}", choiceName);
 
             OnChoiceChanged();
         }
 
-        /* should be set to a combination of Modifiers. The resulting keyboard shortcuts
-         * for navigating are as follows:
-         * First <= Modifiers + Home
-         * Previous <= Modifiers + Left
-         * Next <= Modifiers + Right
-         * Last <= Modifiers + End
-         * Jump to choice <= Modifiers + digit
-         */
-        //@todo p3 this does not allow to jump to choice 10, 11 etc
-        //use a timer?
-        public Keys Modifiers
+        private void btnLast_Click(object sender, EventArgs e)
         {
-            get { return this.modifiers; }
-            set
+            if (current < choices.Length - 1)
             {
-                //Debug.Assert((value & Keys.Modifiers) == value);
-                this.modifiers = value;
-            }
-        }
-
-        void btnLast_Click(object sender, EventArgs e)
-        {
-            if (this.current < this.choices.Length - 1)
-            {
-                this.Current = this.choices.Length - 1;
+                Current = choices.Length - 1;
             }
             OnChoiceClicked();
         }
 
-        void btnNext_Click(object sender, EventArgs e)
+        private void btnNext_Click(object sender, EventArgs e)
         {
             bool cancel = OnNextChoiceClicked();
-            if (!cancel && this.current < this.choices.Length - 1)
+            if (!cancel && current < choices.Length - 1)
             {
-                this.Current++;
+                Current++;
             }
             OnChoiceClicked();
         }
 
-        void btnPrevious_Click(object sender, EventArgs e)
+        private void btnPrevious_Click(object sender, EventArgs e)
         {
             bool cancel = OnPreviousChoiceClicked();
-            if (!cancel && this.current > 0)
+            if (!cancel && current > 0)
             {
-                this.Current--;
+                Current--;
             }
             OnChoiceClicked();
         }
 
-        void btnFirst_Click(object sender, EventArgs e)
+        private void btnFirst_Click(object sender, EventArgs e)
         {
-            this.Current = 0;
+            Current = 0;
             OnChoiceClicked();
         }
 
-        void b_Click(object sender, EventArgs e)
+        private void b_Click(object sender, EventArgs e)
         {
-            ToolStripButton b = (ToolStripButton)sender;
-            this.Current = this.choiceButtons.FindIndex(entry => entry.Value == b);
+            ToolStripButton b = (ToolStripButton) sender;
+            Current = choiceButtons.FindIndex(entry => entry.Value == b);
             OnChoiceClicked();
         }
 
-        public event Action<int> ChoiceChanged;
         protected virtual void OnChoiceChanged()
         {
             if (ChoiceChanged != null)
             {
-                ChoiceChanged(this.current);
+                ChoiceChanged(current);
             }
         }
 
-        public event Action<int> ChoiceClicked;
         protected virtual void OnChoiceClicked()
         {
             if (ChoiceClicked != null)
             {
-                ChoiceClicked(this.current);
+                ChoiceClicked(current);
             }
         }
 
-        public event CancellableEvent PreviousChoiceClicked;
         protected virtual bool OnPreviousChoiceClicked()
         {
             bool cancel = false;
@@ -268,7 +258,6 @@ namespace PartituraMagica
             return cancel;
         }
 
-        public event CancellableEvent NextChoiceClicked;
         protected virtual bool OnNextChoiceClicked()
         {
             bool cancel = false;
@@ -281,18 +270,25 @@ namespace PartituraMagica
 
         public void HandleKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Modifiers == this.Modifiers)
+            if (e.Modifiers == Modifiers)
             {
                 switch (e.KeyCode)
                 {
-                    case Keys.Left: btnPrevious.PerformClick(); break;
-                    case Keys.Right: btnNext.PerformClick(); break;
-                    case Keys.Home: btnFirst.PerformClick(); break;
-                    case Keys.End: btnLast.PerformClick(); break;
+                    case Keys.Left:
+                        btnPrevious.PerformClick();
+                        break;
+                    case Keys.Right:
+                        btnNext.PerformClick();
+                        break;
+                    case Keys.Home:
+                        btnFirst.PerformClick();
+                        break;
+                    case Keys.End:
+                        btnLast.PerformClick();
+                        break;
                     default:
-                        JumpToChoice(e.KeyCode); break;
-
-
+                        JumpToChoice(e.KeyCode);
+                        break;
                 }
             }
         }
@@ -301,16 +297,16 @@ namespace PartituraMagica
         {
             //key is one based
             //the 0 key will do nothing
-            int index = (int)(key - Keys.D0) - 1;
-            if (index < 0 || index >= this.choiceButtons.Count)
+            int index = key - Keys.D0 - 1;
+            if (index < 0 || index >= choiceButtons.Count)
             {
-                index = (int)(key - Keys.NumPad0) - 1;
+                index = key - Keys.NumPad0 - 1;
             }
-            if (index < 0 || index >= this.choiceButtons.Count)
+            if (index < 0 || index >= choiceButtons.Count)
             {
                 return;
             }
-            this.choiceButtons[index].Value.PerformClick();
+            choiceButtons[index].Value.PerformClick();
         }
     }
 }

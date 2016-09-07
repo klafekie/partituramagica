@@ -31,7 +31,7 @@ namespace PartituraMagica
         public bool CanExecute()
         {
             return p.Active != null && p.Active.IsOpen
-                && (saveAs || p.Active.Partitura.Dirty);
+                   && (saveAs || p.Active.Partitura.Dirty);
         }
     }
 }

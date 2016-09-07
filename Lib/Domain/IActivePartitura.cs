@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace PartituraMagica
+﻿namespace PartituraMagica
 {
     /** 
      * Represents a partitura currently open in the application.
@@ -11,37 +6,23 @@ namespace PartituraMagica
      * a partitura. At most one active partitura exists at
      * a given time.
      */
+
     public interface IActivePartitura : IPageFiles
     {
-        string Path
-        {
-            get;
-        }
+        string Path { get; }
 
-        Partitura Partitura
-        {
-            get;
-        }
+        Partitura Partitura { get; }
+
+        bool IsOpen { get; }
+
+        int CurrentPageIndex { get; set; }
+
+        string CurrentImagePath { get; }
+
+        Page CurrentPage { get; }
 
         void Open(string path, Partitura partitura);
         void Save(string path);
-        bool IsOpen { get; }
         void Close();
-
-        int CurrentPageIndex
-        {
-            get;
-            set;
-        }
-
-        string CurrentImagePath
-        {
-            get;
-        }
-
-        Page CurrentPage
-        {
-            get;
-        }
     }
 }

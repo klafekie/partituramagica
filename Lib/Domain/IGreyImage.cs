@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 namespace PartituraMagica
 {
     public delegate double BrightnessGetter(int x, int y);
@@ -10,6 +5,7 @@ namespace PartituraMagica
     /**
      * An abstraction for a pixel based grey bitmap
      */
+
     public interface IGreyImage
     {
         int Width { get; }

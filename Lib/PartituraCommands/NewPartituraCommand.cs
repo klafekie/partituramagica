@@ -1,15 +1,9 @@
-﻿using System;
-using System.Diagnostics;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
+﻿using System.Diagnostics;
 
 namespace PartituraMagica
 {
     public class NewPartituraCommand : PartituraCommandBase, ICommand
     {
-
         public NewPartituraCommand(ICommandParameters p)
             : base(p)
         {

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Collections;
-using System.Threading;
 using System.Windows;
 
 namespace PartituraMagica
@@ -15,8 +12,345 @@ namespace PartituraMagica
     /// A box has a SplitterList which can divide the box into fragments which are next to each other.
     /// </summary>
     [Serializable]
-    class Box
+    internal class Box
     {
+        //if this box (or a splitter in it) is labelled, this holds the
+        //corresponding box/splitter ids. empty otherwise
+        private readonly IList<int> labelIds;
+        private int selectedId;
+        private readonly SplitterList splitters;
+
+        public Box(int id, Rect coords)
+        {
+            Id = id;
+            selectedId = -1;
+            labelIds = new List<int>();
+
+            splitters = new SplitterList();
+            Coords = coords;
+        }
+
+        /// <summary>
+        /// Creates deep copy of the given Box 'rhs'.
+        /// Currently only used during editing (in Page.CanUpdateSelectedBox()) [20150118].
+        /// </summary>
+        public Box(Box rhs)
+        {
+            Id = rhs.Id;
+            Coords = new Rect(rhs.Coords);
+            splitters = new SplitterList(rhs.splitters);
+
+            selectedId = rhs.selectedId;
+            labelIds = rhs.labelIds;
+        }
+
+        public int Id { get; }
+
+        public Rect Coords { get; private set; }
+
+        /** 
+         * the minimum distance between to objects (boxes or splitters)
+         * on the screen 
+         */
+
+        private static double MinItemDistance
+        {
+            get { return 2.0*Page.ClickTolerance + 1.0; }
+        }
+
+        private Size MinBoxSize
+        {
+            get
+            {
+                double borderLine = MakeRelative(Coords.X);
+                borderLine = Math.Max(borderLine,
+                    splitters.RightmostPos);
+                return new Size(borderLine + MinItemDistance, MinItemDistance);
+            }
+        }
+
+        private Rect MakeAbsolute(Rect r)
+        {
+            r.OuterRect = Coords.OuterRect;
+            return r.Move(Coords.X, Coords.Y);
+        }
+
+        private double MakeRelative(double abs)
+        {
+            return abs - Coords.X;
+        }
+
+        public bool Contains(Point pos)
+        {
+            Rect outer = GetOuterRect(Coords);
+            return outer.Contains(pos);
+        }
+
+        private static Rect GetOuterRect(Rect r)
+        {
+            return r.AddInAllDirections(Page.ClickTolerance, null);
+        }
+
+        private static Rect GetInnerRect(Rect r)
+        {
+            return r.AddInAllDirections(-Page.ClickTolerance, new Size(1, 1));
+        }
+
+        public Shape GetShapeTypeAt(Point pos)
+        {
+            Rect inner = GetInnerRect(Coords);
+            uint row = 0;
+            uint column = 0;
+            if (pos.X <= inner.Left)
+            {
+                column = 0;
+            }
+            else if (pos.X < inner.Right)
+            {
+                column = 1;
+            }
+            else
+            {
+                column = 2;
+            }
+            if (pos.Y <= inner.Top)
+            {
+                row = 0;
+            }
+            else if (pos.Y < inner.Bottom)
+            {
+                row = 1;
+            }
+            else
+            {
+                row = 2;
+            }
+
+            Shape[,] shapeTypeGrid =
+            {
+                {Shape.BoxLeftTopCorner, Shape.BoxTopMargin, Shape.BoxRightTopCorner},
+                {Shape.BoxLeftMargin, Shape.BoxContent, Shape.BoxRightMargin},
+                {Shape.BoxLeftBottomCorner, Shape.BoxBottomMargin, Shape.BoxRightBottomCorner}
+            };
+
+            Shape result = shapeTypeGrid[row, column];
+
+            //now check for splitters, this can only happen when we are somewere in the middle of the
+            //box
+            if (result == Shape.BoxContent &&
+                FindSplitterAt(pos) != -1)
+            {
+                return Shape.BoxSplitter;
+            }
+            return result;
+        }
+
+        private int FindSplitterAt(Point pos)
+        {
+            return splitters.FindAt(MakeRelative(pos.X));
+        }
+
+        public bool Update(Point lastPos, Point newPos)
+        {
+            bool splitterMoved = false;
+            double deltaX = newPos.X - lastPos.X;
+            double deltaY = newPos.Y - lastPos.Y;
+
+            Rect result = null;
+
+            switch (GetShapeTypeAt(lastPos))
+            {
+                case Shape.BoxContent:
+                    result = Coords.Move(deltaX, deltaY);
+                    break;
+                case Shape.BoxLeftTopCorner:
+                    result = Coords.AddLeftTop(-deltaX, -deltaY, MinBoxSize);
+                    break;
+                case Shape.BoxTopMargin:
+                    result = Coords.AddAbove(-deltaY, MinBoxSize);
+                    break;
+                case Shape.BoxRightTopCorner:
+                    result = Coords.AddRightTop(deltaX, -deltaY, MinBoxSize);
+                    break;
+                case Shape.BoxRightMargin:
+                    result = Coords.AddRight(deltaX, MinBoxSize);
+                    break;
+                case Shape.BoxRightBottomCorner:
+                    result = Coords.AddRightBottom(deltaX, deltaY, MinBoxSize);
+                    break;
+                case Shape.BoxBottomMargin:
+                    result = Coords.AddBelow(deltaY, MinBoxSize);
+                    break;
+                case Shape.BoxLeftBottomCorner:
+                    result = Coords.AddLeftBottom(-deltaX, deltaY, MinBoxSize);
+                    break;
+                case Shape.BoxLeftMargin:
+                    result = Coords.AddLeft(-deltaX, MinBoxSize);
+                    break;
+                case Shape.BoxSplitter:
+                    splitterMoved = splitters.MoveSplitter(deltaX, FindSplitterAt(lastPos), Coords.Size);
+                    break;
+                default:
+                    throw new ArgumentException("unexpected shapeType");
+            }
+            bool boxMoved = result != null && result != Coords;
+            if (boxMoved)
+            {
+                Coords = result;
+            }
+            return boxMoved || splitterMoved;
+        }
+
+        public void TrySplit(Point pos)
+        {
+            double desiredPos = pos.X;
+            if (!Contains(pos))
+            {
+                desiredPos = Coords.Left + Coords.Width/2.0;
+            }
+            splitters.TrySplit(MakeRelative(desiredPos), Id, Coords.Size);
+        }
+
+        /** paint without changing the selection or the labelling */
+
+        internal void Paint(IDrawingPanel panel)
+        {
+            Paint(panel, null);
+        }
+
+        /** paint without changing the selection */
+
+        internal void Paint(IDrawingPanel panel, ILabelProvider labelProvider)
+        {
+            IEnumerable<KeyValuePair<int, Rect>> rectangles = GetAllCoordsWithIds();
+            foreach (KeyValuePair<int, Rect> entry in rectangles)
+            {
+                panel.AddOrUpdateRectangle(entry.Key, entry.Value);
+                if (labelProvider != null)
+                {
+                    panel.LabelRectangle(entry.Key,
+                        labelProvider.GetLabel(entry.Key));
+                }
+            }
+            ;
+        }
+
+        internal void Select(Point pos, IDrawingPanel panel)
+        {
+            Paint(panel); //add any missing rectangles
+            if (selectedId != -1)
+            {
+                panel.DeselectRectangle(selectedId);
+            }
+            selectedId = GetIdAt(pos);
+            panel.SelectRectangle(selectedId);
+        }
+
+        private int GetIdAt(Point pos)
+        {
+            IEnumerable<KeyValuePair<int, Rect>> rectangles = GetAllCoordsWithIds();
+
+            IEnumerator<KeyValuePair<int, Rect>> entries =
+                rectangles.Where(
+                    e => GetOuterRect(e.Value).Contains(pos)).GetEnumerator();
+
+            //for splitters there can be two rects found at the same postion
+            //we simply take the first one
+
+            if (entries.MoveNext())
+            {
+                return entries.Current.Key;
+            }
+            return -1;
+        }
+
+        internal void Deselect(IDrawingPanel panel)
+        {
+            if (selectedId != -1)
+            {
+                panel.DeselectRectangle(selectedId);
+            }
+            selectedId = -1;
+        }
+
+        //or better Hide()?
+        internal void UnPaint(IDrawingPanel panel)
+        {
+            panel.RemoveRectangle(Id);
+
+            foreach (int id in splitters.Ids)
+            {
+                panel.RemoveRectangle(id);
+            }
+        }
+
+        /// <summary>
+        /// 'Parses' the rectangles and their labels into the parts list, appending the rectangles of each part to the part's 'clippings' list.
+        /// </summary>
+        /// <param name="currentPageIndex">The index of the page this box is on (for registering).</param>
+        internal void AppendParts(IList<Part> parts, int currentPageIndex)
+        {
+            // Initialize parts to a single part (because any partitura is at least one part) and make that the 'current' part.
+            if (parts.Count == 0)
+            {
+                parts.Add(new Part());
+            }
+            // The current part to which found 
+            Part currentPart = parts[parts.Count - 1];
+
+            IEnumerable<KeyValuePair<int, Rect>> withId = GetAllCoordsWithIds();
+
+            foreach (KeyValuePair<int, Rect> entry in withId)
+            {
+                if (labelIds.Contains(entry.Key)
+                    && !currentPart.IsEmpty)
+                {
+                    //beginning of a new part...
+                    //empty parts can happen when we are at the first box on first page					
+                    currentPart = new Part();
+                    parts.Add(currentPart);
+                }
+                currentPart.Add(new Clipping(currentPageIndex, entry.Value, entry.Key));
+            }
+        }
+
+        /// <summary>
+        /// Returns coords for the complete box (including splitters).
+        /// If this box contains a splitter, we return two Rects, one for the
+        /// left part, one for the right part. The dictionary key is the id of 
+        /// the box itself for the leftmost rectangle and the id of the splitter
+        /// "at the left of the rectangle" for the others.
+        /// Note that this is different from the internal representation of Splitters.
+        /// </summary>
+        internal IEnumerable<KeyValuePair<int, Rect>> GetAllCoordsWithIds()
+        {
+            IEnumerable<KeyValuePair<int, Rect>> relResults =
+                splitters.GetAllCoordsWithIds(Id, Coords.Size);
+
+            var result = from entry in relResults
+                select new KeyValuePair<int, Rect>(entry.Key, MakeAbsolute(entry.Value));
+            return result;
+        }
+
+        internal void LabelSelection()
+        {
+            labelIds.Add(selectedId);
+        }
+
+        internal bool IsSelectionLabelled()
+        {
+            return labelIds.Contains(selectedId);
+        }
+
+        internal void UnLabelSelection()
+        {
+            labelIds.Remove(selectedId);
+        }
+
+        internal bool IsLeftSelected()
+        {
+            return selectedId == Id;
+        }
 
         /// a splitter is a vertical line that splits a box.
         /// a box can contain several splitters.	
@@ -25,10 +359,11 @@ namespace PartituraMagica
         [Serializable]
         private class SplitterList
         {
-            private SortedList<double, int> splitters;
+            private readonly SortedList<double, int> splitters;
+
             internal SplitterList()
             {
-                this.splitters = new SortedList<double, int>();
+                splitters = new SortedList<double, int>();
             }
 
             /// <summary>
@@ -40,47 +375,41 @@ namespace PartituraMagica
             {
                 foreach (KeyValuePair<double, int> entry in rhs.splitters)
                 {
-                    this.splitters.Add(entry.Key, entry.Value);
+                    splitters.Add(entry.Key, entry.Value);
                 }
             }
 
             internal IEnumerable<int> Ids
             {
-                get
-                {
-                    return this.splitters.Values;
-                }
-            }
-
-            internal void Add(double pos, int id)
-            {
-                this.splitters.Add(pos, id);
+                get { return splitters.Values; }
             }
 
             internal double RightmostPos
             {
                 get
                 {
-                    if (this.splitters.Count == 0) return 0D;
-                    return this.splitters.Last().Key;
+                    if (splitters.Count == 0) return 0D;
+                    return splitters.Last().Key;
                 }
+            }
+
+            internal void Add(double pos, int id)
+            {
+                splitters.Add(pos, id);
             }
 
             internal int FindAt(double posX)
             {
-                var entries = (from entry in this.splitters
-                               where posX <= entry.Key + Page.ClickTolerance &&
-                                    posX >= entry.Key - Page.ClickTolerance
-                               select entry).ToArray();
+                var entries = (from entry in splitters
+                    where posX <= entry.Key + Page.ClickTolerance &&
+                          posX >= entry.Key - Page.ClickTolerance
+                    select entry).ToArray();
                 if (entries.Length == 0)
                 {
                     return -1;
                 }
-                else
-                {
-                    Debug.Assert(entries.Length == 1);
-                    return entries.First().Value;
-                }
+                Debug.Assert(entries.Length == 1);
+                return entries.First().Value;
             }
 
             internal IEnumerable<KeyValuePair<int, Rect>> GetAllCoordsWithIds(int boxId, Size boxSize)
@@ -91,10 +420,11 @@ namespace PartituraMagica
                 double width = 0;
                 int id = -1;
                 int i = 0;
-                foreach (KeyValuePair<double, int> entry in this.splitters)
+                foreach (KeyValuePair<double, int> entry in splitters)
                 {
                     if (i == 0)
-                    {//leftmost rect                    
+                    {
+//leftmost rect                    
                         x = 0D;
                         width = entry.Key;
                         id = boxId;
@@ -137,16 +467,16 @@ namespace PartituraMagica
             public bool MoveSplitter(double deltaX, int id, Size boxSize)
             {
                 if (deltaX == 0) return false;
-                double oldPos = (from entry in this.splitters
-                                 where entry.Value == id
-                                 select entry.Key).
-                                Single();
+                double oldPos = (from entry in splitters
+                        where entry.Value == id
+                        select entry.Key).
+                    Single();
                 double desiredPos = oldPos + deltaX;
                 bool wouldWork = EnoughRoomForSplitterAt(desiredPos, id, boxSize);
                 if (wouldWork)
                 {
-                    this.splitters.Remove(oldPos);
-                    this.splitters.Add(desiredPos, id);
+                    splitters.Remove(oldPos);
+                    splitters.Add(desiredPos, id);
                 }
                 return wouldWork;
             }
@@ -156,7 +486,7 @@ namespace PartituraMagica
             {
                 if (EnoughRoomForSplitterAt(splitterPos, -1, boxSize))
                 {
-                    int splitterId = this.splitters.Count + 1000 * (boxId + 1);
+                    int splitterId = splitters.Count + 1000*(boxId + 1);
                     splitters.Add(splitterPos, splitterId);
                 }
             }
@@ -168,367 +498,13 @@ namespace PartituraMagica
 
                 int leftId = FindAt(leftTolerance);
                 bool leftOk = (leftId == -1 || leftId == id) &&
-                    desiredPos > 2 * Page.ClickTolerance;
+                              desiredPos > 2*Page.ClickTolerance;
                 int rightId = FindAt(rightTolerance);
                 bool rightOk = (rightId == -1 || rightId == id) &&
-                    desiredPos < boxSize.Width - 2 * Page.ClickTolerance;
+                               desiredPos < boxSize.Width - 2*Page.ClickTolerance;
 
                 return leftOk && rightOk;
             }
-        }
-
-        private int id;
-        private Rect coords;
-        private SplitterList splitters;
-        private int selectedId;
-        //if this box (or a splitter in it) is labelled, this holds the
-        //corresponding box/splitter ids. empty otherwise
-        private IList<int> labelIds;
-
-        public Box(int id, Rect coords)
-        {
-            this.id = id;
-            this.selectedId = -1;
-            this.labelIds = new List<int>();
-
-            this.splitters = new SplitterList();
-            this.coords = coords;
-        }
-
-        /// <summary>
-        /// Creates deep copy of the given Box 'rhs'.
-        /// Currently only used during editing (in Page.CanUpdateSelectedBox()) [20150118].
-        /// </summary>
-        public Box(Box rhs)
-        {
-            this.id = rhs.id;
-            this.coords = new Rect(rhs.coords);
-            this.splitters = new SplitterList(rhs.splitters);
-
-            this.selectedId = rhs.selectedId;
-            this.labelIds = rhs.labelIds;
-        }
-
-        public int Id
-        {
-            get
-            {
-                return id;
-            }
-        }
-
-        public Rect Coords
-        {
-            get
-            {
-                return coords;
-            }
-        }
-
-        /** 
-         * the minimum distance between to objects (boxes or splitters)
-         * on the screen 
-         */
-        private static double MinItemDistance
-        {
-            get
-            {
-                return 2.0 * Page.ClickTolerance + 1.0;
-            }
-        }
-
-        private Rect MakeAbsolute(Rect r)
-        {
-            r.OuterRect = this.coords.OuterRect;
-            return r.Move(this.coords.X, this.coords.Y);
-        }
-
-        private double MakeRelative(double abs)
-        {
-            return abs - this.coords.X;
-        }
-
-        private Size MinBoxSize
-        {
-            get
-            {
-                double borderLine = MakeRelative(this.coords.X);
-                borderLine = Math.Max(borderLine,
-                    this.splitters.RightmostPos);
-                return new Size(borderLine + MinItemDistance, MinItemDistance);
-            }
-        }
-
-        public bool Contains(Point pos)
-        {
-            Rect outer = GetOuterRect(this.coords);
-            return outer.Contains(pos);
-        }
-
-        private static Rect GetOuterRect(Rect r)
-        {
-            return r.AddInAllDirections(Page.ClickTolerance, null);
-        }
-
-        private static Rect GetInnerRect(Rect r)
-        {
-            return r.AddInAllDirections(-Page.ClickTolerance, new Size(1, 1));
-        }
-
-        public Shape GetShapeTypeAt(Point pos)
-        {
-            Rect inner = GetInnerRect(this.coords);
-            uint row = 0;
-            uint column = 0;
-            if (pos.X <= inner.Left)
-            {
-                column = 0;
-            }
-            else if (pos.X < inner.Right)
-            {
-                column = 1;
-            }
-            else
-            {
-                column = 2;
-            }
-            if (pos.Y <= inner.Top)
-            {
-                row = 0;
-            }
-            else if (pos.Y < inner.Bottom)
-            {
-                row = 1;
-            }
-            else
-            {
-                row = 2;
-            }
-
-            Shape[,] shapeTypeGrid = {
-					   {Shape.BoxLeftTopCorner, Shape.BoxTopMargin, Shape.BoxRightTopCorner},
-					   {Shape.BoxLeftMargin, Shape.BoxContent, Shape.BoxRightMargin},
-					   {Shape.BoxLeftBottomCorner, Shape.BoxBottomMargin, Shape.BoxRightBottomCorner}												 
-					};
-
-            Shape result = shapeTypeGrid[row, column];
-
-            //now check for splitters, this can only happen when we are somewere in the middle of the
-            //box
-            if (result == Shape.BoxContent &&
-                            FindSplitterAt(pos) != -1)
-            {
-                return Shape.BoxSplitter;
-
-            }
-            return result;
-        }
-
-        private int FindSplitterAt(Point pos)
-        {
-            return this.splitters.FindAt(MakeRelative(pos.X));
-        }
-
-        public bool Update(Point lastPos, Point newPos)
-        {
-            bool splitterMoved = false;
-            double deltaX = newPos.X - lastPos.X;
-            double deltaY = newPos.Y - lastPos.Y;
-
-            Rect result = null;
-
-            switch (GetShapeTypeAt(lastPos))
-            {
-                case Shape.BoxContent:
-                    result = this.coords.Move(deltaX, deltaY);
-                    break;
-                case Shape.BoxLeftTopCorner:
-                    result = this.coords.AddLeftTop(-deltaX, -deltaY, this.MinBoxSize);
-                    break;
-                case Shape.BoxTopMargin:
-                    result = this.coords.AddAbove(-deltaY, this.MinBoxSize);
-                    break;
-                case Shape.BoxRightTopCorner:
-                    result = this.coords.AddRightTop(deltaX, -deltaY, this.MinBoxSize);
-                    break;
-                case Shape.BoxRightMargin:
-                    result = this.coords.AddRight(deltaX, this.MinBoxSize);
-                    break;
-                case Shape.BoxRightBottomCorner:
-                    result = this.coords.AddRightBottom(deltaX, deltaY, this.MinBoxSize);
-                    break;
-                case Shape.BoxBottomMargin:
-                    result = this.coords.AddBelow(deltaY, this.MinBoxSize);
-                    break;
-                case Shape.BoxLeftBottomCorner:
-                    result = this.coords.AddLeftBottom(-deltaX, deltaY, this.MinBoxSize);
-                    break;
-                case Shape.BoxLeftMargin:
-                    result = this.coords.AddLeft(-deltaX, this.MinBoxSize);
-                    break;
-                case Shape.BoxSplitter:
-                    splitterMoved = this.splitters.MoveSplitter(deltaX, FindSplitterAt(lastPos), this.coords.Size);
-                    break;
-                default:
-                    throw new ArgumentException("unexpected shapeType");
-            }
-            bool boxMoved = result != null && result != this.coords;
-            if (boxMoved)
-            {
-                this.coords = result;
-            }
-            return boxMoved || splitterMoved;
-        }
-
-        public void TrySplit(Point pos)
-        {
-            double desiredPos = pos.X;
-            if (!this.Contains(pos))
-            {
-                desiredPos = this.coords.Left + (this.coords.Width / 2.0);
-            }
-            this.splitters.TrySplit(MakeRelative(desiredPos), this.id, this.coords.Size);
-        }
-
-        /** paint without changing the selection or the labelling */
-        internal void Paint(IDrawingPanel panel)
-        {
-            this.Paint(panel, null);
-        }
-
-        /** paint without changing the selection */
-        internal void Paint(IDrawingPanel panel, ILabelProvider labelProvider)
-        {
-            IEnumerable<KeyValuePair<int, Rect>> rectangles = GetAllCoordsWithIds();
-            foreach (KeyValuePair<int, Rect> entry in rectangles)
-            {
-                panel.AddOrUpdateRectangle(entry.Key, entry.Value);
-                if (labelProvider != null)
-                {
-                    panel.LabelRectangle(entry.Key,
-                        labelProvider.GetLabel(entry.Key));
-                }
-            };
-        }
-
-        internal void Select(Point pos, IDrawingPanel panel)
-        {
-            Paint(panel);//add any missing rectangles
-            if (this.selectedId != -1)
-            {
-                panel.DeselectRectangle(this.selectedId);
-            }
-            this.selectedId = GetIdAt(pos);
-            panel.SelectRectangle(this.selectedId);
-        }
-
-        private int GetIdAt(Point pos)
-        {
-            IEnumerable<KeyValuePair<int, Rect>> rectangles = GetAllCoordsWithIds();
-
-            IEnumerator<KeyValuePair<int, Rect>> entries =
-                rectangles.Where(
-                    e => GetOuterRect(e.Value).Contains(pos)).GetEnumerator();
-
-            //for splitters there can be two rects found at the same postion
-            //we simply take the first one
-
-            if (entries.MoveNext())
-            {
-                return entries.Current.Key;
-            }
-            else
-            {
-                return -1;
-            }
-        }
-
-        internal void Deselect(IDrawingPanel panel)
-        {
-            if (this.selectedId != -1)
-            {
-                panel.DeselectRectangle(this.selectedId);
-            }
-            this.selectedId = -1;
-        }
-
-        //or better Hide()?
-        internal void UnPaint(IDrawingPanel panel)
-        {
-            panel.RemoveRectangle(this.id);
-
-            foreach (int id in this.splitters.Ids)
-            {
-                panel.RemoveRectangle(id);
-            }
-        }
-
-        /// <summary>
-        /// 'Parses' the rectangles and their labels into the parts list, appending the rectangles of each part to the part's 'clippings' list.
-        /// </summary>
-        /// <param name="currentPageIndex">The index of the page this box is on (for registering).</param>
-        internal void AppendParts(IList<Part> parts, int currentPageIndex)
-        {
-            // Initialize parts to a single part (because any partitura is at least one part) and make that the 'current' part.
-            if (parts.Count == 0)
-            {
-                parts.Add(new Part());
-            }
-            // The current part to which found 
-            Part currentPart = parts[parts.Count - 1];
-
-            IEnumerable<KeyValuePair<int, Rect>> withId = GetAllCoordsWithIds();
-
-            foreach (KeyValuePair<int, Rect> entry in withId)
-            {
-                if (this.labelIds.Contains(entry.Key)
-                    && !currentPart.IsEmpty)
-                {
-                    //beginning of a new part...
-                    //empty parts can happen when we are at the first box on first page					
-                    currentPart = new Part();
-                    parts.Add(currentPart);
-                }
-                currentPart.Add(new Clipping(currentPageIndex, entry.Value, entry.Key));
-            }
-        }
-
-        /// <summary>
-        /// Returns coords for the complete box (including splitters).
-        /// If this box contains a splitter, we return two Rects, one for the
-        /// left part, one for the right part. The dictionary key is the id of 
-        /// the box itself for the leftmost rectangle and the id of the splitter
-        /// "at the left of the rectangle" for the others.
-        /// Note that this is different from the internal representation of Splitters.
-        /// </summary>
-        internal IEnumerable<KeyValuePair<int, Rect>> GetAllCoordsWithIds()
-        {
-            IEnumerable<KeyValuePair<int, Rect>> relResults =
-                this.splitters.GetAllCoordsWithIds(this.Id, this.coords.Size);
-
-            var result = from entry in relResults
-                         select new KeyValuePair<int, Rect>(entry.Key, MakeAbsolute(entry.Value));
-            return result;
-        }
-
-        internal void LabelSelection()
-        {
-            this.labelIds.Add(this.selectedId);
-        }
-
-        internal bool IsSelectionLabelled()
-        {
-            return this.labelIds.Contains(this.selectedId);
-        }
-
-        internal void UnLabelSelection()
-        {
-            this.labelIds.Remove(this.selectedId);
-        }
-
-        internal bool IsLeftSelected()
-        {
-            return this.selectedId == this.id;
         }
     }
 }

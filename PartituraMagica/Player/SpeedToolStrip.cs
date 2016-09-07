@@ -7,9 +7,23 @@ namespace PartituraMagica
      * A custom control that allows to increase/decrease speed 
      * and to pause/resume playing
      */
+
     public partial class SpeedToolStrip : ToolStrip
     {
         private bool paused;
+
+        public SpeedToolStrip()
+        {
+            InitializeComponent();
+            btnSlower.Click += btnSlower_Click;
+            btnPause.Click += btnPause_Click;
+            btnFaster.Click += btnFaster_Click;
+            btnJumpBack.Click += BtnJumpBack_Click;
+            btnJumpForward.Click += BtnJumpForward_Click;
+
+            Paused = true;
+        }
+
         public bool Paused
         {
             get { return paused; }
@@ -25,41 +39,29 @@ namespace PartituraMagica
 
         public float Speed { get; set; }
 
-        public SpeedToolStrip()
-        {
-            InitializeComponent();
-            btnSlower.Click += new EventHandler(btnSlower_Click);
-            btnPause.Click += new EventHandler(btnPause_Click);
-            btnFaster.Click += new EventHandler(btnFaster_Click);
-            btnJumpBack.Click += BtnJumpBack_Click;
-            btnJumpForward.Click += BtnJumpForward_Click;
-
-            this.Paused = true;
-        }
-
         private void BtnJumpForward_Click(object sender, EventArgs e)
         {
-            this.JumpsCount--;
+            JumpsCount--;
         }
 
         private void BtnJumpBack_Click(object sender, EventArgs e)
         {
-            this.JumpsCount++;
+            JumpsCount++;
         }
 
-        void btnFaster_Click(object sender, EventArgs e)
+        private void btnFaster_Click(object sender, EventArgs e)
         {
-            this.Speed *= 1.2F;
+            Speed *= 1.2F;
         }
 
-        void btnPause_Click(object sender, EventArgs e)
+        private void btnPause_Click(object sender, EventArgs e)
         {
-            this.Paused = !this.Paused;
+            Paused = !Paused;
         }
 
-        void btnSlower_Click(object sender, EventArgs e)
+        private void btnSlower_Click(object sender, EventArgs e)
         {
-            this.Speed *= 0.8F;
+            Speed *= 0.8F;
         }
 
         public void HandleKeyDown(object sender, KeyEventArgs e)
@@ -81,10 +83,9 @@ namespace PartituraMagica
                     }
                     break;
                 case Keys.Space:
-                    this.paused = true;
+                    paused = true;
                     break;
             }
-
         }
 
         public void HandleKeyUp(object sender, KeyEventArgs e)
@@ -92,7 +93,7 @@ namespace PartituraMagica
             switch (e.KeyCode)
             {
                 case Keys.Space:
-                    this.Paused = false;//use property setter
+                    Paused = false; //use property setter
                     break;
                 case Keys.Left:
                     if (e.Modifiers == Keys.None)

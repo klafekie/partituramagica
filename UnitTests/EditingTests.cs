@@ -14,6 +14,7 @@ namespace PartituraMagica
             currentPageIndex = 0;
             activePartitura = mocks.DynamicMock<IActivePartitura>();
             Expect.Call(activePartitura.Partitura).Repeat.Any().Return(partitura);
+            Expect.Call(activePartitura.IsOpen).Repeat.Any().Return(true);
             Expect.Call(activePartitura.CurrentPage).Repeat.Any().Do(
                 (Func<Page>) delegate { return partitura.GetPage(currentPageIndex); });
         }

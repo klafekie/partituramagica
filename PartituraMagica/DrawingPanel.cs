@@ -1,39 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Shapes;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Diagnostics;
-using System.IO;
-using System.Windows.Input;
+using System.Windows.Shapes;
+using LearnWPF.Effects;
 
 namespace PartituraMagica
 {
-    class DrawingPanel : IDrawingPanel
+    internal class DrawingPanel : IDrawingPanel
     {
-
-        class Clipping
-        {
-            public Clipping()
-            {
-                this.r = new Rectangle();
-                this.t = new TextBlock();
-                this.t.FontSize = 24;
-            }
-            public Rectangle r;
-            public TextBlock t;
-        }
+        private static readonly Brush selectedColor = Brushes.LightGreen;
+        private static readonly Brush notSelectedColor = Brushes.DarkSlateBlue;
 
         private string currentImagePath;
-        private Dictionary<string, GreyImage> imageCache = new Dictionary<string, GreyImage>();
-        private static Brush selectedColor = Brushes.LightGreen;
-        private static Brush notSelectedColor = Brushes.DarkSlateBlue;
-        private Canvas pageCanvas;
         private Dictionary<int, Clipping> id2clipping;
+        private readonly Dictionary<string, GreyImage> imageCache = new Dictionary<string, GreyImage>();
+        private readonly Canvas pageCanvas;
 
         public DrawingPanel(Canvas pageCanvas)
         {
@@ -41,7 +25,7 @@ namespace PartituraMagica
             Clear();
         }
 
-        public void AddRectangle(int id, PartituraMagica.Rect coordinates)
+        public void AddRectangle(int id, Rect coordinates)
         {
             Clipping c = new Clipping();
 
@@ -55,24 +39,10 @@ namespace PartituraMagica
             id2clipping[id] = c;
         }
 
-        private static void SetCoords(Clipping c, PartituraMagica.Rect coordinates)
-        {
-            double thickness = c.r.StrokeThickness;
-            double left = coordinates.X - thickness / 2.0;
-            double top = coordinates.Y - thickness / 2.0;
-
-            c.r.Width = coordinates.Width + thickness;
-            c.r.Height = coordinates.Height + thickness;
-            Canvas.SetLeft(c.r, left);
-            Canvas.SetTop(c.r, top);
-            Canvas.SetLeft(c.t, left + Page.ClickTolerance);
-            Canvas.SetTop(c.t, top + Page.ClickTolerance);
-        }
-
-        public void AddOrUpdateRectangle(int id, PartituraMagica.Rect coordinates)
+        public void AddOrUpdateRectangle(int id, Rect coordinates)
         {
             Clipping c;
-            if (this.id2clipping.TryGetValue(id, out c))
+            if (id2clipping.TryGetValue(id, out c))
             {
                 SetCoords(c, coordinates);
             }
@@ -94,21 +64,21 @@ namespace PartituraMagica
         {
             //we could optimize by just changing zindex of last selected rect
             //but this requires to store last selected id.
-            foreach (Clipping c in this.id2clipping.Values)
+            foreach (Clipping c in id2clipping.Values)
             {
-                Canvas.SetZIndex(c.r, 0);
-                Canvas.SetZIndex(c.t, 2);
+                Panel.SetZIndex(c.r, 0);
+                Panel.SetZIndex(c.t, 2);
             }
-            Clipping selectedClipping = this.id2clipping[id];
+            Clipping selectedClipping = id2clipping[id];
             selectedClipping.r.Stroke = selectedColor;
             selectedClipping.t.Foreground = selectedColor;
-            Canvas.SetZIndex(selectedClipping.r, 1);//bring to top			
-            Canvas.SetZIndex(selectedClipping.t, 3);//text on top of rectangle
+            Panel.SetZIndex(selectedClipping.r, 1); //bring to top			
+            Panel.SetZIndex(selectedClipping.t, 3); //text on top of rectangle
         }
 
         public void DeselectRectangle(int id)
         {
-            Clipping selectedClipping = this.id2clipping[id];
+            Clipping selectedClipping = id2clipping[id];
             selectedClipping.r.Stroke = notSelectedColor;
             selectedClipping.t.Foreground = notSelectedColor;
         }
@@ -128,12 +98,12 @@ namespace PartituraMagica
             image.Height = bm.RawImage.Height;
             image.Width = bm.RawImage.Width;
             image.Source = bm.RawImage;
-            image.Effect = new LearnWPF.Effects.NegativeEffect();
+            image.Effect = new NegativeEffect();
 
             pageCanvas.Width = bm.RawImage.Width;
             pageCanvas.Height = bm.RawImage.Height;
             pageCanvas.Children.Add(image);
-            this.currentImagePath = path;
+            currentImagePath = path;
             return new Point(image.Width, image.Height);
         }
 
@@ -154,29 +124,53 @@ namespace PartituraMagica
 
         public IGreyImage CurrentImage
         {
-            get
-            {
-                return GetImage(this.currentImagePath);
-            }
+            get { return GetImage(currentImagePath); }
+        }
+
+        public IGreyImage GetImage(string path)
+        {
+            return LoadImage(path);
+        }
+
+        private static void SetCoords(Clipping c, Rect coordinates)
+        {
+            double thickness = c.r.StrokeThickness;
+            double left = coordinates.X - thickness/2.0;
+            double top = coordinates.Y - thickness/2.0;
+
+            c.r.Width = coordinates.Width + thickness;
+            c.r.Height = coordinates.Height + thickness;
+            Canvas.SetLeft(c.r, left);
+            Canvas.SetTop(c.r, top);
+            Canvas.SetLeft(c.t, left + Page.ClickTolerance);
+            Canvas.SetTop(c.t, top + Page.ClickTolerance);
         }
 
         private GreyImage LoadImage(string path)
         {
-            if (!this.imageCache.ContainsKey(path))
+            if (!imageCache.ContainsKey(path))
             {
                 BitmapImage bm = new BitmapImage();
                 // BitmapImage.UriSource must be in a BeginInit/EndInit block
                 bm.BeginInit();
                 bm.UriSource = new Uri(path);
                 bm.EndInit();
-                this.imageCache[path] = new GreyImage(path, bm);
+                imageCache[path] = new GreyImage(path, bm);
             }
-            return this.imageCache[path];
+            return imageCache[path];
         }
 
-        public IGreyImage GetImage(string path)
+        private class Clipping
         {
-            return LoadImage(path);
+            public readonly Rectangle r;
+            public readonly TextBlock t;
+
+            public Clipping()
+            {
+                r = new Rectangle();
+                t = new TextBlock();
+                t.FontSize = 24;
+            }
         }
     }
 }

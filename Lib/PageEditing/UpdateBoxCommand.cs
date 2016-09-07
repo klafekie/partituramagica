@@ -1,16 +1,12 @@
-﻿using System;
+﻿using System.Diagnostics;
 using System.Windows;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Diagnostics;
 
 namespace PartituraMagica
 {
     public class UpdateBoxCommand : PartituraCommandBase, ICommand
     {
-        private Point lastPos;
-        private Point newPos;
+        private readonly Point lastPos;
+        private readonly Point newPos;
 
         public UpdateBoxCommand(Point lastPos, Point newPos, ICommandParameters p)
             : base(p)
@@ -34,6 +30,5 @@ namespace PartituraMagica
             Debug.Assert(CanExecute());
             p.Active.CurrentPage.UpdateSelectedBox(lastPos, newPos, p.Panel);
         }
-
     }
 }

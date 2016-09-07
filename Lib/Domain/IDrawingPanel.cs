@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
+﻿using System.Windows;
 
 namespace PartituraMagica
 {
@@ -15,8 +11,11 @@ namespace PartituraMagica
 	 * represents a user interface control where the user can see the 
 	 * current page and draw boxes on it 
 	 */
+
     public interface IDrawingPanel : IImageLoader
     {
+        IGreyImage CurrentImage { get; }
+
         /** new rectangles are initially painted as deselected. */
         void AddRectangle(int id, Rect coordinates);
         void AddOrUpdateRectangle(int id, Rect coordinates);
@@ -29,10 +28,5 @@ namespace PartituraMagica
         void LabelRectangle(int id, string label);
         void Clear();
         Point DrawImage(string path);
-
-        IGreyImage CurrentImage
-        {
-            get;
-        }
     }
 }

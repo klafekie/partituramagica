@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Runtime.Serialization;
 using System.Windows;
 
@@ -25,7 +22,7 @@ namespace PartituraMagica
     }
 
     [Serializable]
-    struct PageMemento
+    internal struct PageMemento
     {
         public PageMemento(ICollection<Box> theboxes)
         {
@@ -35,25 +32,23 @@ namespace PartituraMagica
                 boxes.Add(b);
             }
         }
-        private ArrayList boxes;
+
+        private readonly ArrayList boxes;
+
         public ICollection Boxes
         {
-            get
-            {
-                return this.boxes;
-            }
+            get { return boxes; }
         }
     }
 
     public class Page
     {
-        private IDictionary<int, Box> boxes;
-        private int selectedBoxId;
-        private double pageWith;
-        private double pageHeight;
-        private bool dirty;
-        private static int largestBoxIdTillNow = 0;
         public const double ClickTolerance = 4.5;
+        private static int largestBoxIdTillNow;
+        private readonly IDictionary<int, Box> boxes;
+        private double pageHeight;
+        private double pageWith;
+        private int selectedBoxId;
 
         public Page()
         {
@@ -66,16 +61,36 @@ namespace PartituraMagica
         {
             foreach (object o in p.Boxes)
             {
-                Box b = (Box)o;
-                this.boxes.Add(b.Id, b);
+                Box b = (Box) o;
+                boxes.Add(b.Id, b);
                 largestBoxIdTillNow = Math.Max(largestBoxIdTillNow, b.Id);
+            }
+        }
+
+        /** should stay private, cause no Box instances should get out of this class... */
+
+        private Box SelectedBox
+        {
+            get { return boxes[selectedBoxId]; }
+        }
+
+        public bool Dirty { get; private set; }
+
+        private IList<Box> SortedBoxes
+        {
+            get
+            {
+                List<Box> sortedBoxes = new List<Box>(boxes.Values);
+                sortedBoxes.Sort(
+                    (left, right) => (int) (left.Coords.Y - right.Coords.Y));
+                return sortedBoxes;
             }
         }
 
         internal PageMemento ToMemento()
         {
-            this.dirty = false;
-            return new PageMemento(this.boxes.Values);
+            Dirty = false;
+            return new PageMemento(boxes.Values);
         }
 
         private void SetDefaults()
@@ -83,7 +98,7 @@ namespace PartituraMagica
             selectedBoxId = -1;
             pageWith = 0;
             pageHeight = 0;
-            dirty = false;
+            Dirty = false;
         }
 
         private int GetIdAt(Point pos)
@@ -108,6 +123,7 @@ namespace PartituraMagica
          * at the given position. This can be used to 
          * change the Mouse cursor look accordingly.
          */
+
         public Shape GetShapeTypeAt(Point pos)
         {
             Box b = GetBoxAt(pos);
@@ -119,11 +135,11 @@ namespace PartituraMagica
 
         public void AddBox(Rect coords, IDrawingPanel panel, ILabelProvider labelProvider)
         {
-            dirty = true;
+            Dirty = true;
             int id = ++largestBoxIdTillNow;
 
             //this guarantess that the box cannot be moved out of the page area:
-            coords.OuterRect = new Rect(0, 0, this.pageWith, this.pageHeight);
+            coords.OuterRect = new Rect(0, 0, pageWith, pageHeight);
 
             Box b = new Box(id, coords);
             boxes.Add(id, b);
@@ -133,7 +149,7 @@ namespace PartituraMagica
 
         public void RemoveSelectedBox(IDrawingPanel panel, ILabelProvider labelProvider)
         {
-            dirty = true;
+            Dirty = true;
             double boxY = SelectedBox.Coords.Y;
             SelectedBox.UnPaint(panel);
             boxes.Remove(selectedBoxId);
@@ -142,8 +158,8 @@ namespace PartituraMagica
 
             //select the nearest remaining box			
             Point nearestBoxPos = default(Point);
-            double distance = Double.MaxValue;
-            foreach (Box b in this.boxes.Values)
+            double distance = double.MaxValue;
+            foreach (Box b in boxes.Values)
             {
                 double dist = Math.Abs(b.Coords.Y - boxY);
                 if (dist < distance)
@@ -160,6 +176,7 @@ namespace PartituraMagica
         /** returns true exactly if (at least) one item
          * e.g. a Box is selected.
          */
+
         public bool IsBoxSelected()
         {
             return selectedBoxId > -1;
@@ -180,15 +197,6 @@ namespace PartituraMagica
             return !Overlaps(copy.Coords, false);
         }
 
-        /** should stay private, cause no Box instances should get out of this class... */
-        private Box SelectedBox
-        {
-            get
-            {
-                return (Box)boxes[selectedBoxId];
-            }
-        }
-
         /// <summary>
         /// Returns true iff the given rectangle overlaps in height with any of the boxes on the page (including the 
         /// selected box only if includeSelectedBox is true).
@@ -199,7 +207,7 @@ namespace PartituraMagica
 
             // Make a rectangle which is the given rectangle but over the full page width.
             Rect completeRow =
-                new Rect(0, r.Top, pageWith, r.Height).AddAboveAndBelow(Page.ClickTolerance);
+                new Rect(0, r.Top, pageWith, r.Height).AddAboveAndBelow(ClickTolerance);
 
             // Loop over all boxes of the page (including the selected box if specified), return true iff any box intersects.
             foreach (Box b in boxes.Values)
@@ -224,9 +232,10 @@ namespace PartituraMagica
         /** returns ids of all rectangles that need to be updated 
          * and corresponding new coords. 
          */
+
         public void UpdateSelectedBox(Point lastPos, Point newPos, IDrawingPanel panel)
         {
-            dirty = true;
+            Dirty = true;
             SelectedBox.Update(lastPos, newPos);
             SelectedBox.Paint(panel);
         }
@@ -242,27 +251,19 @@ namespace PartituraMagica
         public void PaintPage(IDrawingPanel panel, Point imageSize, ILabelProvider labelProvider)
         {
             PaintPage(panel, labelProvider);
-            this.pageHeight = imageSize.Y;
-            this.pageWith = imageSize.X;
-        }
-
-        public bool Dirty
-        {
-            get
-            {
-                return this.dirty;
-            }
+            pageHeight = imageSize.Y;
+            pageWith = imageSize.X;
         }
 
         [OnSerialized]
         public void Saved(StreamingContext context)
         {
-            dirty = false;
+            Dirty = false;
         }
 
         public void SplitSelectedBox(Point pos, IDrawingPanel panel)
         {
-            this.dirty = true;
+            Dirty = true;
             SelectedBox.TrySplit(pos);
             SelectedBox.Paint(panel);
         }
@@ -274,10 +275,10 @@ namespace PartituraMagica
             {
                 if (IsBoxSelected())
                 {
-                    this.SelectedBox.Deselect(panel);
+                    SelectedBox.Deselect(panel);
                 }
-                this.selectedBoxId = b.Id;
-                this.SelectedBox.Select(pos, panel);
+                selectedBoxId = b.Id;
+                SelectedBox.Select(pos, panel);
             }
         }
 
@@ -297,49 +298,39 @@ namespace PartituraMagica
          * Boxes that contain splitters are returned as several 
          * boxes with identical Y and Height
          */
+
         internal void AppendParts(IList<Part> parts, int currentPageIndex)
         {
-            foreach (Box b in this.SortedBoxes)
+            foreach (Box b in SortedBoxes)
             {
                 b.AppendParts(parts, currentPageIndex);
-            }
-        }
-
-        private IList<Box> SortedBoxes
-        {
-            get
-            {
-                List<Box> sortedBoxes = new List<Box>(this.boxes.Values);
-                sortedBoxes.Sort(
-                    (left, right) => (int)(left.Coords.Y - right.Coords.Y));
-                return sortedBoxes;
             }
         }
 
 
         public void LabelSelection(IDrawingPanel panel, ILabelProvider labelProvider)
         {
-            this.dirty = true;
-            this.SelectedBox.LabelSelection();
-            this.PaintPage(panel, labelProvider);
+            Dirty = true;
+            SelectedBox.LabelSelection();
+            PaintPage(panel, labelProvider);
         }
 
         internal bool IsSelectionLabelled()
         {
-            return this.SelectedBox.IsSelectionLabelled();
+            return SelectedBox.IsSelectionLabelled();
         }
 
         internal void UnLabelSelection(IDrawingPanel panel, ILabelProvider labelProvider)
         {
-            this.dirty = true;
-            this.SelectedBox.UnLabelSelection();
-            this.PaintPage(panel, labelProvider);
+            Dirty = true;
+            SelectedBox.UnLabelSelection();
+            PaintPage(panel, labelProvider);
         }
 
         internal bool IsLeftTopSelected()
         {
-            IList<Box> sortedBoxes = this.SortedBoxes;
-            if (sortedBoxes.Count == 0 || this.selectedBoxId != sortedBoxes[0].Id)
+            IList<Box> sortedBoxes = SortedBoxes;
+            if (sortedBoxes.Count == 0 || selectedBoxId != sortedBoxes[0].Id)
             {
                 return false;
             }

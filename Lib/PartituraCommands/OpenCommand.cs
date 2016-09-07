@@ -31,7 +31,7 @@ namespace PartituraMagica
                     using (Stream str = p.FileSystem.OpenRead(chosenFile))
                     {
                         BinaryFormatter sf = new BinaryFormatter();
-                        PartituraMemento mem = (PartituraMemento)sf.Deserialize(str);
+                        PartituraMemento mem = (PartituraMemento) sf.Deserialize(str);
                         Partitura partitura = new Partitura(mem);
                         p.Active.Open(chosenFile, partitura);
                     }

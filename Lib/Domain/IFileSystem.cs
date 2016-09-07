@@ -7,7 +7,7 @@ namespace PartituraMagica
     {
         Image,
         Partitura
-    };
+    }
 
     public enum DialogResult
     {
@@ -19,6 +19,7 @@ namespace PartituraMagica
     /**
      * offers an abstraction from standard filesystem operations and dialogs
      */
+
     public interface IFileSystem
     {
         /** return all files in the directory path that match pattern.

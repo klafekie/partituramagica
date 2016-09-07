@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace PartituraMagica
 {
@@ -11,74 +11,39 @@ namespace PartituraMagica
      * Parts are currently labled A, B, C etc but they might as well have user defined
      * names later
      */
+
     public class Part : IEnumerable<Clipping>
     {
-        private IList<Clipping> clippings;
+        private readonly IList<Clipping> clippings;
 
         public Part()
         {
-            this.clippings = new List<Clipping>();
+            clippings = new List<Clipping>();
             //this.islabelled = isLabelled;
         }
 
         public Part(Part rhs)
         {
-            this.clippings = new List<Clipping>();
+            clippings = new List<Clipping>();
             foreach (Clipping c in rhs.clippings)
             {
-                this.clippings.Add(new Clipping(c));
+                clippings.Add(new Clipping(c));
             }
         }
 
         internal Clipping this[int index]
         {
-            get
-            {
-                return this.clippings[index];
-            }
-        }
-
-        public IEnumerator<Clipping> GetEnumerator()
-        {
-            return this.clippings.GetEnumerator();
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void Add(Clipping clipping)
-        {
-            this.clippings.Add(clipping);
-        }
-
-        internal int ContainsAt(int id)
-        {
-            for (int i = 0; i < this.clippings.Count; i++)
-            {
-                if (this.clippings[i].Id == id)
-                {
-                    return i;
-                }
-            }
-            return -1;
+            get { return clippings[index]; }
         }
 
         internal bool IsEmpty
         {
-            get
-            {
-                return this.clippings.Count == 0;
-            }
+            get { return clippings.Count == 0; }
         }
 
         internal int Count
         {
-            get
-            {
-                return this.clippings.Count;
-            }
+            get { return clippings.Count; }
         }
 
         public double Width
@@ -86,7 +51,7 @@ namespace PartituraMagica
             get
             {
                 double result = 0D;
-                foreach (Clipping c in this.clippings)
+                foreach (Clipping c in clippings)
                 {
                     result += c.Coords.Width;
                 }
@@ -94,9 +59,37 @@ namespace PartituraMagica
             }
         }
 
+        public IEnumerator<Clipping> GetEnumerator()
+        {
+            return clippings.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void Add(Clipping clipping)
+        {
+            clippings.Add(clipping);
+        }
+
+        internal int ContainsAt(int id)
+        {
+            for (int i = 0; i < clippings.Count; i++)
+            {
+                if (clippings[i].Id == id)
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
         public override string ToString()
         {
-            return String.Format("{0} ... {1}, Count = {2}", this.clippings.FirstOrDefault(), this.clippings.LastOrDefault(), this.clippings.Count);
+            return string.Format("{0} ... {1}, Count = {2}", clippings.FirstOrDefault(), clippings.LastOrDefault(),
+                clippings.Count);
         }
     }
 }

@@ -53,8 +53,7 @@
         </Menu>
         <ScrollViewer HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible">
             <Canvas Name="PageCanvas" MouseMove="PageCanvas_MouseMove"
-                MouseDown="PageCanvas_MouseDown" >                
-            </Canvas>
+                MouseDown="PageCanvas_MouseDown" />
         </ScrollViewer>        
     </DockPanel>
 </Window>
