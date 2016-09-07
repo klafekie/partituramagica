@@ -23,7 +23,7 @@ namespace PartituraMagica
         /**
          * returns an instance that knows the currently played part.
          */
-        IChoiceNavigator PartNavigator { get; }
+        IPartNavigator PartNavigator { get; }
         /** 
          * Initialize the views graphical objects using the given clippings
          */

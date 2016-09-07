@@ -5,26 +5,26 @@ using System.Windows.Forms;
 namespace PartituraMagica
 {
     /** 
-     * This view can be used to navigate arbitrary choices.
+     * This view can be used to navigate arbitrary parts.
      * In our case Parts or (later) Pages
      */
 
-    public partial class ChoiceNavigatorStrip : ToolStrip, IChoiceNavigator
+    public partial class PartNavigatorStrip : ToolStrip, IPartNavigator
     {
         private readonly ToolStripItem _btnFirst;
         private readonly ToolStripItem _btnLast;
         private readonly ToolStripItem _btnNext;
         private readonly ToolStripItem _btnPrevious;
 
-        private readonly List<KeyValuePair<string, ToolStripButton>> _choiceButtons =
+        private readonly List<KeyValuePair<string, ToolStripButton>> _partButtons =
             new List<KeyValuePair<string, ToolStripButton>>();
 
-        private string _choiceName;
+        private string _partName;
 
-        private string[] _choices;
+        private string[] _parts;
         private int _current;
 
-        public ChoiceNavigatorStrip()
+        public PartNavigatorStrip()
         {
             InitializeComponent();
             ImageList = imageList1; //ImageList property cannot be set in designer.						
@@ -44,7 +44,7 @@ namespace PartituraMagica
             _btnLast = Items.Add("Last", ImageList.Images["last"]);
             _btnLast.Click += btnLast_Click;
 
-            //this is done before the setter of choices Pattern because we're in the c'tor
+            //this is done before the setter of parts Pattern because we're in the c'tor
             foreach (ToolStripItem b in Items)
             {
                 b.ImageScaling = ToolStripItemImageScaling.None;
@@ -53,49 +53,34 @@ namespace PartituraMagica
                 //b.AutoSize = false;
             }
         }
-
-        /** 
-         * sets the tooltip and button texts to reflect the type of choice
-         * you can navigate. E.G. "Part" or "Page"
-         */
-
-        public string ChoiceName
-        {
-            get { return _choiceName; }
-            set
-            {
-                _choiceName = value;
-                Adjust(false);
-            }
-        }
-
+        
         /* should be set to a combination of Modifiers. The resulting keyboard shortcuts
          * for navigating are as follows:
          * First <= Modifiers + Home
          * Previous <= Modifiers + Left
          * Next <= Modifiers + Right
          * Last <= Modifiers + End
-         * Jump to choice <= Modifiers + digit
+         * Jump to part <= Modifiers + digit
          */
         public Keys Modifiers { get; set; }
 
-        public string[] Choices
+        public string[] Parts
         {
-            get { return _choices; }
+            get { return _parts; }
             set
             {
-                bool changed = _choices == null ^ value == null;
-                if (_choices != null && value != null)
+                bool changed = _parts == null ^ value == null;
+                if (_parts != null && value != null)
                 {
-                    if (_choices.Length != value.Length)
+                    if (_parts.Length != value.Length)
                     {
                         changed = true;
                     }
                     else
                     {
-                        for (int i = 0; i < _choices.Length; i++)
+                        for (int i = 0; i < _parts.Length; i++)
                         {
-                            if (_choices[i] != value[i])
+                            if (_parts[i] != value[i])
                             {
                                 changed = true;
                             }
@@ -104,7 +89,7 @@ namespace PartituraMagica
                 }
                 if (changed)
                 {
-                    _choices = value;
+                    _parts = value;
                     Adjust(changed);
                 }
             }
@@ -124,144 +109,144 @@ namespace PartituraMagica
             }
         }
 
-        public event Action<int> ChoiceChanged;
+        public event Action<int> PartChanged;
 
-        public event Action<int> ChoiceClicked;
+        public event Action<int> PartClicked;
 
-        public event CancellableEvent PreviousChoiceClicked;
+        public event CancellableEvent PreviousPartClicked;
 
-        public event CancellableEvent NextChoiceClicked;
+        public event CancellableEvent NextPartClicked;
 
-        private void Adjust(bool choicesChanged)
+        private void Adjust(bool partsChanged)
         {
-            if (choicesChanged)
+            if (partsChanged)
             {
-                //we dont remove the separators if choices is empty.
-                foreach (KeyValuePair<string, ToolStripButton> entry in _choiceButtons)
+                //we dont remove the separators if parts is empty.
+                foreach (KeyValuePair<string, ToolStripButton> entry in _partButtons)
                 {
                     Items.Remove(entry.Value);
                 }
-                _choiceButtons.Clear();
+                _partButtons.Clear();
 
                 int insertIndex = 3;
 
-                if (_choices != null)
+                if (_parts != null)
                 {
-                    for (int i = _choices.Length - 1; i >= 0; i--)
+                    for (int i = _parts.Length - 1; i >= 0; i--)
                     {
-                        ToolStripButton b = new ToolStripButton(_choices[i]);
+                        ToolStripButton b = new ToolStripButton(_parts[i]);
                         b.Click += b_Click;
                         //b.AutoSize = false;
                         //b.Width = 36;
                         //b.Height = 36;
-                        _choiceButtons.Add(new KeyValuePair<string, ToolStripButton>(
-                            _choices[i], b));
+                        _partButtons.Add(new KeyValuePair<string, ToolStripButton>(
+                            _parts[i], b));
                         Items.Insert(insertIndex, b);
                     }
-                    _choiceButtons.Reverse();
+                    _partButtons.Reverse();
                 }
             }
-            foreach (KeyValuePair<string, ToolStripButton> entry in _choiceButtons)
+            foreach (KeyValuePair<string, ToolStripButton> entry in _partButtons)
             {
                 entry.Value.Checked = false;
             }
 
-            if (_choiceButtons.Count > _current)
+            if (_partButtons.Count > _current)
             {
-                _choiceButtons[_current].Value.Checked = true;
+                _partButtons[_current].Value.Checked = true;
             }
 
-            foreach (KeyValuePair<string, ToolStripButton> entry in _choiceButtons)
+            foreach (KeyValuePair<string, ToolStripButton> entry in _partButtons)
             {
                 entry.Value.ToolTipText =
-                    string.Format("Go to {0} {1}", _choiceName, entry.Value.Text);
+                    string.Format("Go to {0} {1}", _partName, entry.Value.Text);
             }
             _btnFirst.ToolTipText =
-                string.Format("Go to first {0}", _choiceName);
+                string.Format("Go to first {0}", _partName);
             _btnNext.ToolTipText =
-                string.Format("Go to next {0}", _choiceName);
+                string.Format("Go to next {0}", _partName);
             _btnPrevious.ToolTipText =
-                string.Format("Go to previous {0}", _choiceName);
+                string.Format("Go to previous {0}", _partName);
             _btnLast.ToolTipText =
-                string.Format("Go to last {0}", _choiceName);
+                string.Format("Go to last {0}", _partName);
 
-            OnChoiceChanged();
+            OnPartChanged();
         }
 
         private void btnLast_Click(object sender, EventArgs e)
         {
-            if (_current < _choices.Length - 1)
+            if (_current < _parts.Length - 1)
             {
-                Current = _choices.Length - 1;
+                Current = _parts.Length - 1;
             }
-            OnChoiceClicked();
+            OnPartClicked();
         }
 
         private void btnNext_Click(object sender, EventArgs e)
         {
-            bool cancel = OnNextChoiceClicked();
-            if (!cancel && _current < _choices.Length - 1)
+            bool cancel = OnNextPartClicked();
+            if (!cancel && _current < _parts.Length - 1)
             {
                 Current++;
             }
-            OnChoiceClicked();
+            OnPartClicked();
         }
 
         private void btnPrevious_Click(object sender, EventArgs e)
         {
-            bool cancel = OnPreviousChoiceClicked();
+            bool cancel = OnPreviousPartClicked();
             if (!cancel && _current > 0)
             {
                 Current--;
             }
-            OnChoiceClicked();
+            OnPartClicked();
         }
 
         private void btnFirst_Click(object sender, EventArgs e)
         {
             Current = 0;
-            OnChoiceClicked();
+            OnPartClicked();
         }
 
         private void b_Click(object sender, EventArgs e)
         {
             ToolStripButton b = (ToolStripButton) sender;
-            Current = _choiceButtons.FindIndex(entry => entry.Value == b);
-            OnChoiceClicked();
+            Current = _partButtons.FindIndex(entry => entry.Value == b);
+            OnPartClicked();
         }
 
-        protected virtual void OnChoiceChanged()
+        protected virtual void OnPartChanged()
         {
-            if (ChoiceChanged != null)
+            if (PartChanged != null)
             {
-                ChoiceChanged(_current);
+                PartChanged(_current);
             }
         }
 
-        protected virtual void OnChoiceClicked()
+        protected virtual void OnPartClicked()
         {
-            if (ChoiceClicked != null)
+            if (PartClicked != null)
             {
-                ChoiceClicked(_current);
+                PartClicked(_current);
             }
         }
 
-        protected virtual bool OnPreviousChoiceClicked()
+        protected virtual bool OnPreviousPartClicked()
         {
             bool cancel = false;
-            if (PreviousChoiceClicked != null)
+            if (PreviousPartClicked != null)
             {
-                PreviousChoiceClicked(ref cancel);
+                PreviousPartClicked(ref cancel);
             }
             return cancel;
         }
 
-        protected virtual bool OnNextChoiceClicked()
+        protected virtual bool OnNextPartClicked()
         {
             bool cancel = false;
-            if (NextChoiceClicked != null)
+            if (NextPartClicked != null)
             {
-                NextChoiceClicked(ref cancel);
+                NextPartClicked(ref cancel);
             }
             return cancel;
         }
@@ -285,26 +270,26 @@ namespace PartituraMagica
                         _btnLast.PerformClick();
                         break;
                     default:
-                        JumpToChoice(e.KeyCode);
+                        JumpToPart(e.KeyCode);
                         break;
                 }
             }
         }
 
-        private void JumpToChoice(Keys key)
+        private void JumpToPart(Keys key)
         {
             //key is one based
             //the 0 key will do nothing
             int index = key - Keys.D0 - 1;
-            if (index < 0 || index >= _choiceButtons.Count)
+            if (index < 0 || index >= _partButtons.Count)
             {
                 index = key - Keys.NumPad0 - 1;
             }
-            if (index < 0 || index >= _choiceButtons.Count)
+            if (index < 0 || index >= _partButtons.Count)
             {
                 return;
             }
-            _choiceButtons[index].Value.PerformClick();
+            _partButtons[index].Value.PerformClick();
         }
     }
 }

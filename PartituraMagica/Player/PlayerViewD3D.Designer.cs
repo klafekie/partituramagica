@@ -21,7 +21,7 @@
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.zoomStrip = new PartituraMagica.ZoomToolStrip();
             this.speedStrip = new PartituraMagica.SpeedToolStrip();
-            this.partsStrip = new PartituraMagica.ChoiceNavigatorStrip();
+            this.partsStrip = new PartituraMagica.PartNavigatorStrip();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
@@ -83,8 +83,7 @@
             // 
             // partsStrip
             // 
-            this.partsStrip.ChoiceName = "Part";
-            this.partsStrip.Choices = new string[] {
+            this.partsStrip.Parts = new string[] {
         "A",
         "B",
         "C",
@@ -124,7 +123,7 @@
         private System.Windows.Forms.Panel panel1;
         private SpeedToolStrip speedStrip;
         private System.Windows.Forms.ToolStripContainer toolStripContainer1;
-        private ChoiceNavigatorStrip partsStrip;
+        private PartNavigatorStrip partsStrip;
         private ZoomToolStrip zoomStrip;
 
     }

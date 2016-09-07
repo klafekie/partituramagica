@@ -75,12 +75,12 @@ namespace PartituraMagica
                 offset += l.Width + LineDistance;
             }
 
-            string[] choices = new string[partPattern.Length];
+            string[] parts = new string[partPattern.Length];
             for (int i = 0; i < partPattern.Length; i++)
             {
-                choices[i] = partPattern[i].ToString();
+                parts[i] = partPattern[i].ToString();
             }
-            partsStrip.Choices = choices;
+            partsStrip.Parts = parts;
             partsStrip.Current = 0;
             _viewXPos = 0;
             _currentLine = 0;
@@ -130,7 +130,7 @@ namespace PartituraMagica
             };
         }
 
-        public IChoiceNavigator PartNavigator
+        public IPartNavigator PartNavigator
         {
             get { return partsStrip; }
         }

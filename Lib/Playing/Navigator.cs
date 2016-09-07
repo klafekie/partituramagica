@@ -132,14 +132,14 @@ namespace PartituraMagica.Playing
         {
             if (add)
             {
-                _view.PartNavigator.ChoiceClicked += PartClicked;
-                _view.PartNavigator.PreviousChoiceClicked += PreviousPartClicked;
+                _view.PartNavigator.PartClicked += PartClicked;
+                _view.PartNavigator.PreviousPartClicked += PreviousPartClicked;
                 _view.LineEndReached += LineEndReached;
             }
             else
             {
-                _view.PartNavigator.ChoiceClicked -= PartClicked;
-                _view.PartNavigator.PreviousChoiceClicked -= PreviousPartClicked;
+                _view.PartNavigator.PartClicked -= PartClicked;
+                _view.PartNavigator.PreviousPartClicked -= PreviousPartClicked;
                 _view.LineEndReached -= LineEndReached;
             }
         }

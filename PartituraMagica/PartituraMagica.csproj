@@ -111,11 +111,11 @@
     <Compile Include="EditingController.cs" />
     <Compile Include="GreyImage.cs" />
     <Compile Include="ClippingD3D.cs" />
-    <Compile Include="Player\ChoiceNavigatorStrip.cs">
+    <Compile Include="Player\PartNavigatorStrip.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Player\ChoiceNavigatorStrip.Designer.cs">
-      <DependentUpon>ChoiceNavigatorStrip.cs</DependentUpon>
+    <Compile Include="Player\PartNavigatorStrip.Designer.cs">
+      <DependentUpon>PartNavigatorStrip.cs</DependentUpon>
     </Compile>
     <Compile Include="Player\PlayerViewD3D.cs">
       <SubType>Form</SubType>
@@ -149,11 +149,12 @@
     <Compile Include="Player\ZoomToolStrip.Designer.cs">
       <DependentUpon>ZoomToolStrip.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="Player\ChoiceNavigatorStrip.resx">
-      <DependentUpon>ChoiceNavigatorStrip.cs</DependentUpon>
+    <EmbeddedResource Include="Player\PartNavigatorStrip.resx">
+      <DependentUpon>PartNavigatorStrip.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Player\PlayerViewD3D.resx">
       <DependentUpon>PlayerViewD3D.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -162,9 +163,11 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Player\SpeedToolStrip.resx">
       <DependentUpon>SpeedToolStrip.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Player\ZoomToolStrip.resx">
       <DependentUpon>ZoomToolStrip.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

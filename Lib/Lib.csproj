@@ -87,7 +87,7 @@
     <Compile Include="PartituraCommands\OpenCommand.cs" />
     <Compile Include="PartituraCommands\SaveCommand.cs" />
     <Compile Include="PartituraCommands\ShowPageCommand.cs" />
-    <Compile Include="Playing\IChoiceNavigator.cs" />
+    <Compile Include="Playing\IPartNavigator.cs" />
     <Compile Include="Playing\Navigator.cs" />
     <Compile Include="Playing\ShowPlayerCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
