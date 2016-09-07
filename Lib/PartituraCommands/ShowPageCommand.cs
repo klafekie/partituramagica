@@ -5,28 +5,28 @@ namespace PartituraMagica
 {
     public class ShowPageCommand : PartituraCommandBase, ICommand
     {
-        private readonly int index;
+        private readonly int _index;
 
         public ShowPageCommand(int index, ICommandParameters p)
             : base(p)
         {
-            this.index = index;
+            this._index = index;
         }
 
         public void Execute()
         {
             Debug.Assert(CanExecute());
-            p.Active.CurrentPageIndex = index;
-            p.Panel.Clear();
-            Point dimensions = p.Panel.DrawImage(p.Active.CurrentImagePath);
+            P.Active.CurrentPageIndex = _index;
+            P.Panel.Clear();
+            Point dimensions = P.Panel.DrawImage(P.Active.CurrentImagePath);
 
-            p.Active.Partitura.Paint(index, p.Panel, dimensions);
+            P.Active.Partitura.Paint(_index, P.Panel, dimensions);
         }
 
         public bool CanExecute()
         {
-            return p.Active != null && p.Active.IsOpen &&
-                   index >= 0 && index < p.Active.GetPageCount();
+            return P.Active != null && P.Active.IsOpen &&
+                   _index >= 0 && _index < P.Active.GetPageCount();
         }
     }
 }

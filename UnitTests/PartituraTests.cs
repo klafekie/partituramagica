@@ -11,13 +11,13 @@ namespace PartituraMagica
         public override void Setup()
         {
             base.Setup();
-            activePartitura = new ActivePartitura(fileSystem);
+            ActivePartitura = new ActivePartitura(fileSystem);
         }
 
         [TearDown]
         public virtual void TearDown()
         {
-            mocks.VerifyAll();
+            Mocks.VerifyAll();
         }
 
 
@@ -75,44 +75,44 @@ namespace PartituraMagica
             Expect.Call(fileSystem.OpenRead("c:\\otherDir\\partituraFile.partitura"))
                 .Return(s2);
 
-            mocks.ReplayAll();
+            Mocks.ReplayAll();
 
             new NewPartituraCommand(this).Execute();
-            Assert.AreEqual(panel.imagePath, "c:\\partituraFile-000.jpg",
+            Assert.AreEqual(panel.ImagePath, "c:\\partituraFile-000.jpg",
                 "first added file is immediately displayed");
-            Assert.NotNull(activePartitura.Partitura);
-            Assert.AreEqual(activePartitura.GetPageCount(), 1);
-            Assert.AreEqual(activePartitura.Path, "c:\\partituraFile.partitura");
+            Assert.NotNull(ActivePartitura.Partitura);
+            Assert.AreEqual(ActivePartitura.GetPageCount(), 1);
+            Assert.AreEqual(ActivePartitura.Path, "c:\\partituraFile.partitura");
 
             new AddPagesCommand(this).Execute();
-            Assert.AreEqual(panel.imagePath, "c:\\partituraFile-001.jpg",
+            Assert.AreEqual(panel.ImagePath, "c:\\partituraFile-001.jpg",
                 "last added page is immediately displayed");
 
             new AddPagesCommand(this).Execute();
-            Assert.AreEqual(panel.imagePath, "c:\\partituraFile-002.jpg",
+            Assert.AreEqual(panel.ImagePath, "c:\\partituraFile-002.jpg",
                 "last added page is immediately displayed");
 
             ////switch between the pages to see that they have the correcct indices
             new ShowPageCommand(0, this).Execute();
-            Assert.AreEqual(panel.imagePath, "c:\\partituraFile-000.jpg");
+            Assert.AreEqual(panel.ImagePath, "c:\\partituraFile-000.jpg");
             new ShowPageCommand(1, this).Execute();
-            Assert.AreEqual(panel.imagePath, "c:\\partituraFile-001.jpg");
+            Assert.AreEqual(panel.ImagePath, "c:\\partituraFile-001.jpg");
             new ShowPageCommand(2, this).Execute();
-            Assert.AreEqual(panel.imagePath, "c:\\partituraFile-002.jpg");
+            Assert.AreEqual(panel.ImagePath, "c:\\partituraFile-002.jpg");
 
             //now safe to another location and reopen to see that there are still the same pages
             new SaveCommand(true, this).Execute();
-            Assert.False(activePartitura.Partitura.Dirty);
+            Assert.False(ActivePartitura.Partitura.Dirty);
             new ClosePartituraCommand(this).Execute();
             new CloseApplicationCommand(this).Execute();
 
             new OpenCommand(this).Execute();
             new ShowPageCommand(0, this).Execute();
-            Assert.AreEqual(panel.imagePath, "c:\\otherDir\\partituraFile-000.jpg");
+            Assert.AreEqual(panel.ImagePath, "c:\\otherDir\\partituraFile-000.jpg");
             new ShowPageCommand(1, this).Execute();
-            Assert.AreEqual(panel.imagePath, "c:\\otherDir\\partituraFile-001.jpg");
+            Assert.AreEqual(panel.ImagePath, "c:\\otherDir\\partituraFile-001.jpg");
             new ShowPageCommand(2, this).Execute();
-            Assert.AreEqual(panel.imagePath, "c:\\otherDir\\partituraFile-002.jpg");
+            Assert.AreEqual(panel.ImagePath, "c:\\otherDir\\partituraFile-002.jpg");
         }
 
         [Test]
@@ -121,12 +121,12 @@ namespace PartituraMagica
             Expect.Call(fileSystem.ShowSaveDialog(FileType.Partitura))
                 .Return(null);
 
-            mocks.ReplayAll();
+            Mocks.ReplayAll();
             //user presses cancel in fileSystem for the partitura file
             new NewPartituraCommand(this).Execute();
-            Assert.AreEqual(panel.rectangles.Count, 0, "panel is cleared");
-            Assert.Null(activePartitura.Partitura);
-            Assert.Null(activePartitura.Path);
+            Assert.AreEqual(panel.Rectangles.Count, 0, "panel is cleared");
+            Assert.Null(ActivePartitura.Partitura);
+            Assert.Null(ActivePartitura.Path);
             Assert.False(new SaveCommand(true, this).CanExecute());
         }
 
@@ -147,26 +147,26 @@ namespace PartituraMagica
             Expect.Call(fileSystem.ShowOpenDialog(FileType.Image))
                 .Return("d:\\image.jpg");
 
-            mocks.ReplayAll();
+            Mocks.ReplayAll();
 
             new NewPartituraCommand(this).Execute();
-            Assert.AreEqual(panel.imagePath, "c:\\partituraFile-000.jpg",
+            Assert.AreEqual(panel.ImagePath, "c:\\partituraFile-000.jpg",
                 "first file is immediately displayed");
-            Assert.NotNull(activePartitura.Partitura);
-            Assert.AreEqual(activePartitura.GetPageCount(), 2);
-            Assert.AreEqual(activePartitura.Path, "c:\\partituraFile.partitura");
+            Assert.NotNull(ActivePartitura.Partitura);
+            Assert.AreEqual(ActivePartitura.GetPageCount(), 2);
+            Assert.AreEqual(ActivePartitura.Path, "c:\\partituraFile.partitura");
 
             new AddPagesCommand(this).Execute();
-            Assert.AreEqual(panel.imagePath, "c:\\partituraFile-002.jpg",
+            Assert.AreEqual(panel.ImagePath, "c:\\partituraFile-002.jpg",
                 "last added page is immediately displayed");
 
             ////switch between the pages to see that they have the correcct indices
             new ShowPageCommand(0, this).Execute();
-            Assert.AreEqual(panel.imagePath, "c:\\partituraFile-000.jpg");
+            Assert.AreEqual(panel.ImagePath, "c:\\partituraFile-000.jpg");
             new ShowPageCommand(1, this).Execute();
-            Assert.AreEqual(panel.imagePath, "c:\\partituraFile-001.jpg");
+            Assert.AreEqual(panel.ImagePath, "c:\\partituraFile-001.jpg");
             new ShowPageCommand(2, this).Execute();
-            Assert.AreEqual(panel.imagePath, "c:\\partituraFile-002.jpg");
+            Assert.AreEqual(panel.ImagePath, "c:\\partituraFile-002.jpg");
         }
 
         [Test]
@@ -182,7 +182,7 @@ namespace PartituraMagica
             Expect.Call(fileSystem.ShowSaveDialog(FileType.Partitura))
                 .Return("c:\\partituraFile.partitura");
 
-            mocks.ReplayAll();
+            Mocks.ReplayAll();
 
             try
             {

@@ -5,38 +5,38 @@ namespace PartituraMagica
 {
     public class OpenCommand : PartituraCommandBase, ICommand
     {
-        private readonly string path;
+        private readonly string _path;
 
         public OpenCommand(ICommandParameters p)
             : base(p)
         {
-            path = null;
+            _path = null;
         }
 
         //for testing purposes
         public OpenCommand(string path, ICommandParameters p)
             : base(p)
         {
-            this.path = path;
+            this._path = path;
         }
 
         public void Execute()
         {
-            string chosenFile = path ?? p.FileSystem.ShowOpenDialog(FileType.Partitura);
+            string chosenFile = _path ?? P.FileSystem.ShowOpenDialog(FileType.Partitura);
             if (chosenFile != null)
             {
-                new ClosePartituraCommand(p).TryExecute();
-                if (!p.Active.IsOpen)
+                new ClosePartituraCommand(P).TryExecute();
+                if (!P.Active.IsOpen)
                 {
-                    using (Stream str = p.FileSystem.OpenRead(chosenFile))
+                    using (Stream str = P.FileSystem.OpenRead(chosenFile))
                     {
                         BinaryFormatter sf = new BinaryFormatter();
                         PartituraMemento mem = (PartituraMemento) sf.Deserialize(str);
                         Partitura partitura = new Partitura(mem);
-                        p.Active.Open(chosenFile, partitura);
+                        P.Active.Open(chosenFile, partitura);
                     }
-                    new ShowPageCommand(0, p).TryExecute();
-                    p.MainWindow.PartPattern = p.Active.Partitura.PartPattern;
+                    new ShowPageCommand(0, P).TryExecute();
+                    P.MainWindow.PartPattern = P.Active.Partitura.PartPattern;
                 }
             }
         }

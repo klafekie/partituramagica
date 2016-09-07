@@ -19,26 +19,26 @@ namespace PartituraMagica
 
     public partial class PlayerViewD3D : Form, IPlayerView
     {
-        private const float LINE_DISTANCE = 10F;
+        private const float LineDistance = 10F;
 
         private readonly List<ClippingD3D> _clippingD3Ds = new List<ClippingD3D>();
             // [Renamed from 'lines' jed 20150118]
 
-        private readonly ApplicationConfiguration configuration = new ApplicationConfiguration();
-        private readonly Direct3D d3d;
-        private readonly IImageLoader imageLoader;
-        private readonly IntPtr ownerHandle;
-        private readonly IPageFiles pageFiles;
-        private bool closed = true;
-        private int currentLine;
+        private readonly ApplicationConfiguration _configuration = new ApplicationConfiguration();
+        private readonly Direct3D _d3D;
+        private readonly IImageLoader _imageLoader;
+        private readonly IntPtr _ownerHandle;
+        private readonly IPageFiles _pageFiles;
+        private bool _closed = true;
+        private int _currentLine;
 
-        private Device device;
-        private float lastZoomX;
+        private Device _device;
+        private float _lastZoomX;
 
-        private bool rendering;
+        private bool _rendering;
 
         //position in view specific coordinates		
-        private double viewXPos;
+        private double _viewXPos;
 
         public PlayerViewD3D(IPageFiles pageFiles, IImageLoader imageLoader, IntPtr owner, PlayerMemento memento)
         {
@@ -46,14 +46,14 @@ namespace PartituraMagica
             InitializeComponent();
             WindowState = FormWindowState.Maximized;
 
-            this.pageFiles = pageFiles;
-            this.imageLoader = imageLoader;
+            this._pageFiles = pageFiles;
+            this._imageLoader = imageLoader;
             zoomStrip.XZoom = memento.XZoom;
             zoomStrip.YZoom = memento.YZoom;
             speedStrip.Speed = memento.Speed;
-            ownerHandle = owner;
+            _ownerHandle = owner;
 
-            d3d = new Direct3D();
+            _d3D = new Direct3D();
             CreateDevice();
         }
 
@@ -62,17 +62,17 @@ namespace PartituraMagica
             _clippingD3Ds.Clear();
             foreach (Clipping c in clips)
             {
-                string path = pageFiles.GetImage(c.PageIndex);
-                IGreyImage image = imageLoader.GetImage(path);
-                ClippingD3D line = new ClippingD3D(image, c.Coords, configuration.InvertColors, configuration.Color);
+                string path = _pageFiles.GetImage(c.PageIndex);
+                IGreyImage image = _imageLoader.GetImage(path);
+                ClippingD3D line = new ClippingD3D(image, c.Coords, _configuration.InvertColors, _configuration.Color);
                 _clippingD3Ds.Add(line);
             }
 
             float offset = 0F;
             foreach (ClippingD3D l in _clippingD3Ds)
             {
-                l.Init(device, offset);
-                offset += l.Width + LINE_DISTANCE;
+                l.Init(_device, offset);
+                offset += l.Width + LineDistance;
             }
 
             string[] choices = new string[partPattern.Length];
@@ -82,22 +82,22 @@ namespace PartituraMagica
             }
             partsStrip.Choices = choices;
             partsStrip.Current = 0;
-            viewXPos = 0;
-            currentLine = 0;
+            _viewXPos = 0;
+            _currentLine = 0;
         }
 
         public void GotoLine(int lineIndex)
         {
-            currentLine = lineIndex;
-            viewXPos = _clippingD3Ds[lineIndex].XPos;
+            _currentLine = lineIndex;
+            _viewXPos = _clippingD3Ds[lineIndex].XPos;
         }
 
         public void StartScrolling()
         {
-            IWin32Window w = new Win32Window(ownerHandle);
-            rendering = true;
+            IWin32Window w = new Win32Window(_ownerHandle);
+            _rendering = true;
             speedStrip.Paused = false;
-            closed = false;
+            _closed = false;
             Enabled = true;
             Show(w);
 
@@ -105,7 +105,7 @@ namespace PartituraMagica
             {
                 Application.DoEvents();
                 Render();
-            } while (!closed);
+            } while (!_closed);
             Enabled = false;
         }
 
@@ -113,8 +113,8 @@ namespace PartituraMagica
         {
             get
             {
-                Debug.Assert(lastZoomX > 0F);
-                return viewXPos - (double) currentLine*LINE_DISTANCE;
+                Debug.Assert(_lastZoomX > 0F);
+                return _viewXPos - (double) _currentLine*LineDistance;
             }
         }
 
@@ -137,25 +137,25 @@ namespace PartituraMagica
 
         protected override void Dispose(bool disposing)
         {
-            rendering = false;
+            _rendering = false;
             if (disposing && (components != null))
             {
                 components.Dispose();
             }
             base.Dispose(disposing);
 
-            if (device != null)
+            if (_device != null)
             {
-                device.Dispose();
+                _device.Dispose();
             }
             foreach (ClippingD3D l in _clippingD3Ds)
             {
                 l.Dispose();
             }
             ClippingD3D.Cleanup();
-            if (d3d != null)
+            if (_d3D != null)
             {
-                d3d.Dispose();
+                _d3D.Dispose();
             }
         }
 
@@ -168,7 +168,7 @@ namespace PartituraMagica
             const int bbWidth = 1600;
             const int bbHeight = 900;
 
-            device = new Device(d3d, d3d.Adapters.DefaultAdapter.Adapter,
+            _device = new Device(_d3D, _d3D.Adapters.DefaultAdapter.Adapter,
                 DeviceType.Hardware, panel1.Handle, CreateFlags.HardwareVertexProcessing,
                 new PresentParameters
                 {
@@ -182,70 +182,70 @@ namespace PartituraMagica
                     SwapEffect = SwapEffect.Discard
                 });
 
-            device.SetRenderState(RenderState.CullMode, Cull.None);
-            device.SetRenderState(RenderState.Lighting, false);
-            device.SetRenderState(RenderState.Clipping, false);
-            device.SetRenderState(RenderState.AlphaBlendEnable, false);
+            _device.SetRenderState(RenderState.CullMode, Cull.None);
+            _device.SetRenderState(RenderState.Lighting, false);
+            _device.SetRenderState(RenderState.Clipping, false);
+            _device.SetRenderState(RenderState.AlphaBlendEnable, false);
             // Antialiasing: see http://msdn.microsoft.com/en-us/library/windows/desktop/bb173422%28v=vs.85%29.aspx
             // seems that it is not doing anything when working with images, only for shapes
-            device.SetRenderState(RenderState.MultisampleAntialias, false);
+            _device.SetRenderState(RenderState.MultisampleAntialias, false);
         }
 
         private void Render()
         {
             //using (TraceEntry e = SimpleTracer.Start("Render()")) {
             //	int tick = Environment.TickCount;
-            if (device == null)
+            if (_device == null)
             {
                 return;
             }
 
-            if (!rendering)
+            if (!_rendering)
             {
                 //Debug.Write(".");
                 return;
             }
 
-            device.Clear(ClearFlags.Target, configuration.InvertColors ? Color.Black : configuration.Color, 1.0f, 0);
+            _device.Clear(ClearFlags.Target, _configuration.InvertColors ? Color.Black : _configuration.Color, 1.0f, 0);
             try
             {
-                device.BeginScene();
+                _device.BeginScene();
                 float zoomY;
-                zoomStrip.GetNextZoom(out lastZoomX, out zoomY);
-                device.SetTransform(TransformState.World,
-                    Matrix.Scaling(lastZoomX, zoomY, 1F)*
-                    Matrix.Translation((float) -viewXPos*lastZoomX, 0, 0));
+                zoomStrip.GetNextZoom(out _lastZoomX, out zoomY);
+                _device.SetTransform(TransformState.World,
+                    Matrix.Scaling(_lastZoomX, zoomY, 1F)*
+                    Matrix.Translation((float) -_viewXPos*_lastZoomX, 0, 0));
                 for (int i = 0; i < _clippingD3Ds.Count; i++)
                 {
-                    _clippingD3Ds[i].Render(device);
+                    _clippingD3Ds[i].Render(_device);
                 }
             }
             finally
             {
-                device.EndScene();
+                _device.EndScene();
             }
 
-            device.Present();
+            _device.Present();
 
             if (speedStrip.JumpsCount != 0)
             {
-                viewXPos = Math.Max(0, viewXPos - speedStrip.JumpsCount*250);
+                _viewXPos = Math.Max(0, _viewXPos - speedStrip.JumpsCount*250);
                 speedStrip.JumpsCount = 0;
             }
 
             if (!speedStrip.Paused)
             {
-                if (viewXPos < _clippingD3Ds.Last().Right)
+                if (_viewXPos < _clippingD3Ds.Last().Right)
                 {
                     if (!speedStrip.Paused)
                     {
-                        viewXPos += speedStrip.Speed;
+                        _viewXPos += speedStrip.Speed;
                     }
-                    if (viewXPos > _clippingD3Ds[currentLine].Right)
+                    if (_viewXPos > _clippingD3Ds[_currentLine].Right)
                     {
                         if (!OnLineEndReached())
                         {
-                            currentLine++;
+                            _currentLine++;
                         }
                     }
                 }
@@ -256,7 +256,7 @@ namespace PartituraMagica
         protected bool OnLineEndReached()
         {
             bool cancel = false;
-            LineEndReached?.Invoke(currentLine, ref cancel);
+            LineEndReached?.Invoke(_currentLine, ref cancel);
             return cancel;
         }
 
@@ -284,7 +284,7 @@ namespace PartituraMagica
         private void SpecialClose()
         {
             Hide();
-            closed = true;
+            _closed = true;
             //Trace.WriteLine(SimpleTracer.GetData());
         }
 
@@ -295,7 +295,7 @@ namespace PartituraMagica
 
         private void PlayerViewD3D_FormClosing(object sender, FormClosingEventArgs e)
         {
-            closed = true;
+            _closed = true;
             switch (e.CloseReason)
             {
                 case CloseReason.ApplicationExitCall:

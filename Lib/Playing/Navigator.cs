@@ -16,24 +16,24 @@ namespace PartituraMagica.Playing
 
     public class Navigator : IDisposable
     {
-        private static readonly double MIN_PART_SCROLL = 50D;
-        private readonly string partPattern;
+        private static readonly double MinPartScroll = 50D;
+        private readonly string _partPattern;
         //the original parts as configured by the user
-        private readonly IList<Part> parts;
-        private readonly IPlayerView view;
-        private List<LinePartInfo> lines;
+        private readonly IList<Part> _parts;
+        private readonly IPlayerView _view;
+        private List<LinePartInfo> _lines;
 
         public Navigator(string partPattern, IList<Part> parts, IPlayerView view)
         {
-            this.view = view;
+            this._view = view;
             //note that we allow that not all labelled parts occur in the pattern.
             if (string.IsNullOrEmpty(partPattern))
             {
                 partPattern = "A";
             }
             partPattern.Trim();
-            this.partPattern = partPattern;
-            this.parts = parts;
+            this._partPattern = partPattern;
+            this._parts = parts;
             CreateLines();
             SetupEvents(true);
         }
@@ -45,20 +45,20 @@ namespace PartituraMagica.Playing
 
         private int GetPartIndex(int i)
         {
-            return partPattern[i] - 'A';
+            return _partPattern[i] - 'A';
         }
 
         private void CreateLines()
         {
-            lines = new List<LinePartInfo>();
+            _lines = new List<LinePartInfo>();
             double currentX = 0D;
             int lineIndex = 0;
-            for (int patternIndex = 0; patternIndex < partPattern.Length; patternIndex++)
+            for (int patternIndex = 0; patternIndex < _partPattern.Length; patternIndex++)
             {
-                Part p = parts[GetPartIndex(patternIndex)];
+                Part p = _parts[GetPartIndex(patternIndex)];
                 for (int clippingIndex = 0; clippingIndex < p.Count; clippingIndex++)
                 {
-                    lines.Add(
+                    _lines.Add(
                         new LinePartInfo(GetPartIndex(patternIndex),
                             clippingIndex, patternIndex, lineIndex, currentX));
                     currentX += p[clippingIndex].Coords.Width;
@@ -71,9 +71,9 @@ namespace PartituraMagica.Playing
         {
             List<Clipping> clips = new List<Clipping>();
 
-            foreach (LinePartInfo i in lines)
+            foreach (LinePartInfo i in _lines)
             {
-                clips.Add(new Clipping(parts[i.partIndex][i.clippingIndex]));
+                clips.Add(new Clipping(_parts[i.PartIndex][i.ClippingIndex]));
             }
 
             //make the clippings a bit taller, cause the lines might
@@ -85,37 +85,37 @@ namespace PartituraMagica.Playing
                 c.AddAboveAndBelow(Page.ClickTolerance);
             }
 
-            view.Init(partPattern, clips);
-            view.StartScrolling();
+            _view.Init(_partPattern, clips);
+            _view.StartScrolling();
         }
 
         private void PartClicked(int partIndex)
         {
-            view.GotoLine(PatternIndexToLineInfo(partIndex).lineIndex);
+            _view.GotoLine(PatternIndexToLineInfo(partIndex).LineIndex);
         }
 
         private LinePartInfo PatternIndexToLineInfo(int patternIndex)
         {
-            return (from l in lines
-                where l.patternIndex == patternIndex
+            return (from l in _lines
+                where l.PatternIndex == patternIndex
                 select l).First();
         }
 
         private void PreviousPartClicked(ref bool cancel)
         {
-            int patternIndex = view.PartNavigator.Current;
-            double currentPartStartPos = PatternIndexToLineInfo(patternIndex).xPos;
+            int patternIndex = _view.PartNavigator.Current;
+            double currentPartStartPos = PatternIndexToLineInfo(patternIndex).XPos;
 
             //if we have scrolled only a bit, go back to previous part, otherwise restart current part
-            cancel |= view.XPos > currentPartStartPos + MIN_PART_SCROLL;
+            cancel |= _view.XPos > currentPartStartPos + MinPartScroll;
         }
 
         private void LineEndReached(int line, ref bool cancel)
         {
             int patternIndex = 0;
-            if (line + 1 < lines.Count)
+            if (line + 1 < _lines.Count)
             {
-                patternIndex = lines[line + 1].patternIndex;
+                patternIndex = _lines[line + 1].PatternIndex;
             }
             else
             {
@@ -124,7 +124,7 @@ namespace PartituraMagica.Playing
 
             if (!cancel)
             {
-                view.PartNavigator.Current = patternIndex;
+                _view.PartNavigator.Current = patternIndex;
             }
         }
 
@@ -132,33 +132,33 @@ namespace PartituraMagica.Playing
         {
             if (add)
             {
-                view.PartNavigator.ChoiceClicked += PartClicked;
-                view.PartNavigator.PreviousChoiceClicked += PreviousPartClicked;
-                view.LineEndReached += LineEndReached;
+                _view.PartNavigator.ChoiceClicked += PartClicked;
+                _view.PartNavigator.PreviousChoiceClicked += PreviousPartClicked;
+                _view.LineEndReached += LineEndReached;
             }
             else
             {
-                view.PartNavigator.ChoiceClicked -= PartClicked;
-                view.PartNavigator.PreviousChoiceClicked -= PreviousPartClicked;
-                view.LineEndReached -= LineEndReached;
+                _view.PartNavigator.ChoiceClicked -= PartClicked;
+                _view.PartNavigator.PreviousChoiceClicked -= PreviousPartClicked;
+                _view.LineEndReached -= LineEndReached;
             }
         }
 
         private class LinePartInfo
         {
-            public readonly int clippingIndex; //index of the clipping relative to the corresponding part
-            public readonly int lineIndex; //the position inside the Navigator.lines list
-            public readonly int partIndex; //index of the parts, 0 corresponds to part "A"
-            public readonly int patternIndex; //the position inside the part pattern, 
-            public readonly double xPos; //the absolute xPosition of the line on the view
+            public readonly int ClippingIndex; //index of the clipping relative to the corresponding part
+            public readonly int LineIndex; //the position inside the Navigator.lines list
+            public readonly int PartIndex; //index of the parts, 0 corresponds to part "A"
+            public readonly int PatternIndex; //the position inside the part pattern, 
+            public readonly double XPos; //the absolute xPosition of the line on the view
 
             public LinePartInfo(int partIndex, int clippingIndex, int patternIndex, int lineIndex, double xPos)
             {
-                this.partIndex = partIndex;
-                this.clippingIndex = clippingIndex;
-                this.patternIndex = patternIndex;
-                this.lineIndex = lineIndex;
-                this.xPos = xPos;
+                this.PartIndex = partIndex;
+                this.ClippingIndex = clippingIndex;
+                this.PatternIndex = patternIndex;
+                this.LineIndex = lineIndex;
+                this.XPos = xPos;
             }
         }
     }

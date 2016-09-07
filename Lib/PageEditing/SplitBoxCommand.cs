@@ -12,23 +12,23 @@ namespace PartituraMagica
 
     public class SplitBoxCommand : PartituraCommandBase, ICommand
     {
-        private readonly Point pos;
+        private readonly Point _pos;
 
         public SplitBoxCommand(Point pos, ICommandParameters p)
             : base(p)
         {
-            this.pos = pos;
+            this._pos = pos;
         }
 
         public bool CanExecute()
         {
-            return p.Active.CurrentPage != null && p.Active.CurrentPage.IsBoxSelected();
+            return P.Active.CurrentPage != null && P.Active.CurrentPage.IsBoxSelected();
         }
 
         public void Execute()
         {
             Debug.Assert(CanExecute());
-            p.Active.CurrentPage.SplitSelectedBox(pos, p.Panel);
+            P.Active.CurrentPage.SplitSelectedBox(_pos, P.Panel);
         }
     }
 }

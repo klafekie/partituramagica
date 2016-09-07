@@ -10,12 +10,12 @@ namespace PartituraMagica
 
     public partial class ZoomToolStrip : ToolStrip
     {
-        private float xZoom;
+        private float _xZoom;
         //with the help of xZoomdelta and yzoomdelta we implement a 
         //smooth change of the zoom. See GetNextZoom()
-        private int xZoomDelta;
-        private float yZoom;
-        private int yZoomDelta;
+        private int _xZoomDelta;
+        private float _yZoom;
+        private int _yZoomDelta;
 
         public ZoomToolStrip()
         {
@@ -28,35 +28,35 @@ namespace PartituraMagica
 
         public float XZoom
         {
-            get { return xZoom; }
+            get { return _xZoom; }
             set
             {
                 if (value == 0F)
                 {
-                    xZoom = 0.000001F;
+                    _xZoom = 0.000001F;
                 }
                 else
                 {
-                    xZoom = value;
+                    _xZoom = value;
                 }
-                xZoomDelta = 0;
+                _xZoomDelta = 0;
             }
         }
 
         public float YZoom
         {
-            get { return yZoom; }
+            get { return _yZoom; }
             set
             {
                 if (value == 0F)
                 {
-                    yZoom = 0.000001F;
+                    _yZoom = 0.000001F;
                 }
                 else
                 {
-                    yZoom = value;
+                    _yZoom = value;
                 }
-                yZoomDelta = 0;
+                _yZoomDelta = 0;
             }
         }
 
@@ -67,19 +67,19 @@ namespace PartituraMagica
 
         private void ZoomOut(bool xOnly)
         {
-            xZoomDelta = -15;
+            _xZoomDelta = -15;
             if (!xOnly)
             {
-                yZoomDelta = -15;
+                _yZoomDelta = -15;
             }
         }
 
         private void ZoomIn(bool xOnly)
         {
-            xZoomDelta = 15;
+            _xZoomDelta = 15;
             if (!xOnly)
             {
-                yZoomDelta = 15;
+                _yZoomDelta = 15;
             }
         }
 
@@ -126,29 +126,29 @@ namespace PartituraMagica
 
         public void GetNextZoom(out float zoomXRes, out float zoomYRes)
         {
-            if (xZoomDelta > 0)
+            if (_xZoomDelta > 0)
             {
-                xZoom *= 1.01F;
-                xZoomDelta--;
+                _xZoom *= 1.01F;
+                _xZoomDelta--;
             }
-            if (xZoomDelta < 0)
+            if (_xZoomDelta < 0)
             {
-                xZoom *= 0.99F;
-                xZoomDelta++;
+                _xZoom *= 0.99F;
+                _xZoomDelta++;
             }
 
-            if (yZoomDelta > 0)
+            if (_yZoomDelta > 0)
             {
-                yZoom *= 1.01F;
-                yZoomDelta--;
+                _yZoom *= 1.01F;
+                _yZoomDelta--;
             }
-            if (yZoomDelta < 0)
+            if (_yZoomDelta < 0)
             {
-                yZoom *= 0.99F;
-                yZoomDelta++;
+                _yZoom *= 0.99F;
+                _yZoomDelta++;
             }
-            zoomXRes = xZoom;
-            zoomYRes = yZoom;
+            zoomXRes = _xZoom;
+            zoomYRes = _yZoom;
         }
     }
 }

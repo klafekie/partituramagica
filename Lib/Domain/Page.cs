@@ -26,34 +26,34 @@ namespace PartituraMagica
     {
         public PageMemento(ICollection<Box> theboxes)
         {
-            boxes = new ArrayList(theboxes.Count);
+            _boxes = new ArrayList(theboxes.Count);
             foreach (Box b in theboxes)
             {
-                boxes.Add(b);
+                _boxes.Add(b);
             }
         }
 
-        private readonly ArrayList boxes;
+        private readonly ArrayList _boxes;
 
         public ICollection Boxes
         {
-            get { return boxes; }
+            get { return _boxes; }
         }
     }
 
     public class Page
     {
         public const double ClickTolerance = 4.5;
-        private static int largestBoxIdTillNow;
-        private readonly IDictionary<int, Box> boxes;
-        private double pageHeight;
-        private double pageWith;
-        private int selectedBoxId;
+        private static int _largestBoxIdTillNow;
+        private readonly IDictionary<int, Box> _boxes;
+        private double _pageHeight;
+        private double _pageWith;
+        private int _selectedBoxId;
 
         public Page()
         {
             SetDefaults();
-            boxes = new Dictionary<int, Box>();
+            _boxes = new Dictionary<int, Box>();
         }
 
         internal Page(PageMemento p)
@@ -62,8 +62,8 @@ namespace PartituraMagica
             foreach (object o in p.Boxes)
             {
                 Box b = (Box) o;
-                boxes.Add(b.Id, b);
-                largestBoxIdTillNow = Math.Max(largestBoxIdTillNow, b.Id);
+                _boxes.Add(b.Id, b);
+                _largestBoxIdTillNow = Math.Max(_largestBoxIdTillNow, b.Id);
             }
         }
 
@@ -71,7 +71,7 @@ namespace PartituraMagica
 
         private Box SelectedBox
         {
-            get { return boxes[selectedBoxId]; }
+            get { return _boxes[_selectedBoxId]; }
         }
 
         public bool Dirty { get; private set; }
@@ -80,7 +80,7 @@ namespace PartituraMagica
         {
             get
             {
-                List<Box> sortedBoxes = new List<Box>(boxes.Values);
+                List<Box> sortedBoxes = new List<Box>(_boxes.Values);
                 sortedBoxes.Sort(
                     (left, right) => (int) (left.Coords.Y - right.Coords.Y));
                 return sortedBoxes;
@@ -90,14 +90,14 @@ namespace PartituraMagica
         internal PageMemento ToMemento()
         {
             Dirty = false;
-            return new PageMemento(boxes.Values);
+            return new PageMemento(_boxes.Values);
         }
 
         private void SetDefaults()
         {
-            selectedBoxId = -1;
-            pageWith = 0;
-            pageHeight = 0;
+            _selectedBoxId = -1;
+            _pageWith = 0;
+            _pageHeight = 0;
             Dirty = false;
         }
 
@@ -109,7 +109,7 @@ namespace PartituraMagica
 
         private Box GetBoxAt(Point pos)
         {
-            foreach (Box b in boxes.Values)
+            foreach (Box b in _boxes.Values)
             {
                 if (b.Contains(pos))
                 {
@@ -136,13 +136,13 @@ namespace PartituraMagica
         public void AddBox(Rect coords, IDrawingPanel panel, ILabelProvider labelProvider)
         {
             Dirty = true;
-            int id = ++largestBoxIdTillNow;
+            int id = ++_largestBoxIdTillNow;
 
             //this guarantess that the box cannot be moved out of the page area:
-            coords.OuterRect = new Rect(0, 0, pageWith, pageHeight);
+            coords.OuterRect = new Rect(0, 0, _pageWith, _pageHeight);
 
             Box b = new Box(id, coords);
-            boxes.Add(id, b);
+            _boxes.Add(id, b);
             PaintPage(panel, labelProvider);
             SelectBoxAt(b.Coords.TopLeft, panel);
         }
@@ -152,14 +152,14 @@ namespace PartituraMagica
             Dirty = true;
             double boxY = SelectedBox.Coords.Y;
             SelectedBox.UnPaint(panel);
-            boxes.Remove(selectedBoxId);
-            selectedBoxId = -1;
+            _boxes.Remove(_selectedBoxId);
+            _selectedBoxId = -1;
             PaintPage(panel, labelProvider);
 
             //select the nearest remaining box			
             Point nearestBoxPos = default(Point);
             double distance = double.MaxValue;
-            foreach (Box b in boxes.Values)
+            foreach (Box b in _boxes.Values)
             {
                 double dist = Math.Abs(b.Coords.Y - boxY);
                 if (dist < distance)
@@ -179,7 +179,7 @@ namespace PartituraMagica
 
         public bool IsBoxSelected()
         {
-            return selectedBoxId > -1;
+            return _selectedBoxId > -1;
         }
 
         public bool CanUpdateSelectedBox(Point lastPos, Point newPos)
@@ -207,12 +207,12 @@ namespace PartituraMagica
 
             // Make a rectangle which is the given rectangle but over the full page width.
             Rect completeRow =
-                new Rect(0, r.Top, pageWith, r.Height).AddAboveAndBelow(ClickTolerance);
+                new Rect(0, r.Top, _pageWith, r.Height).AddAboveAndBelow(ClickTolerance);
 
             // Loop over all boxes of the page (including the selected box if specified), return true iff any box intersects.
-            foreach (Box b in boxes.Values)
+            foreach (Box b in _boxes.Values)
             {
-                if ((includeSelectedBox || b.Id != selectedBoxId)
+                if ((includeSelectedBox || b.Id != _selectedBoxId)
                     && b.Coords.IntersectsWith(completeRow))
                 {
                     return true;
@@ -242,7 +242,7 @@ namespace PartituraMagica
 
         public void PaintPage(IDrawingPanel panel, ILabelProvider labelProvider)
         {
-            foreach (Box b in boxes.Values)
+            foreach (Box b in _boxes.Values)
             {
                 b.Paint(panel, labelProvider);
             }
@@ -251,8 +251,8 @@ namespace PartituraMagica
         public void PaintPage(IDrawingPanel panel, Point imageSize, ILabelProvider labelProvider)
         {
             PaintPage(panel, labelProvider);
-            pageHeight = imageSize.Y;
-            pageWith = imageSize.X;
+            _pageHeight = imageSize.Y;
+            _pageWith = imageSize.X;
         }
 
         [OnSerialized]
@@ -277,7 +277,7 @@ namespace PartituraMagica
                 {
                     SelectedBox.Deselect(panel);
                 }
-                selectedBoxId = b.Id;
+                _selectedBoxId = b.Id;
                 SelectedBox.Select(pos, panel);
             }
         }
@@ -330,7 +330,7 @@ namespace PartituraMagica
         internal bool IsLeftTopSelected()
         {
             IList<Box> sortedBoxes = SortedBoxes;
-            if (sortedBoxes.Count == 0 || selectedBoxId != sortedBoxes[0].Id)
+            if (sortedBoxes.Count == 0 || _selectedBoxId != sortedBoxes[0].Id)
             {
                 return false;
             }

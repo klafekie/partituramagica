@@ -12,25 +12,25 @@ namespace PartituraMagica
         public void Execute()
         {
             Debug.Assert(CanExecute());
-            string path = p.FileSystem.ShowSaveDialog(FileType.Partitura);
+            string path = P.FileSystem.ShowSaveDialog(FileType.Partitura);
 
             if (path != null)
             {
-                new ClosePartituraCommand(p).TryExecute();
+                new ClosePartituraCommand(P).TryExecute();
 
-                if (!p.Active.IsOpen)
+                if (!P.Active.IsOpen)
                 {
                     //only continue if previous piece was really closed.				
 
                     Partitura partitura = new Partitura();
-                    p.Active.Open(path, partitura);
+                    P.Active.Open(path, partitura);
 
                     //show the first page if we already have at least one image file
                     //matching on disk
                     //otherwise add a page, 
-                    if (!new ShowPageCommand(0, p).TryExecute())
+                    if (!new ShowPageCommand(0, P).TryExecute())
                     {
-                        new AddPagesCommand(p).TryExecute();
+                        new AddPagesCommand(P).TryExecute();
                     }
                 }
             }

@@ -5,30 +5,30 @@ namespace PartituraMagica
 {
     public class UpdateBoxCommand : PartituraCommandBase, ICommand
     {
-        private readonly Point lastPos;
-        private readonly Point newPos;
+        private readonly Point _lastPos;
+        private readonly Point _newPos;
 
         public UpdateBoxCommand(Point lastPos, Point newPos, ICommandParameters p)
             : base(p)
         {
-            this.lastPos = lastPos;
-            this.newPos = newPos;
+            this._lastPos = lastPos;
+            this._newPos = newPos;
         }
 
         public bool CanExecute()
         {
-            Page current = p.Active.CurrentPage;
+            Page current = P.Active.CurrentPage;
             if (current == null || !current.IsBoxSelected())
             {
                 return false;
             }
-            return current.CanUpdateSelectedBox(lastPos, newPos);
+            return current.CanUpdateSelectedBox(_lastPos, _newPos);
         }
 
         public void Execute()
         {
             Debug.Assert(CanExecute());
-            p.Active.CurrentPage.UpdateSelectedBox(lastPos, newPos, p.Panel);
+            P.Active.CurrentPage.UpdateSelectedBox(_lastPos, _newPos, P.Panel);
         }
     }
 }

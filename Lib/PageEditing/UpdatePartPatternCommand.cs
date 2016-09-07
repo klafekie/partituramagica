@@ -12,13 +12,13 @@ namespace PartituraMagica
 
         public bool CanExecute()
         {
-            return p.Active != null && p.Active.IsOpen;
+            return P.Active != null && P.Active.IsOpen;
         }
 
         public void Execute()
         {
             Debug.Assert(CanExecute());
-            string partPattern = p.MainWindow.PartPattern;
+            string partPattern = P.MainWindow.PartPattern;
             if (partPattern == null || partPattern.Length == 0)
             {
                 partPattern = "A";
@@ -29,13 +29,13 @@ namespace PartituraMagica
             //    max = Math.Max((int)(i - 'A'), max);
             //}
 
-            Partitura pActivePartitura = p.Active.Partitura;
-            if (max >= pActivePartitura.GetAllParts(p.Active.GetPageCount()).Count)
+            Partitura pActivePartitura = P.Active.Partitura;
+            if (max >= pActivePartitura.GetAllParts(P.Active.GetPageCount()).Count)
             {
-                p.MainWindow.MessageBox("You have specified a part that does not exist.");
+                P.MainWindow.MessageBox("You have specified a part that does not exist.");
                 //@todo p2 set focus to the TextBox. Problem box.Focus() doesn't do it...
                 //can be done in the Validating event?
-                p.MainWindow.PartPattern = pActivePartitura.PartPattern;
+                P.MainWindow.PartPattern = pActivePartitura.PartPattern;
             }
             else
             {

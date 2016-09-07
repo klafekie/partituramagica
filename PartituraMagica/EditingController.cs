@@ -8,15 +8,15 @@ namespace PartituraMagica
 {
     internal class EditingController : ICommandParameters, IDisposable
     {
-        private readonly MainWindow mainWindow;
-        private PlayerViewD3D playerView;
+        private readonly MainWindow _mainWindow;
+        private PlayerViewD3D _playerView;
 
         public EditingController(MainWindow mainWindow, IDrawingPanel panel)
         {
             Panel = panel;
             FileSystem = new FileSystem();
             Active = new ActivePartitura(FileSystem);
-            this.mainWindow = mainWindow;
+            this._mainWindow = mainWindow;
 
             string[] args = Environment.GetCommandLineArgs();
             if (args.Length == 2)
@@ -52,15 +52,15 @@ namespace PartituraMagica
 
         public IMainWindow MainWindow
         {
-            get { return mainWindow; }
+            get { return _mainWindow; }
         }
 
         public void DisposePlayerView()
         {
-            if (playerView != null)
+            if (_playerView != null)
             {
-                playerView.Dispose();
-                playerView = null;
+                _playerView.Dispose();
+                _playerView = null;
             }
         }
 
@@ -114,20 +114,20 @@ namespace PartituraMagica
                 case "StartPlayer":
                     Func<IPlayerView> createView = delegate
                     {
-                        WindowInteropHelper h = new WindowInteropHelper(mainWindow);
-                        if (playerView == null)
+                        WindowInteropHelper h = new WindowInteropHelper(_mainWindow);
+                        if (_playerView == null)
                         {
-                            playerView = new PlayerViewD3D(Active, Panel, h.Handle, LoadPlayer());
-                            playerView.VisibleChanged += (o, args) =>
+                            _playerView = new PlayerViewD3D(Active, Panel, h.Handle, LoadPlayer());
+                            _playerView.VisibleChanged += (o, args) =>
                             {
                                 //todo p1 bind to a better event
-                                if (!playerView.Visible)
+                                if (!_playerView.Visible)
                                 {
-                                    SavePlayer(playerView);
+                                    SavePlayer(_playerView);
                                 }
                             };
                         }
-                        return playerView;
+                        return _playerView;
                     };
                     return new ShowPlayerCommand(createView, this);
                 default:

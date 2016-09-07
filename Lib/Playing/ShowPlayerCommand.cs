@@ -7,12 +7,12 @@ namespace PartituraMagica
 {
     public class ShowPlayerCommand : PartituraCommandBase, ICommand
     {
-        private readonly Func<IPlayerView> CreateView;
+        private readonly Func<IPlayerView> _createView;
 
         public ShowPlayerCommand(Func<IPlayerView> createView, ICommandParameters p)
             : base(p)
         {
-            CreateView = createView;
+            _createView = createView;
         }
 
         public void Execute()
@@ -21,23 +21,23 @@ namespace PartituraMagica
             {
                 Debug.Assert(CanExecute());
 
-                IList<Part> allParts = p.Active.Partitura.GetAllParts(p.Active.GetPageCount());
+                IList<Part> allParts = P.Active.Partitura.GetAllParts(P.Active.GetPageCount());
 
-                IPlayerView view = CreateView();
-                using (Navigator n = new Navigator(p.Active.Partitura.PartPattern, allParts, view))
+                IPlayerView view = _createView();
+                using (Navigator n = new Navigator(P.Active.Partitura.PartPattern, allParts, view))
                 {
-                    p.MainWindow.IsEnabled = false;
+                    P.MainWindow.IsEnabled = false;
                     n.Start();
-                    p.MainWindow.IsEnabled = true;
+                    P.MainWindow.IsEnabled = true;
                 }
-                bool test = p.MainWindow.Activate();
+                bool test = P.MainWindow.Activate();
                 //Debug.WriteLine("Activate Success = " + test);
             }
             catch (Exception e)
             {
                 Trace.TraceError("Exception when showing the player:");
                 Trace.TraceError(e.ToString());
-                p.MainWindow.MessageBox("A problem with the initialization of DirectX has occurred:\n\n" +
+                P.MainWindow.MessageBox("A problem with the initialization of DirectX has occurred:\n\n" +
                                         e.Message +
                                         "\n\nPlease see ReleaseNotes.doc for troubleshooting hints and restart the application.");
             }
@@ -45,8 +45,8 @@ namespace PartituraMagica
 
         public bool CanExecute()
         {
-            return p.Active != null && p.Active.Partitura != null &&
-                   p.Active.Partitura.GetAllParts(p.Active.GetPageCount()).Count > 0;
+            return P.Active != null && P.Active.Partitura != null &&
+                   P.Active.Partitura.GetAllParts(P.Active.GetPageCount()).Count > 0;
         }
     }
 }

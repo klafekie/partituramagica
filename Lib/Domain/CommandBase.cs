@@ -2,11 +2,11 @@
 {
     public class PartituraCommandBase : CommandBase
     {
-        protected ICommandParameters p;
+        protected ICommandParameters P;
 
         protected PartituraCommandBase(ICommandParameters p)
         {
-            this.p = p;
+            this.P = p;
         }
     }
 

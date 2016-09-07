@@ -5,23 +5,23 @@ namespace PartituraMagica
 {
     public class SelectItemCommand : PartituraCommandBase, ICommand
     {
-        protected Point pos;
+        protected Point Pos;
 
         public SelectItemCommand(Point pos, ICommandParameters p)
             : base(p)
         {
-            this.pos = pos;
+            this.Pos = pos;
         }
 
         public bool CanExecute()
         {
-            return p.Active.CurrentPage != null && p.Active.CurrentPage.GetShapeTypeAt(pos) != Shape.NothingSpecial;
+            return P.Active.CurrentPage != null && P.Active.CurrentPage.GetShapeTypeAt(Pos) != Shape.NothingSpecial;
         }
 
         public void Execute()
         {
             Debug.Assert(CanExecute());
-            p.Active.CurrentPage.SelectBoxAt(pos, p.Panel);
+            P.Active.CurrentPage.SelectBoxAt(Pos, P.Panel);
         }
     }
 }

@@ -14,36 +14,36 @@ namespace PartituraMagica
 
     public class Part : IEnumerable<Clipping>
     {
-        private readonly IList<Clipping> clippings;
+        private readonly IList<Clipping> _clippings;
 
         public Part()
         {
-            clippings = new List<Clipping>();
+            _clippings = new List<Clipping>();
             //this.islabelled = isLabelled;
         }
 
         public Part(Part rhs)
         {
-            clippings = new List<Clipping>();
-            foreach (Clipping c in rhs.clippings)
+            _clippings = new List<Clipping>();
+            foreach (Clipping c in rhs._clippings)
             {
-                clippings.Add(new Clipping(c));
+                _clippings.Add(new Clipping(c));
             }
         }
 
         internal Clipping this[int index]
         {
-            get { return clippings[index]; }
+            get { return _clippings[index]; }
         }
 
         internal bool IsEmpty
         {
-            get { return clippings.Count == 0; }
+            get { return _clippings.Count == 0; }
         }
 
         internal int Count
         {
-            get { return clippings.Count; }
+            get { return _clippings.Count; }
         }
 
         public double Width
@@ -51,7 +51,7 @@ namespace PartituraMagica
             get
             {
                 double result = 0D;
-                foreach (Clipping c in clippings)
+                foreach (Clipping c in _clippings)
                 {
                     result += c.Coords.Width;
                 }
@@ -61,7 +61,7 @@ namespace PartituraMagica
 
         public IEnumerator<Clipping> GetEnumerator()
         {
-            return clippings.GetEnumerator();
+            return _clippings.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -71,14 +71,14 @@ namespace PartituraMagica
 
         internal void Add(Clipping clipping)
         {
-            clippings.Add(clipping);
+            _clippings.Add(clipping);
         }
 
         internal int ContainsAt(int id)
         {
-            for (int i = 0; i < clippings.Count; i++)
+            for (int i = 0; i < _clippings.Count; i++)
             {
-                if (clippings[i].Id == id)
+                if (_clippings[i].Id == id)
                 {
                     return i;
                 }
@@ -88,8 +88,8 @@ namespace PartituraMagica
 
         public override string ToString()
         {
-            return string.Format("{0} ... {1}, Count = {2}", clippings.FirstOrDefault(), clippings.LastOrDefault(),
-                clippings.Count);
+            return string.Format("{0} ... {1}, Count = {2}", _clippings.FirstOrDefault(), _clippings.LastOrDefault(),
+                _clippings.Count);
         }
     }
 }

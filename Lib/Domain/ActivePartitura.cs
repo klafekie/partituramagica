@@ -10,11 +10,11 @@ namespace PartituraMagica
 
     public class ActivePartitura : IActivePartitura
     {
-        private readonly IFileSystem fileSystem;
+        private readonly IFileSystem _fileSystem;
 
         public ActivePartitura(IFileSystem fileSystem)
         {
-            this.fileSystem = fileSystem;
+            this._fileSystem = fileSystem;
         }
 
         public string Path { get; private set; }
@@ -40,10 +40,10 @@ namespace PartituraMagica
                     string newDir = System.IO.Path.GetDirectoryName(newPath);
                     string fileName = System.IO.Path.GetFileName(oldImage);
                     string newImage = System.IO.Path.Combine(newDir, fileName);
-                    fileSystem.Copy(oldImage, newImage);
+                    _fileSystem.Copy(oldImage, newImage);
                 }
             }
-            using (Stream str = fileSystem.OpenWrite(newPath))
+            using (Stream str = _fileSystem.OpenWrite(newPath))
             {
                 BinaryFormatter sf = new BinaryFormatter();
                 sf.Serialize(str, Partitura.ToMemento());
@@ -113,7 +113,7 @@ namespace PartituraMagica
             string partituraName = GetPartituraName(path);
 
             ICollection<string> matchingImages =
-                fileSystem.GetMatchingFileNames(dir, partituraName + "-???.jpg");
+                _fileSystem.GetMatchingFileNames(dir, partituraName + "-???.jpg");
             return matchingImages;
         }
 

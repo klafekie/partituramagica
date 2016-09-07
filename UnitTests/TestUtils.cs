@@ -8,24 +8,24 @@ namespace PartituraMagica
     [TestFixture]
     internal class TestUtils : ICommandParameters
     {
-        protected Partitura partitura;
+        protected Partitura Partitura;
         protected FakeDrawingPanel panel;
-        protected IActivePartitura activePartitura;
-        protected MockRepository mocks;
+        protected IActivePartitura ActivePartitura;
+        protected MockRepository Mocks;
         protected FakeFileSystem fileSystem;
         protected IMainWindow mainWindow;
 
         public virtual void Setup()
         {
-            partitura = new Partitura();
+            Partitura = new Partitura();
             panel = new FakeDrawingPanel();
             //set pagewidth and height
-            partitura.GetPage(0).PaintPage(panel, new Point(1000, 2000),
-                new ABCLabelProvider(partitura));
+            Partitura.GetPage(0).PaintPage(panel, new Point(1000, 2000),
+                new AbcLabelProvider(Partitura));
 
-            mocks = new MockRepository();
-            fileSystem = mocks.PartialMock<FakeFileSystem>();
-            mainWindow = mocks.DynamicMock<IMainWindow>();
+            Mocks = new MockRepository();
+            fileSystem = Mocks.PartialMock<FakeFileSystem>();
+            mainWindow = Mocks.DynamicMock<IMainWindow>();
         }
 
 
@@ -42,14 +42,14 @@ namespace PartituraMagica
 
         protected void AssertPanelContains(Rect r)
         {
-            CollectionAssert.Contains(panel.rectangles.Values, r);
+            CollectionAssert.Contains(panel.Rectangles.Values, r);
         }
 
         protected void AssertPanelContains(Rect r, string label)
         {
-            CollectionAssert.Contains(panel.rectangles.Values, r);
+            CollectionAssert.Contains(panel.Rectangles.Values, r);
             int id = -1;
-            foreach (KeyValuePair<int, Rect> entry in panel.rectangles)
+            foreach (KeyValuePair<int, Rect> entry in panel.Rectangles)
             {
                 if (entry.Value == r)
                 {
@@ -58,7 +58,7 @@ namespace PartituraMagica
                 }
             }
 
-            Assert.AreEqual(label, panel.labels[id]);
+            Assert.AreEqual(label, panel.Labels[id]);
         }
 
         protected bool CanUpdate(double oldX, double oldY, double newX, double newY)
@@ -87,7 +87,7 @@ namespace PartituraMagica
 
         public IActivePartitura Active
         {
-            get { return activePartitura; }
+            get { return ActivePartitura; }
         }
 
         public IFileSystem FileSystem

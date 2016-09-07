@@ -11,18 +11,18 @@ namespace PartituraMagica
 
     public partial class ChoiceNavigatorStrip : ToolStrip, IChoiceNavigator
     {
-        private readonly ToolStripItem btnFirst;
-        private readonly ToolStripItem btnLast;
-        private readonly ToolStripItem btnNext;
-        private readonly ToolStripItem btnPrevious;
+        private readonly ToolStripItem _btnFirst;
+        private readonly ToolStripItem _btnLast;
+        private readonly ToolStripItem _btnNext;
+        private readonly ToolStripItem _btnPrevious;
 
-        private readonly List<KeyValuePair<string, ToolStripButton>> choiceButtons =
+        private readonly List<KeyValuePair<string, ToolStripButton>> _choiceButtons =
             new List<KeyValuePair<string, ToolStripButton>>();
 
-        private string choiceName;
+        private string _choiceName;
 
-        private string[] choices;
-        private int current;
+        private string[] _choices;
+        private int _current;
 
         public ChoiceNavigatorStrip()
         {
@@ -31,18 +31,18 @@ namespace PartituraMagica
             //@todo p1 impl Bookmark feature
 
 
-            btnFirst = Items.Add("First", ImageList.Images["first"]);
-            btnFirst.Click += btnFirst_Click;
-            btnPrevious = Items.Add("Previous", ImageList.Images["previous"]);
-            btnPrevious.Click += btnPrevious_Click;
+            _btnFirst = Items.Add("First", ImageList.Images["first"]);
+            _btnFirst.Click += btnFirst_Click;
+            _btnPrevious = Items.Add("Previous", ImageList.Images["previous"]);
+            _btnPrevious.Click += btnPrevious_Click;
 
             Items.Add(new ToolStripSeparator());
             Items.Add(new ToolStripSeparator());
 
-            btnNext = Items.Add("Next", ImageList.Images["next"]);
-            btnNext.Click += btnNext_Click;
-            btnLast = Items.Add("Last", ImageList.Images["last"]);
-            btnLast.Click += btnLast_Click;
+            _btnNext = Items.Add("Next", ImageList.Images["next"]);
+            _btnNext.Click += btnNext_Click;
+            _btnLast = Items.Add("Last", ImageList.Images["last"]);
+            _btnLast.Click += btnLast_Click;
 
             //this is done before the setter of choices Pattern because we're in the c'tor
             foreach (ToolStripItem b in Items)
@@ -61,10 +61,10 @@ namespace PartituraMagica
 
         public string ChoiceName
         {
-            get { return choiceName; }
+            get { return _choiceName; }
             set
             {
-                choiceName = value;
+                _choiceName = value;
                 Adjust(false);
             }
         }
@@ -81,21 +81,21 @@ namespace PartituraMagica
 
         public string[] Choices
         {
-            get { return choices; }
+            get { return _choices; }
             set
             {
-                bool changed = choices == null ^ value == null;
-                if (choices != null && value != null)
+                bool changed = _choices == null ^ value == null;
+                if (_choices != null && value != null)
                 {
-                    if (choices.Length != value.Length)
+                    if (_choices.Length != value.Length)
                     {
                         changed = true;
                     }
                     else
                     {
-                        for (int i = 0; i < choices.Length; i++)
+                        for (int i = 0; i < _choices.Length; i++)
                         {
-                            if (choices[i] != value[i])
+                            if (_choices[i] != value[i])
                             {
                                 changed = true;
                             }
@@ -104,7 +104,7 @@ namespace PartituraMagica
                 }
                 if (changed)
                 {
-                    choices = value;
+                    _choices = value;
                     Adjust(changed);
                 }
             }
@@ -112,11 +112,11 @@ namespace PartituraMagica
 
         public int Current
         {
-            get { return current; }
+            get { return _current; }
             set
             {
-                bool changed = current != value;
-                current = value;
+                bool changed = _current != value;
+                _current = value;
                 if (changed)
                 {
                     Adjust(false);
@@ -137,62 +137,62 @@ namespace PartituraMagica
             if (choicesChanged)
             {
                 //we dont remove the separators if choices is empty.
-                foreach (KeyValuePair<string, ToolStripButton> entry in choiceButtons)
+                foreach (KeyValuePair<string, ToolStripButton> entry in _choiceButtons)
                 {
                     Items.Remove(entry.Value);
                 }
-                choiceButtons.Clear();
+                _choiceButtons.Clear();
 
                 int insertIndex = 3;
 
-                if (choices != null)
+                if (_choices != null)
                 {
-                    for (int i = choices.Length - 1; i >= 0; i--)
+                    for (int i = _choices.Length - 1; i >= 0; i--)
                     {
-                        ToolStripButton b = new ToolStripButton(choices[i]);
+                        ToolStripButton b = new ToolStripButton(_choices[i]);
                         b.Click += b_Click;
                         //b.AutoSize = false;
                         //b.Width = 36;
                         //b.Height = 36;
-                        choiceButtons.Add(new KeyValuePair<string, ToolStripButton>(
-                            choices[i], b));
+                        _choiceButtons.Add(new KeyValuePair<string, ToolStripButton>(
+                            _choices[i], b));
                         Items.Insert(insertIndex, b);
                     }
-                    choiceButtons.Reverse();
+                    _choiceButtons.Reverse();
                 }
             }
-            foreach (KeyValuePair<string, ToolStripButton> entry in choiceButtons)
+            foreach (KeyValuePair<string, ToolStripButton> entry in _choiceButtons)
             {
                 entry.Value.Checked = false;
             }
 
-            if (choiceButtons.Count > current)
+            if (_choiceButtons.Count > _current)
             {
-                choiceButtons[current].Value.Checked = true;
+                _choiceButtons[_current].Value.Checked = true;
             }
 
-            foreach (KeyValuePair<string, ToolStripButton> entry in choiceButtons)
+            foreach (KeyValuePair<string, ToolStripButton> entry in _choiceButtons)
             {
                 entry.Value.ToolTipText =
-                    string.Format("Go to {0} {1}", choiceName, entry.Value.Text);
+                    string.Format("Go to {0} {1}", _choiceName, entry.Value.Text);
             }
-            btnFirst.ToolTipText =
-                string.Format("Go to first {0}", choiceName);
-            btnNext.ToolTipText =
-                string.Format("Go to next {0}", choiceName);
-            btnPrevious.ToolTipText =
-                string.Format("Go to previous {0}", choiceName);
-            btnLast.ToolTipText =
-                string.Format("Go to last {0}", choiceName);
+            _btnFirst.ToolTipText =
+                string.Format("Go to first {0}", _choiceName);
+            _btnNext.ToolTipText =
+                string.Format("Go to next {0}", _choiceName);
+            _btnPrevious.ToolTipText =
+                string.Format("Go to previous {0}", _choiceName);
+            _btnLast.ToolTipText =
+                string.Format("Go to last {0}", _choiceName);
 
             OnChoiceChanged();
         }
 
         private void btnLast_Click(object sender, EventArgs e)
         {
-            if (current < choices.Length - 1)
+            if (_current < _choices.Length - 1)
             {
-                Current = choices.Length - 1;
+                Current = _choices.Length - 1;
             }
             OnChoiceClicked();
         }
@@ -200,7 +200,7 @@ namespace PartituraMagica
         private void btnNext_Click(object sender, EventArgs e)
         {
             bool cancel = OnNextChoiceClicked();
-            if (!cancel && current < choices.Length - 1)
+            if (!cancel && _current < _choices.Length - 1)
             {
                 Current++;
             }
@@ -210,7 +210,7 @@ namespace PartituraMagica
         private void btnPrevious_Click(object sender, EventArgs e)
         {
             bool cancel = OnPreviousChoiceClicked();
-            if (!cancel && current > 0)
+            if (!cancel && _current > 0)
             {
                 Current--;
             }
@@ -226,7 +226,7 @@ namespace PartituraMagica
         private void b_Click(object sender, EventArgs e)
         {
             ToolStripButton b = (ToolStripButton) sender;
-            Current = choiceButtons.FindIndex(entry => entry.Value == b);
+            Current = _choiceButtons.FindIndex(entry => entry.Value == b);
             OnChoiceClicked();
         }
 
@@ -234,7 +234,7 @@ namespace PartituraMagica
         {
             if (ChoiceChanged != null)
             {
-                ChoiceChanged(current);
+                ChoiceChanged(_current);
             }
         }
 
@@ -242,7 +242,7 @@ namespace PartituraMagica
         {
             if (ChoiceClicked != null)
             {
-                ChoiceClicked(current);
+                ChoiceClicked(_current);
             }
         }
 
@@ -273,16 +273,16 @@ namespace PartituraMagica
                 switch (e.KeyCode)
                 {
                     case Keys.Left:
-                        btnPrevious.PerformClick();
+                        _btnPrevious.PerformClick();
                         break;
                     case Keys.Right:
-                        btnNext.PerformClick();
+                        _btnNext.PerformClick();
                         break;
                     case Keys.Home:
-                        btnFirst.PerformClick();
+                        _btnFirst.PerformClick();
                         break;
                     case Keys.End:
-                        btnLast.PerformClick();
+                        _btnLast.PerformClick();
                         break;
                     default:
                         JumpToChoice(e.KeyCode);
@@ -296,15 +296,15 @@ namespace PartituraMagica
             //key is one based
             //the 0 key will do nothing
             int index = key - Keys.D0 - 1;
-            if (index < 0 || index >= choiceButtons.Count)
+            if (index < 0 || index >= _choiceButtons.Count)
             {
                 index = key - Keys.NumPad0 - 1;
             }
-            if (index < 0 || index >= choiceButtons.Count)
+            if (index < 0 || index >= _choiceButtons.Count)
             {
                 return;
             }
-            choiceButtons[index].Value.PerformClick();
+            _choiceButtons[index].Value.PerformClick();
         }
     }
 }

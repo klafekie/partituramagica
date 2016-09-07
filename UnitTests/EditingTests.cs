@@ -11,21 +11,21 @@ namespace PartituraMagica
         public override void Setup()
         {
             base.Setup();
-            currentPageIndex = 0;
-            activePartitura = mocks.DynamicMock<IActivePartitura>();
-            Expect.Call(activePartitura.Partitura).Repeat.Any().Return(partitura);
-            Expect.Call(activePartitura.IsOpen).Repeat.Any().Return(true);
-            Expect.Call(activePartitura.CurrentPage).Repeat.Any().Do(
-                (Func<Page>) delegate { return partitura.GetPage(currentPageIndex); });
+            CurrentPageIndex = 0;
+            ActivePartitura = Mocks.DynamicMock<IActivePartitura>();
+            Expect.Call(ActivePartitura.Partitura).Repeat.Any().Return(Partitura);
+            Expect.Call(ActivePartitura.IsOpen).Repeat.Any().Return(true);
+            Expect.Call(ActivePartitura.CurrentPage).Repeat.Any().Do(
+                (Func<Page>) delegate { return Partitura.GetPage(CurrentPageIndex); });
         }
 
         [TearDown]
         public virtual void TearDown()
         {
-            mocks.VerifyAll();
+            Mocks.VerifyAll();
         }
 
-        protected int currentPageIndex;
+        protected int CurrentPageIndex;
 
 
         public void RunAll()
@@ -66,7 +66,7 @@ namespace PartituraMagica
         [Test]
         public void TestAddRemoveBoxes()
         {
-            mocks.ReplayAll();
+            Mocks.ReplayAll();
             AssertShapeAt(50, 50, Shape.NothingSpecial);
             //A new rect of size 10/10 is created with current pos
             //as lower right corner
@@ -88,14 +88,14 @@ namespace PartituraMagica
             //last added box is always the selected box
             new RemoveBoxCommand(this).Execute();
             AssertShapeAt(45, 45, Shape.NothingSpecial);
-            Assert.AreEqual(panel.selection.Count, 0); //selection is cleared
+            Assert.AreEqual(panel.Selection.Count, 0); //selection is cleared
         }
 
 
         [Test]
         public void TestAddRemoveManyBoxes()
         {
-            mocks.ReplayAll();
+            Mocks.ReplayAll();
             new AddBoxCommand(new Point(100, 100), this).Execute();
             new AddBoxCommand(new Point(100, 120), this).Execute();
             new AddBoxCommand(new Point(100, 140), this).Execute();
@@ -122,7 +122,7 @@ namespace PartituraMagica
         [Test]
         public void TestLabel()
         {
-            mocks.ReplayAll();
+            Mocks.ReplayAll();
             //three boxes, first has one splitter, second has no splitter, third has two splitters
             new AddBoxCommand(new Point(100, 100), this).Execute();
             Update(Shape.BoxRightMargin, 100, 95, 140, 95);
@@ -165,7 +165,7 @@ namespace PartituraMagica
             //remove second box
             new SelectItemCommand(new Point(90, 110), this).Execute();
             new RemoveBoxCommand(this).Execute();
-            Assert.AreEqual(3, panel.rectangles.Count);
+            Assert.AreEqual(3, panel.Rectangles.Count);
             AssertPanelContains(new Rect(90, 130, 20, 10), "A");
             AssertPanelContains(new Rect(110, 130, 20, 10), null);
             AssertPanelContains(new Rect(130, 130, 10, 10), "B");
@@ -174,7 +174,7 @@ namespace PartituraMagica
         [Test]
         public void TestMoveLeftTop()
         {
-            mocks.ReplayAll();
+            Mocks.ReplayAll();
             new AddBoxCommand(new Point(100, 200), this).Execute();
 
             //try to move over left/top border
@@ -185,7 +185,7 @@ namespace PartituraMagica
         [Test]
         public void TestMoveRightBottom()
         {
-            mocks.ReplayAll();
+            Mocks.ReplayAll();
             new AddBoxCommand(new Point(100, 200), this).Execute();
 
             //try to move over right/bottom border
@@ -197,12 +197,12 @@ namespace PartituraMagica
         [Test]
         public void TestMoveSplitters()
         {
-            mocks.ReplayAll();
+            Mocks.ReplayAll();
             new AddBoxCommand(new Point(100, 200), this).Execute();
 
             //enlarge box to be 50 pixels wide.
             new UpdateBoxCommand(new Point(100, 200), new Point(140, 200), this).Execute();
-            CollectionAssert.Contains(panel.rectangles.Values, new Rect(90, 190, 50, 10));
+            CollectionAssert.Contains(panel.Rectangles.Values, new Rect(90, 190, 50, 10));
 
             new SplitBoxCommand(new Point(114, 200), this).Execute();
             new SplitBoxCommand(new Point(125, 200), this).Execute();
@@ -234,7 +234,7 @@ namespace PartituraMagica
         [Test]
         public void TestResizeLeftTop()
         {
-            mocks.ReplayAll();
+            Mocks.ReplayAll();
             new AddBoxCommand(new Point(100, 200), this).Execute();
 
             //try to resize over left/top border -> results in 0, 0
@@ -245,7 +245,7 @@ namespace PartituraMagica
         [Test]
         public void TestResizeMove()
         {
-            mocks.ReplayAll();
+            Mocks.ReplayAll();
             new AddBoxCommand(new Point(100, 200), this).Execute();
             //since we have only a single box, update can be executed 
             // everywhere within page borders
@@ -270,7 +270,7 @@ namespace PartituraMagica
         [Test]
         public void TestResizeRightBottom()
         {
-            mocks.ReplayAll();
+            Mocks.ReplayAll();
             new AddBoxCommand(new Point(100, 200), this).Execute();
 
             //try to resize over the right/bottom corner
@@ -281,7 +281,7 @@ namespace PartituraMagica
         [Test]
         public void TestSplitBox()
         {
-            mocks.ReplayAll();
+            Mocks.ReplayAll();
             new AddBoxCommand(new Point(100, 200), this).Execute();
 
             //enlarge second box to be 50 pixels wide (90,200,50,10)
@@ -297,27 +297,27 @@ namespace PartituraMagica
             AssertPanelContains(new Rect(90, 190, 25, 10));
             AssertPanelContains(new Rect(115, 190, 10, 10));
             AssertPanelContains(new Rect(125, 190, 15, 10));
-            Assert.AreEqual(3, panel.rectangles.Count);
+            Assert.AreEqual(3, panel.Rectangles.Count);
 
             //splitting again at same location has no effect
             new SplitBoxCommand(new Point(100, 100), this).Execute();
             AssertPanelContains(new Rect(90, 190, 25, 10));
             AssertPanelContains(new Rect(115, 190, 10, 10));
             AssertPanelContains(new Rect(125, 190, 15, 10));
-            Assert.AreEqual(3, panel.rectangles.Count);
+            Assert.AreEqual(3, panel.Rectangles.Count);
 
             //nothing happens, cause there is already a splitter at 115
             new SplitBoxCommand(new Point(120, 200), this).Execute();
             AssertPanelContains(new Rect(90, 190, 25, 10));
             AssertPanelContains(new Rect(115, 190, 10, 10));
             AssertPanelContains(new Rect(125, 190, 15, 10));
-            Assert.AreEqual(3, panel.rectangles.Count);
+            Assert.AreEqual(3, panel.Rectangles.Count);
         }
 
         [Test]
         public void TestUpdateMultipleBoxes()
         {
-            mocks.ReplayAll();
+            Mocks.ReplayAll();
             //overlapping on X axis assuming initial size of 10x10
             new AddBoxCommand(new Point(105, 50), this).Execute();
             new AddBoxCommand(new Point(100, 100), this).Execute();
@@ -334,7 +334,7 @@ namespace PartituraMagica
         [Test]
         public void TestUpdateRightMargin()
         {
-            mocks.ReplayAll();
+            Mocks.ReplayAll();
             new AddBoxCommand(new Point(100, 100), this).Execute();
             Assert.AreEqual(panel.LastRect, new Rect(90, 90, 10, 10));
 
@@ -353,7 +353,7 @@ namespace PartituraMagica
         [Test]
         public void TestUpdateSplittedBox()
         {
-            mocks.ReplayAll();
+            Mocks.ReplayAll();
             new AddBoxCommand(new Point(100, 200), this).Execute();
 
             //enlarge box to be 50 pixels wide.

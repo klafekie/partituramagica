@@ -13,10 +13,10 @@ namespace PartituraMagica
         {
             Debug.Assert(CanExecute());
             DialogResult c = DialogResult.No;
-            ICommand cmd = new SaveCommand(false, p);
+            ICommand cmd = new SaveCommand(false, P);
             if (cmd.CanExecute())
             {
-                c = p.FileSystem.AskToSave();
+                c = P.FileSystem.AskToSave();
                 if (c == DialogResult.Cancel)
                 {
                     return;
@@ -26,18 +26,18 @@ namespace PartituraMagica
                     cmd.Execute();
                 }
             }
-            if (p.Active.IsOpen && (!p.Active.Partitura.Dirty || c == DialogResult.No))
+            if (P.Active.IsOpen && (!P.Active.Partitura.Dirty || c == DialogResult.No))
             {
                 //file was really safed or user doesn't care
-                p.Panel.Clear();
-                p.Active.Close();
-                p.DisposePlayerView();
+                P.Panel.Clear();
+                P.Active.Close();
+                P.DisposePlayerView();
             }
         }
 
         public bool CanExecute()
         {
-            return p.Active != null && p.Active.IsOpen;
+            return P.Active != null && P.Active.IsOpen;
         }
     }
 }

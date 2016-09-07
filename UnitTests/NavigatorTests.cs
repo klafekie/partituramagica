@@ -14,23 +14,23 @@ namespace PartituraMagica
         [SetUp]
         public void Setup()
         {
-            mocks = new MockRepository();
-            view = mocks.StrictMock<IPlayerView>();
+            _mocks = new MockRepository();
+            _view = _mocks.StrictMock<IPlayerView>();
         }
 
         [TearDown]
         public void TearDown()
         {
-            mocks.VerifyAll();
+            _mocks.VerifyAll();
         }
 
-        private MockRepository mocks;
-        private IPlayerView view;
-        private static readonly List<Part> threeParts;
-        private static readonly string ABCCBBA = "ABCCBBA";
-        private static readonly double lA;
-        private static readonly double lB;
-        private static readonly double lC;
+        private MockRepository _mocks;
+        private IPlayerView _view;
+        private static readonly List<Part> ThreeParts;
+        private static readonly string Abccbba = "ABCCBBA";
+        private static readonly double LA;
+        private static readonly double LB;
+        private static readonly double LC;
 
         static NavigatorTests()
         {
@@ -38,23 +38,23 @@ namespace PartituraMagica
             a.Add(new Clipping(0, 10, 10, 100, 10));
             a.Add(new Clipping(0, 110, 10, 100, 10)); //box is split, but not labelled
             a.Add(new Clipping(0, 10, 20, 100, 10));
-            lA = 300;
+            LA = 300;
 
             Part b = new Part(); //part b stretches over two pages
             b.Add(new Clipping(0, 10, 30, 10, 10));
             b.Add(new Clipping(1, 11, 10, 10, 10));
             b.Add(new Clipping(1, 11, 30, 10, 10));
             b.Add(new Clipping(2, 12, 30, 10, 10));
-            lB = 40;
+            LB = 40;
 
             Part c = new Part(); //part c consists of a single split box
             c.Add(new Clipping(2, 22, 30, 10, 10));
-            lC = 10;
+            LC = 10;
 
-            threeParts = new List<Part>();
-            threeParts.Add(a);
-            threeParts.Add(b);
-            threeParts.Add(c);
+            ThreeParts = new List<Part>();
+            ThreeParts.Add(a);
+            ThreeParts.Add(b);
+            ThreeParts.Add(c);
         }
 
         public void RunAll()
@@ -73,10 +73,10 @@ namespace PartituraMagica
         [Test]
         public void EmptyPartsTest()
         {
-            mocks.ReplayAll();
+            _mocks.ReplayAll();
             try
             {
-                Navigator n = new Navigator(ABCCBBA, new List<Part>(), view);
+                Navigator n = new Navigator(Abccbba, new List<Part>(), _view);
                 n.Start();
                 Assert.Fail("Expected Exception");
             }
@@ -173,10 +173,10 @@ namespace PartituraMagica
         {
             //view.AppendLine(null);
             LastCall.IgnoreArguments().Repeat.Times(3);
-            view.GotoLine(0);
-            mocks.ReplayAll();
+            _view.GotoLine(0);
+            _mocks.ReplayAll();
 
-            Navigator n = new Navigator("A", threeParts, view);
+            Navigator n = new Navigator("A", ThreeParts, _view);
             n.Start();
         }
     }

@@ -43,18 +43,18 @@ namespace PartituraMagica
         [SetUp]
         public void Setup()
         {
-            mocks = new MockRepository();
-            image = new FakeImage();
+            _mocks = new MockRepository();
+            _image = new FakeImage();
         }
 
         [TearDown]
         public void TearDown()
         {
-            mocks.VerifyAll();
+            _mocks.VerifyAll();
         }
 
-        private MockRepository mocks;
-        private FakeImage image;
+        private MockRepository _mocks;
+        private FakeImage _image;
 
         public void RunAll()
         {
@@ -125,10 +125,10 @@ namespace PartituraMagica
         [Test]
         public void Black()
         {
-            image.Brightness = (x, y) => 0F;
-            mocks.ReplayAll();
+            _image.Brightness = (x, y) => 0F;
+            _mocks.ReplayAll();
 
-            BoxFinder f = new BoxFinder(image);
+            BoxFinder f = new BoxFinder(_image);
             IEnumerable<Rect> rects = f.Execute();
             Assert.AreEqual(rects.Count(), 0);
         }
@@ -137,10 +137,10 @@ namespace PartituraMagica
         [Test]
         public void Blanc()
         {
-            image.Brightness = (x, y) => 1F;
-            mocks.ReplayAll();
+            _image.Brightness = (x, y) => 1F;
+            _mocks.ReplayAll();
 
-            BoxFinder f = new BoxFinder(image);
+            BoxFinder f = new BoxFinder(_image);
             IEnumerable<Rect> rects = f.Execute();
             Assert.AreEqual(rects.Count(), 0);
         }
@@ -148,7 +148,7 @@ namespace PartituraMagica
         [Test]
         public void BoxesAtTopAndBottom()
         {
-            BoxFinder f = new BoxFinder(image);
+            BoxFinder f = new BoxFinder(_image);
             Rect[] systems = new Rect[2]
             {
                 new Rect(100, 100, 600, 10),
@@ -166,10 +166,10 @@ namespace PartituraMagica
         [Test]
         public void Chess()
         {
-            image.Brightness = (x, y) => x%2 == 0 ^ y%2 == 0 ? 1F : 0F;
-            mocks.ReplayAll();
+            _image.Brightness = (x, y) => x%2 == 0 ^ y%2 == 0 ? 1F : 0F;
+            _mocks.ReplayAll();
 
-            BoxFinder f = new BoxFinder(image);
+            BoxFinder f = new BoxFinder(_image);
             IEnumerable<Rect> rects = f.Execute();
             Assert.AreEqual(rects.Count(), 0);
         }
@@ -177,7 +177,7 @@ namespace PartituraMagica
         [Test]
         public void FourBoxes()
         {
-            BoxFinder f = new BoxFinder(image);
+            BoxFinder f = new BoxFinder(_image);
             Rect[] systems = new Rect[4]
             {
                 new Rect(100, 300, 600, 10),
@@ -203,7 +203,7 @@ namespace PartituraMagica
         [Test]
         public void OneBox()
         {
-            BoxFinder f = new BoxFinder(image);
+            BoxFinder f = new BoxFinder(_image);
             Rect[] systems = new Rect[1] {new Rect(100, 300, 600, 10)};
             List<Rect> boxes = f.GetBoxes(systems).ToList();
             Assert.AreEqual(boxes.Count, 1);
@@ -222,16 +222,16 @@ namespace PartituraMagica
             boxes = f.GetBoxes(systems).ToList();
             Assert.AreEqual(boxes.Count, 1);
             Assert.AreEqual(boxes[0].Y, 2700 - 150);
-            Assert.AreEqual(boxes[0].Bottom, image.Height - 1);
+            Assert.AreEqual(boxes[0].Bottom, _image.Height - 1);
         }
 
         [Test]
         public void OneSystem()
         {
-            image.Brightness = OneSystemImage;
-            mocks.ReplayAll();
+            _image.Brightness = OneSystemImage;
+            _mocks.ReplayAll();
 
-            BoxFinder f = new BoxFinder(image);
+            BoxFinder f = new BoxFinder(_image);
             List<Rect> lines = f.DetectSystems().ToList();
             Assert.AreEqual(lines.Count, 1);
 
@@ -244,10 +244,10 @@ namespace PartituraMagica
         [Test]
         public void ThreeSystems()
         {
-            image.Brightness = ThreeSystemsImage;
-            mocks.ReplayAll();
+            _image.Brightness = ThreeSystemsImage;
+            _mocks.ReplayAll();
 
-            BoxFinder f = new BoxFinder(image);
+            BoxFinder f = new BoxFinder(_image);
             List<Rect> lines = f.DetectSystems().ToList();
             Assert.AreEqual(lines.Count, 3);
 

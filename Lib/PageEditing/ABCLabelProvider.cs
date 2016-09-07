@@ -5,21 +5,21 @@ namespace PartituraMagica
 {
     /** first part is labelled "A", second part "B" etc */
 
-    internal class ABCLabelProvider : ILabelProvider
+    internal class AbcLabelProvider : ILabelProvider
     {
-        private int pageIndex;
-        private readonly Partitura partitura;
+        private int _pageIndex;
+        private readonly Partitura _partitura;
 
-        public ABCLabelProvider(Partitura partitura)
+        public AbcLabelProvider(Partitura partitura)
         {
-            this.partitura = partitura;
-            pageIndex = -1;
+            this._partitura = partitura;
+            _pageIndex = -1;
         }
 
         public string GetLabel(int id)
         {
-            Debug.Assert(pageIndex >= 0);
-            IList<Part> allParts = partitura.GetAllParts(pageIndex + 1);
+            Debug.Assert(_pageIndex >= 0);
+            IList<Part> allParts = _partitura.GetAllParts(_pageIndex + 1);
             int pos = -1;
             int partIndex = 0;
             for (; partIndex < allParts.Count; partIndex++)
@@ -42,7 +42,7 @@ namespace PartituraMagica
 
         public int PageIndex
         {
-            set { pageIndex = value; }
+            set { _pageIndex = value; }
         }
     }
 }

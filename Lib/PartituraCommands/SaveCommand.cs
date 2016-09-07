@@ -4,34 +4,34 @@ namespace PartituraMagica
 {
     public class SaveCommand : PartituraCommandBase, ICommand
     {
-        private readonly bool saveAs;
+        private readonly bool _saveAs;
 
         public SaveCommand(bool saveAs, ICommandParameters p)
             : base(p)
         {
-            this.saveAs = saveAs;
+            this._saveAs = saveAs;
         }
 
         public void Execute()
         {
             Debug.Assert(CanExecute());
-            string path = p.Active.Path;
+            string path = P.Active.Path;
 
-            if (saveAs || path == null)
+            if (_saveAs || path == null)
             {
-                path = p.FileSystem.ShowSaveDialog(FileType.Partitura);
+                path = P.FileSystem.ShowSaveDialog(FileType.Partitura);
             }
 
             if (path != null)
             {
-                p.Active.Save(path);
+                P.Active.Save(path);
             }
         }
 
         public bool CanExecute()
         {
-            return p.Active != null && p.Active.IsOpen
-                   && (saveAs || p.Active.Partitura.Dirty);
+            return P.Active != null && P.Active.IsOpen
+                   && (_saveAs || P.Active.Partitura.Dirty);
         }
     }
 }

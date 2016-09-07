@@ -14,11 +14,11 @@ namespace PartituraMagica
     [Serializable]
     public class Rect
     {
-        private Rect outerRect;
-        private System.Windows.Rect r;
+        private Rect _outerRect;
+        private System.Windows.Rect _r;
 
         public Rect(Rect rhs)
-            : this(rhs.X, rhs.Y, rhs.Width, rhs.Height, rhs.outerRect)
+            : this(rhs.X, rhs.Y, rhs.Width, rhs.Height, rhs._outerRect)
         {
         }
 
@@ -29,19 +29,19 @@ namespace PartituraMagica
 
         private Rect(double x, double y, double width, double height, Rect outerRect)
         {
-            r = new System.Windows.Rect(x, y, width, height);
-            this.outerRect = outerRect;
+            _r = new System.Windows.Rect(x, y, width, height);
+            this._outerRect = outerRect;
         }
 
         public Rect OuterRect
         {
-            get { return outerRect; }
-            set { outerRect = value; }
+            get { return _outerRect; }
+            set { _outerRect = value; }
         }
 
         public double X
         {
-            get { return r.X; }
+            get { return _r.X; }
         }
 
         public int XInt
@@ -51,7 +51,7 @@ namespace PartituraMagica
 
         public double Y
         {
-            get { return r.Y; }
+            get { return _r.Y; }
         }
 
         public int YInt
@@ -61,7 +61,7 @@ namespace PartituraMagica
 
         public double Width
         {
-            get { return r.Width; }
+            get { return _r.Width; }
         }
 
         public int WidthInt
@@ -71,7 +71,7 @@ namespace PartituraMagica
 
         public double Height
         {
-            get { return r.Height; }
+            get { return _r.Height; }
         }
 
         public int HeightInt
@@ -81,7 +81,7 @@ namespace PartituraMagica
 
         public double Left
         {
-            get { return r.Left; }
+            get { return _r.Left; }
         }
 
         public int LeftInt
@@ -91,7 +91,7 @@ namespace PartituraMagica
 
         public double Right
         {
-            get { return r.Right; }
+            get { return _r.Right; }
         }
 
         public int RightInt
@@ -101,32 +101,32 @@ namespace PartituraMagica
 
         public double Top
         {
-            get { return r.Top; }
+            get { return _r.Top; }
         }
 
         public double Bottom
         {
-            get { return r.Bottom; }
+            get { return _r.Bottom; }
         }
 
         public Point LeftTop
         {
-            get { return r.Location; }
+            get { return _r.Location; }
         }
 
         public Size Size
         {
-            get { return r.Size; }
+            get { return _r.Size; }
         }
 
         public Point TopLeft
         {
-            get { return r.TopLeft; }
+            get { return _r.TopLeft; }
         }
 
         public bool Contains(Point point)
         {
-            return r.Contains(point.X, point.Y);
+            return _r.Contains(point.X, point.Y);
         }
 
         //we intentionally dont check the outerRect/minSize here
@@ -149,26 +149,26 @@ namespace PartituraMagica
         {
             double width = Width;
             double height = Height;
-            if (outerRect != null)
+            if (_outerRect != null)
             {
-                if (x < outerRect.X)
+                if (x < _outerRect.X)
                 {
-                    x = outerRect.X;
+                    x = _outerRect.X;
                 }
-                if (y < outerRect.Y)
+                if (y < _outerRect.Y)
                 {
-                    y = outerRect.Y;
+                    y = _outerRect.Y;
                 }
-                if (x + width > outerRect.Right)
+                if (x + width > _outerRect.Right)
                 {
-                    x = outerRect.Right - width;
+                    x = _outerRect.Right - width;
                 }
-                if (y + height > outerRect.Bottom)
+                if (y + height > _outerRect.Bottom)
                 {
-                    y = outerRect.Bottom - height;
+                    y = _outerRect.Bottom - height;
                 }
             }
-            return new Rect(x, y, width, height, outerRect);
+            return new Rect(x, y, width, height, _outerRect);
         }
 
         private Rect SafeCreateRect(double x, double y, double width, double height, Size? minSize)
@@ -179,22 +179,22 @@ namespace PartituraMagica
                 if (width < minSize.Value.Width || height < minSize.Value.Height)
                     return this;
             }
-            if (outerRect != null)
+            if (_outerRect != null)
             {
-                if (x < outerRect.X)
+                if (x < _outerRect.X)
                 {
-                    width -= outerRect.X - x;
-                    x = outerRect.X;
+                    width -= _outerRect.X - x;
+                    x = _outerRect.X;
                 }
-                if (y < outerRect.Y)
+                if (y < _outerRect.Y)
                 {
-                    height -= outerRect.Y - y;
-                    y = outerRect.Y;
+                    height -= _outerRect.Y - y;
+                    y = _outerRect.Y;
                 }
-                if (x + width > outerRect.Right) width = outerRect.Right - x;
-                if (y + height > outerRect.Bottom) height = outerRect.Bottom - y;
+                if (x + width > _outerRect.Right) width = _outerRect.Right - x;
+                if (y + height > _outerRect.Bottom) height = _outerRect.Bottom - y;
             }
-            return new Rect(x, y, width, height, outerRect);
+            return new Rect(x, y, width, height, _outerRect);
         }
 
         public Rect AddBelow(double delta)
@@ -269,7 +269,7 @@ namespace PartituraMagica
 
         public bool IntersectsWith(Rect rect)
         {
-            return r.IntersectsWith(rect.r);
+            return _r.IntersectsWith(rect._r);
         }
 
         public override bool Equals(object o)
@@ -280,7 +280,7 @@ namespace PartituraMagica
         public bool Equals(Rect value)
         {
             if (value == null) return false;
-            return r.Equals(value.r);
+            return _r.Equals(value._r);
         }
 
         public static bool operator !=(Rect rect1, Rect rect2)
@@ -296,12 +296,12 @@ namespace PartituraMagica
 
         public override int GetHashCode()
         {
-            return r.GetHashCode();
+            return _r.GetHashCode();
         }
 
         public override string ToString()
         {
-            return r.ToString();
+            return _r.ToString();
         }
     }
 }

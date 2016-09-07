@@ -12,8 +12,8 @@ namespace PartituraMagica
 
     public partial class MainWindow : Window, IMainWindow
     {
-        private readonly EditingController controller;
-        private Point lastClickPos;
+        private readonly EditingController _controller;
+        private Point _lastClickPos;
 
         public MainWindow()
         {
@@ -21,7 +21,7 @@ namespace PartituraMagica
 
             InitializeComponent();
 
-            controller = new EditingController(this, new DrawingPanel(PageCanvas));
+            _controller = new EditingController(this, new DrawingPanel(PageCanvas));
         }
 
         public static RoutedUICommand AddPage { get; } = new
@@ -68,7 +68,7 @@ namespace PartituraMagica
 
         public void CloseAndExit()
         {
-            controller.Dispose();
+            _controller.Dispose();
             Application.Current.Shutdown();
         }
 
@@ -97,30 +97,30 @@ namespace PartituraMagica
         private void CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             string name = ((RoutedCommand) e.Command).Name;
-            e.CanExecute = controller.CanExecuteCommand(name);
+            e.CanExecute = _controller.CanExecuteCommand(name);
         }
 
         private void Execute(object sender, ExecutedRoutedEventArgs e)
         {
             string name = ((RoutedCommand) e.Command).Name;
-            controller.CreateCommand(name).Execute();
+            _controller.CreateCommand(name).Execute();
         }
 
         private void PageCanvas_MouseMove(object sender, MouseEventArgs e)
         {
             Point currentPos = e.GetPosition(PageCanvas);
             SetMouseCursor(currentPos);
-            controller.CreateMouseMoveCommand(
-                lastClickPos, currentPos,
+            _controller.CreateMouseMoveCommand(
+                _lastClickPos, currentPos,
                 e.LeftButton == MouseButtonState.Pressed).TryExecute();
 
-            lastClickPos = currentPos;
+            _lastClickPos = currentPos;
         }
 
         private void SetMouseCursor(Point currentPos)
         {
             Cursor cursor = Cursors.Arrow;
-            Shape type = controller.GetShapeAt(currentPos);
+            Shape type = _controller.GetShapeAt(currentPos);
             switch (type)
             {
                 case Shape.BoxContent:
@@ -155,8 +155,8 @@ namespace PartituraMagica
         private void PageCanvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Point pos = e.GetPosition(PageCanvas);
-            lastClickPos = pos;
-            controller.CreateMouseDownCommand(pos, e.ClickCount).TryExecute();
+            _lastClickPos = pos;
+            _controller.CreateMouseDownCommand(pos, e.ClickCount).TryExecute();
         }
 
         private void WindowClosing(object sender, CancelEventArgs e)
@@ -165,7 +165,7 @@ namespace PartituraMagica
             //first when window is closed by user,
             //this leads to a call to MainWindow.CloseAndExit() which fires
             //this event again.
-            ICommand cmd = controller.CreateCommand("CloseApplication");
+            ICommand cmd = _controller.CreateCommand("CloseApplication");
 
             //Cancel closing if the piece is still open
             e.Cancel = cmd.TryExecute();
@@ -178,16 +178,16 @@ namespace PartituraMagica
 
         private void patternBox_PreviewLostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
-            controller.CreateCommand("UpdatePartPattern").TryExecute();
+            _controller.CreateCommand("UpdatePartPattern").TryExecute();
         }
 
         private void patternBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Space)
             {
-                if (controller.CreateCommand("UpdatePartPattern").TryExecute())
+                if (_controller.CreateCommand("UpdatePartPattern").TryExecute())
                 {
-                    controller.CreateCommand("StartPlayer").TryExecute();
+                    _controller.CreateCommand("StartPlayer").TryExecute();
                 }
                 e.Handled = true;
             }

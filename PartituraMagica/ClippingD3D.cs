@@ -15,11 +15,11 @@ namespace PartituraMagica
 
     internal class ClippingD3D : IDisposable
     {
-        private readonly Rect coords;
+        private readonly Rect _coords;
 
-        private readonly Color foregroundColor;
-        private readonly IGreyImage image;
-        private readonly bool invertColors;
+        private readonly Color _foregroundColor;
+        private readonly IGreyImage _image;
+        private readonly bool _invertColors;
 
         /// <summary>
         /// The D3D representation of the contents of this clipping, which can be 'scrolled' by the D3D rendering.
@@ -30,20 +30,20 @@ namespace PartituraMagica
 
         public ClippingD3D(IGreyImage image, Rect coords, bool invertColors, Color foregroundColor)
         {
-            this.image = image;
-            this.invertColors = invertColors;
-            this.foregroundColor = foregroundColor;
-            this.coords = new Rect(coords);
+            this._image = image;
+            this._invertColors = invertColors;
+            this._foregroundColor = foregroundColor;
+            this._coords = new Rect(coords);
         }
 
         public float Width
         {
-            get { return (float) coords.Width; }
+            get { return (float) _coords.Width; }
         }
 
         public float Height
         {
-            get { return (float) coords.Height; }
+            get { return (float) _coords.Height; }
         }
 
         public double XPos { get; private set; }
@@ -63,7 +63,7 @@ namespace PartituraMagica
 
         public void Init(Device dev, float offset)
         {
-            _mesh = Mesh.CreateBox(dev, (float) coords.Width, (float) coords.Height, 0f);
+            _mesh = Mesh.CreateBox(dev, (float) _coords.Width, (float) _coords.Height, 0f);
 
             XPos = offset;
 
@@ -77,8 +77,8 @@ namespace PartituraMagica
                 //Debug.WriteLine("offset: " + offset.ToString());
                 DataStream stream = _mesh.LockVertexBuffer(LockFlags.None);
 
-                float width = image.Width*96F/(float) image.DpiX;
-                float height = image.Height*96F/(float) image.DpiY;
+                float width = _image.Width*96F/(float) _image.DpiX;
+                float height = _image.Height*96F/(float) _image.DpiY;
 
                 var vertices = new PositionedColoredTextured[_mesh.VertexCount];
                 for (int i = 0; i < _mesh.VertexCount; ++i)
@@ -92,15 +92,15 @@ namespace PartituraMagica
                 for (int i = 0; i < _mesh.VertexCount; ++i)
                 {
                     var vertice = vertices[i];
-                    float left = (float) coords.X/width;
-                    float top = (float) coords.Y/height;
-                    float right = (float) coords.Right/width;
-                    float bottom = (float) coords.Bottom/height;
+                    float left = (float) _coords.X/width;
+                    float top = (float) _coords.Y/height;
+                    float right = (float) _coords.Right/width;
+                    float bottom = (float) _coords.Bottom/height;
 
-                    vertice.Color = foregroundColor.ToArgb();
+                    vertice.Color = _foregroundColor.ToArgb();
                     vertice.Tu = vertice.X >= 0 ? right : left;
                     vertice.Tv = vertice.Y >= 0 ? top : bottom;
-                    vertice.X += offset + (float) coords.Width/2F;
+                    vertice.X += offset + (float) _coords.Width/2F;
                     //Debug.WriteLine(String.Format("{0}: ({1}; {2}; {3}) u:{4} v:{5}", i, vertice.X, vertice.Y, vertice.Z, vertice.Tu, vertice.Tv));
 
                     stream.Write(vertice);
@@ -121,7 +121,7 @@ namespace PartituraMagica
                 return;
             }
 
-            dev.SetTexture(0, Cache.Get(image, dev).Texture);
+            dev.SetTexture(0, Cache.Get(_image, dev).Texture);
 
             // Set the 'blending mode': how colors are mixed.
             // Note: the following three calls (ColorOperation, ColorArg1, ColorArg2 belong together [according to
@@ -134,7 +134,7 @@ namespace PartituraMagica
              * - Disabling the ColorArg2 line of setting the default (= .Current) explicitly gives no visible texture.
              */
             dev.SetTextureStageState(0, TextureStage.ColorOperation,
-                invertColors
+                _invertColors
                     ? TextureOperation.Subtract
                     : TextureOperation.Modulate);
             dev.SetTextureStageState(0, TextureStage.ColorArg1, TextureArgument.Diffuse);
@@ -163,7 +163,7 @@ namespace PartituraMagica
 
         private class Cache
         {
-            private static readonly Dictionary<string, Cache> loadedPages = new Dictionary<string, Cache>();
+            private static readonly Dictionary<string, Cache> LoadedPages = new Dictionary<string, Cache>();
 
             private Cache(Texture t)
             {
@@ -174,16 +174,16 @@ namespace PartituraMagica
 
             public static void Cleanup()
             {
-                foreach (Cache b in loadedPages.Values)
+                foreach (Cache b in LoadedPages.Values)
                 {
                     b.Texture.Dispose();
                 }
-                loadedPages.Clear();
+                LoadedPages.Clear();
             }
 
             public static Cache Get(IGreyImage image, Device dev)
             {
-                if (!loadedPages.ContainsKey(image.Path))
+                if (!LoadedPages.ContainsKey(image.Path))
                 {
                     //@todo p2 optimize scaling so that it doesn't flicker for low zoom factors
                     //for this we can use mip mapping and find the optimal filter for the texture
@@ -211,10 +211,10 @@ namespace PartituraMagica
                         filter, //how to reduce the source image
                         Filter.None, //how to handle transition from one mip map to the smaller/bigger one
                         0x00000000);
-                    loadedPages[image.Path] = new Cache(texture);
+                    LoadedPages[image.Path] = new Cache(texture);
                     Trace.TraceInformation("success");
                 }
-                return loadedPages[image.Path];
+                return LoadedPages[image.Path];
             }
         }
     }

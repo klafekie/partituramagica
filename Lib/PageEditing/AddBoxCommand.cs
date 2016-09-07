@@ -5,31 +5,31 @@ namespace PartituraMagica
 {
     public class AddBoxCommand : PartituraCommandBase, ICommand
     {
-        private readonly Rect r;
+        private readonly Rect _r;
 
         public AddBoxCommand(Point pos, ICommandParameters p)
             : base(p)
         {
-            r = CreateRect(pos);
+            _r = CreateRect(pos);
         }
 
         public AddBoxCommand(Rect r, ICommandParameters p)
             : base(p)
         {
-            this.r = r;
+            this._r = r;
         }
 
         public bool CanExecute()
         {
-            return p.Active != null && p.Active.CurrentPage != null &&
-                   !p.Active.CurrentPage.Overlaps(r);
+            return P.Active != null && P.Active.CurrentPage != null &&
+                   !P.Active.CurrentPage.Overlaps(_r);
         }
 
         public void Execute()
         {
             Debug.Assert(CanExecute());
             //Trace.TraceInformation("Adding Box at " + r);
-            p.Active.Partitura.AddBox(p.Active.CurrentPageIndex, r, p.Panel);
+            P.Active.Partitura.AddBox(P.Active.CurrentPageIndex, _r, P.Panel);
         }
 
         private Rect CreateRect(Point pos)

@@ -14,13 +14,13 @@ namespace PartituraMagica
 
         public bool CanExecute()
         {
-            return p.Active.CurrentPage != null && p.Active.CurrentPage.IsBoxSelected();
+            return P.Active.CurrentPage != null && P.Active.CurrentPage.IsBoxSelected();
         }
 
         public void Execute()
         {
             Debug.Assert(CanExecute());
-            p.Active.Partitura.RemoveSelectedBox(p.Active.CurrentPageIndex, p.Panel);
+            P.Active.Partitura.RemoveSelectedBox(P.Active.CurrentPageIndex, P.Panel);
         }
     }
 }

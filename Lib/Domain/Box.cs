@@ -16,17 +16,17 @@ namespace PartituraMagica
     {
         //if this box (or a splitter in it) is labelled, this holds the
         //corresponding box/splitter ids. empty otherwise
-        private readonly IList<int> labelIds;
-        private int selectedId;
-        private readonly SplitterList splitters;
+        private readonly IList<int> _labelIds;
+        private int _selectedId;
+        private readonly SplitterList _splitters;
 
         public Box(int id, Rect coords)
         {
             Id = id;
-            selectedId = -1;
-            labelIds = new List<int>();
+            _selectedId = -1;
+            _labelIds = new List<int>();
 
-            splitters = new SplitterList();
+            _splitters = new SplitterList();
             Coords = coords;
         }
 
@@ -38,10 +38,10 @@ namespace PartituraMagica
         {
             Id = rhs.Id;
             Coords = new Rect(rhs.Coords);
-            splitters = new SplitterList(rhs.splitters);
+            _splitters = new SplitterList(rhs._splitters);
 
-            selectedId = rhs.selectedId;
-            labelIds = rhs.labelIds;
+            _selectedId = rhs._selectedId;
+            _labelIds = rhs._labelIds;
         }
 
         public int Id { get; }
@@ -64,7 +64,7 @@ namespace PartituraMagica
             {
                 double borderLine = MakeRelative(Coords.X);
                 borderLine = Math.Max(borderLine,
-                    splitters.RightmostPos);
+                    _splitters.RightmostPos);
                 return new Size(borderLine + MinItemDistance, MinItemDistance);
             }
         }
@@ -147,7 +147,7 @@ namespace PartituraMagica
 
         private int FindSplitterAt(Point pos)
         {
-            return splitters.FindAt(MakeRelative(pos.X));
+            return _splitters.FindAt(MakeRelative(pos.X));
         }
 
         public bool Update(Point lastPos, Point newPos)
@@ -188,7 +188,7 @@ namespace PartituraMagica
                     result = Coords.AddLeft(-deltaX, MinBoxSize);
                     break;
                 case Shape.BoxSplitter:
-                    splitterMoved = splitters.MoveSplitter(deltaX, FindSplitterAt(lastPos), Coords.Size);
+                    splitterMoved = _splitters.MoveSplitter(deltaX, FindSplitterAt(lastPos), Coords.Size);
                     break;
                 default:
                     throw new ArgumentException("unexpected shapeType");
@@ -208,7 +208,7 @@ namespace PartituraMagica
             {
                 desiredPos = Coords.Left + Coords.Width/2.0;
             }
-            splitters.TrySplit(MakeRelative(desiredPos), Id, Coords.Size);
+            _splitters.TrySplit(MakeRelative(desiredPos), Id, Coords.Size);
         }
 
         /** paint without changing the selection or the labelling */
@@ -238,12 +238,12 @@ namespace PartituraMagica
         internal void Select(Point pos, IDrawingPanel panel)
         {
             Paint(panel); //add any missing rectangles
-            if (selectedId != -1)
+            if (_selectedId != -1)
             {
-                panel.DeselectRectangle(selectedId);
+                panel.DeselectRectangle(_selectedId);
             }
-            selectedId = GetIdAt(pos);
-            panel.SelectRectangle(selectedId);
+            _selectedId = GetIdAt(pos);
+            panel.SelectRectangle(_selectedId);
         }
 
         private int GetIdAt(Point pos)
@@ -266,11 +266,11 @@ namespace PartituraMagica
 
         internal void Deselect(IDrawingPanel panel)
         {
-            if (selectedId != -1)
+            if (_selectedId != -1)
             {
-                panel.DeselectRectangle(selectedId);
+                panel.DeselectRectangle(_selectedId);
             }
-            selectedId = -1;
+            _selectedId = -1;
         }
 
         //or better Hide()?
@@ -278,7 +278,7 @@ namespace PartituraMagica
         {
             panel.RemoveRectangle(Id);
 
-            foreach (int id in splitters.Ids)
+            foreach (int id in _splitters.Ids)
             {
                 panel.RemoveRectangle(id);
             }
@@ -302,7 +302,7 @@ namespace PartituraMagica
 
             foreach (KeyValuePair<int, Rect> entry in withId)
             {
-                if (labelIds.Contains(entry.Key)
+                if (_labelIds.Contains(entry.Key)
                     && !currentPart.IsEmpty)
                 {
                     //beginning of a new part...
@@ -325,7 +325,7 @@ namespace PartituraMagica
         internal IEnumerable<KeyValuePair<int, Rect>> GetAllCoordsWithIds()
         {
             IEnumerable<KeyValuePair<int, Rect>> relResults =
-                splitters.GetAllCoordsWithIds(Id, Coords.Size);
+                _splitters.GetAllCoordsWithIds(Id, Coords.Size);
 
             var result = from entry in relResults
                 select new KeyValuePair<int, Rect>(entry.Key, MakeAbsolute(entry.Value));
@@ -334,22 +334,22 @@ namespace PartituraMagica
 
         internal void LabelSelection()
         {
-            labelIds.Add(selectedId);
+            _labelIds.Add(_selectedId);
         }
 
         internal bool IsSelectionLabelled()
         {
-            return labelIds.Contains(selectedId);
+            return _labelIds.Contains(_selectedId);
         }
 
         internal void UnLabelSelection()
         {
-            labelIds.Remove(selectedId);
+            _labelIds.Remove(_selectedId);
         }
 
         internal bool IsLeftSelected()
         {
-            return selectedId == Id;
+            return _selectedId == Id;
         }
 
         /// a splitter is a vertical line that splits a box.
@@ -359,11 +359,11 @@ namespace PartituraMagica
         [Serializable]
         private class SplitterList
         {
-            private readonly SortedList<double, int> splitters;
+            private readonly SortedList<double, int> _splitters;
 
             internal SplitterList()
             {
-                splitters = new SortedList<double, int>();
+                _splitters = new SortedList<double, int>();
             }
 
             /// <summary>
@@ -373,34 +373,34 @@ namespace PartituraMagica
             internal SplitterList(SplitterList rhs)
                 : this()
             {
-                foreach (KeyValuePair<double, int> entry in rhs.splitters)
+                foreach (KeyValuePair<double, int> entry in rhs._splitters)
                 {
-                    splitters.Add(entry.Key, entry.Value);
+                    _splitters.Add(entry.Key, entry.Value);
                 }
             }
 
             internal IEnumerable<int> Ids
             {
-                get { return splitters.Values; }
+                get { return _splitters.Values; }
             }
 
             internal double RightmostPos
             {
                 get
                 {
-                    if (splitters.Count == 0) return 0D;
-                    return splitters.Last().Key;
+                    if (_splitters.Count == 0) return 0D;
+                    return _splitters.Last().Key;
                 }
             }
 
             internal void Add(double pos, int id)
             {
-                splitters.Add(pos, id);
+                _splitters.Add(pos, id);
             }
 
             internal int FindAt(double posX)
             {
-                var entries = (from entry in splitters
+                var entries = (from entry in _splitters
                     where posX <= entry.Key + Page.ClickTolerance &&
                           posX >= entry.Key - Page.ClickTolerance
                     select entry).ToArray();
@@ -420,7 +420,7 @@ namespace PartituraMagica
                 double width = 0;
                 int id = -1;
                 int i = 0;
-                foreach (KeyValuePair<double, int> entry in splitters)
+                foreach (KeyValuePair<double, int> entry in _splitters)
                 {
                     if (i == 0)
                     {
@@ -467,7 +467,7 @@ namespace PartituraMagica
             public bool MoveSplitter(double deltaX, int id, Size boxSize)
             {
                 if (deltaX == 0) return false;
-                double oldPos = (from entry in splitters
+                double oldPos = (from entry in _splitters
                         where entry.Value == id
                         select entry.Key).
                     Single();
@@ -475,8 +475,8 @@ namespace PartituraMagica
                 bool wouldWork = EnoughRoomForSplitterAt(desiredPos, id, boxSize);
                 if (wouldWork)
                 {
-                    splitters.Remove(oldPos);
-                    splitters.Add(desiredPos, id);
+                    _splitters.Remove(oldPos);
+                    _splitters.Add(desiredPos, id);
                 }
                 return wouldWork;
             }
@@ -486,8 +486,8 @@ namespace PartituraMagica
             {
                 if (EnoughRoomForSplitterAt(splitterPos, -1, boxSize))
                 {
-                    int splitterId = splitters.Count + 1000*(boxId + 1);
-                    splitters.Add(splitterPos, splitterId);
+                    int splitterId = _splitters.Count + 1000*(boxId + 1);
+                    _splitters.Add(splitterPos, splitterId);
                 }
             }
 

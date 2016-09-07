@@ -6,7 +6,7 @@ namespace PartituraMagica
 {
     public class FakeFileSystem : IFileSystem
     {
-        public SortedList<string, List<string>> matchingFileNames = new SortedList<string, List<string>>();
+        public SortedList<string, List<string>> MatchingFileNames = new SortedList<string, List<string>>();
 
         public virtual ICollection<string> GetMatchingFileNames(string path, string pattern)
         {
@@ -51,11 +51,11 @@ namespace PartituraMagica
 
         public ICollection<string> GetNames(string path)
         {
-            if (!matchingFileNames.ContainsKey(path))
+            if (!MatchingFileNames.ContainsKey(path))
             {
-                matchingFileNames.Add(path, new List<string>());
+                MatchingFileNames.Add(path, new List<string>());
             }
-            return matchingFileNames[path];
+            return MatchingFileNames[path];
         }
     }
 }

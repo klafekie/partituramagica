@@ -12,9 +12,9 @@ namespace PartituraMagica
         public void Execute()
         {
             Debug.Assert(CanExecute());
-            if (!p.Active.IsOpen || new ClosePartituraCommand(p).TryExecute())
+            if (!P.Active.IsOpen || new ClosePartituraCommand(P).TryExecute())
             {
-                p.MainWindow.CloseAndExit();
+                P.MainWindow.CloseAndExit();
             }
         }
 

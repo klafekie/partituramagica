@@ -10,7 +10,7 @@ namespace PartituraMagica
 
     public partial class SpeedToolStrip : ToolStrip
     {
-        private bool paused;
+        private bool _paused;
 
         public SpeedToolStrip()
         {
@@ -26,12 +26,12 @@ namespace PartituraMagica
 
         public bool Paused
         {
-            get { return paused; }
+            get { return _paused; }
             set
             {
                 btnPause.Text = value ? "Resume" : "Pause";
                 btnPause.Checked = value;
-                paused = value;
+                _paused = value;
             }
         }
 
@@ -83,7 +83,7 @@ namespace PartituraMagica
                     }
                     break;
                 case Keys.Space:
-                    paused = true;
+                    _paused = true;
                     break;
             }
         }

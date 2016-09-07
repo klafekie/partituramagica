@@ -11,19 +11,19 @@ namespace PartituraMagica
 
         public bool CanExecute()
         {
-            if (p.Active == null || !p.Active.IsOpen) return false;
-            if (p.Active.CurrentPageIndex == 0 && p.Active.CurrentPage.IsLeftTopSelected())
+            if (P.Active == null || !P.Active.IsOpen) return false;
+            if (P.Active.CurrentPageIndex == 0 && P.Active.CurrentPage.IsLeftTopSelected())
             {
                 //the implicit 'A' cannot be removed
                 return false;
             }
-            return p.Active.CurrentPage.IsBoxSelected() && p.Active.CurrentPage.IsSelectionLabelled();
+            return P.Active.CurrentPage.IsBoxSelected() && P.Active.CurrentPage.IsSelectionLabelled();
         }
 
         public void Execute()
         {
             Debug.Assert(CanExecute());
-            p.Active.Partitura.UnLabelSelection(p.Panel, p.Active.CurrentPageIndex);
+            P.Active.Partitura.UnLabelSelection(P.Panel, P.Active.CurrentPageIndex);
         }
     }
 }

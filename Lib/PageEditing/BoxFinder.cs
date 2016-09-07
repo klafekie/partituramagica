@@ -29,57 +29,57 @@ namespace PartituraMagica
         private const double LINE_PATTERN_WIDTH = 0.1D;
         private const double SMALL_LINE_PATTERN_WIDTH = 0.01D;
         private const double LINE_PATTERN_HEIGHT = 0.0004D;
-        private const double LINE_BRIGHTNESS_THRESHOLD = 0.5D;
-        private const double EDGE_BRIGHTNESS_THRESHOLD = 0.85;
+        private const double LineBrightnessThreshold = 0.5D;
+        private const double EdgeBrightnessThreshold = 0.85;
         private const double DEFAULT_BOX_HEIGHT = 0.1D;
         private const double MAX_BOX_HEIGHT = DEFAULT_BOX_HEIGHT*1.3D;
         private const double MIN_SYSTEM_DISTANCE = 3D*MAX_LINE_DISTANCE;
 
-        private readonly IGreyImage image;
+        private readonly IGreyImage _image;
 
         public BoxFinder(IGreyImage image)
         {
-            this.image = image;
+            this._image = image;
         }
 
         private int LinePatternWidth
         {
-            get { return (int) Math.Round(image.Width*LINE_PATTERN_WIDTH); }
+            get { return (int) Math.Round(_image.Width*LINE_PATTERN_WIDTH); }
         }
 
         private int SmallLinePatternWidth
         {
-            get { return (int) Math.Round(image.Width*SMALL_LINE_PATTERN_WIDTH); }
+            get { return (int) Math.Round(_image.Width*SMALL_LINE_PATTERN_WIDTH); }
         }
 
         private int LinePatternHeight
         {
-            get { return (int) Math.Ceiling(image.Height*LINE_PATTERN_HEIGHT); }
+            get { return (int) Math.Ceiling(_image.Height*LINE_PATTERN_HEIGHT); }
         }
 
         private int MaxLineDistance
         {
-            get { return (int) Math.Round(image.Height*MAX_LINE_DISTANCE); }
+            get { return (int) Math.Round(_image.Height*MAX_LINE_DISTANCE); }
         }
 
         private int MinLineDistance
         {
-            get { return (int) Math.Round(image.Height*MIN_LINE_DISTANCE); }
+            get { return (int) Math.Round(_image.Height*MIN_LINE_DISTANCE); }
         }
 
         public double DefaultBoxHeight
         {
-            get { return image.Height*DEFAULT_BOX_HEIGHT; }
+            get { return _image.Height*DEFAULT_BOX_HEIGHT; }
         }
 
         public double MinSystemDistance
         {
-            get { return image.Height*MIN_SYSTEM_DISTANCE; }
+            get { return _image.Height*MIN_SYSTEM_DISTANCE; }
         }
 
         public double MaxBoxHeight
         {
-            get { return image.Height*MAX_BOX_HEIGHT; }
+            get { return _image.Height*MAX_BOX_HEIGHT; }
         }
 
         /** 
@@ -95,8 +95,8 @@ namespace PartituraMagica
 
             //@todo p2 where can we get the 96 dpi from?
             //maybe from the paint graphics object?
-            double xFactor = 96D/image.DpiX;
-            double yFactor = 96D/image.DpiY;
+            double xFactor = 96D/_image.DpiX;
+            double yFactor = 96D/_image.DpiY;
 
             return from s in boxes
                 select s.Scale(xFactor, yFactor);
@@ -130,7 +130,7 @@ namespace PartituraMagica
                         MaxBoxHeight/2);
                 }
 
-                double spaceBelow = Math.Min(image.Height - current.Bottom - 1, defaultSpacing);
+                double spaceBelow = Math.Min(_image.Height - current.Bottom - 1, defaultSpacing);
                 if (next != null)
                 {
                     spaceBelow = Math.Min(
@@ -228,7 +228,7 @@ namespace PartituraMagica
             edgeFound = false;
             rotationCorrection = 0;
             int right;
-            for (right = system.First().RightInt; right < image.Width && !edgeFound; right++)
+            for (right = system.First().RightInt; right < _image.Width && !edgeFound; right++)
             {
                 edgeFound = FindEndingAt(system, right - SmallLinePatternWidth, ref rotationCorrection);
             }
@@ -261,7 +261,7 @@ namespace PartituraMagica
                 darkest = mean;
             }
 
-            return darkest >= EDGE_BRIGHTNESS_THRESHOLD;
+            return darkest >= EdgeBrightnessThreshold;
         }
 
         private double GetSystemBrightnessAt(IEnumerable<Rect> system, int x, int rotationCorrection)
@@ -271,7 +271,7 @@ namespace PartituraMagica
             foreach (Rect orig in system)
             {
                 double y = orig.Y + rotationCorrection;
-                if (y >= 0 && y < image.Height)
+                if (y >= 0 && y < _image.Height)
                 {
                     Rect smallLinePattern = new Rect(x, y, SmallLinePatternWidth, LinePatternHeight);
                     result += GetMeanBrightness(smallLinePattern);
@@ -286,12 +286,12 @@ namespace PartituraMagica
         private IEnumerable<LinePattern> GetLineCandidates()
         {
             List<LinePattern> lineCandidates = new List<LinePattern>();
-            int x = (image.Width - LinePatternWidth)/2;
-            for (int y = 0; y <= image.Height - LinePatternHeight; y++)
+            int x = (_image.Width - LinePatternWidth)/2;
+            for (int y = 0; y <= _image.Height - LinePatternHeight; y++)
             {
                 Rect linePattern = new Rect(x, y, LinePatternWidth, LinePatternHeight);
                 double mean = GetMeanBrightness(linePattern);
-                if (mean < LINE_BRIGHTNESS_THRESHOLD)
+                if (mean < LineBrightnessThreshold)
                 {
                     lineCandidates.Add(new LinePattern(linePattern, mean));
                 }
@@ -309,14 +309,14 @@ namespace PartituraMagica
             {
                 if (lastLine != null)
                 {
-                    if (currentLine.rect.Y - lastLine.rect.Y > MaxLineDistance)
+                    if (currentLine.Rect.Y - lastLine.Rect.Y > MaxLineDistance)
                     {
                         groupedLines.Add(currentPack);
                         currentPack = new List<Rect>();
                     }
                 }
                 lastLine = currentLine;
-                currentPack.Add(currentLine.rect);
+                currentPack.Add(currentLine.Rect);
             }
             if (currentPack.Count > 0)
             {
@@ -342,11 +342,11 @@ namespace PartituraMagica
                 while (i < candidateList.Count - 1)
                 {
                     LinePattern nextLine = candidateList[i + 1];
-                    if (nextLine.rect.Y > currentLine.rect.Y + MinLineDistance)
+                    if (nextLine.Rect.Y > currentLine.Rect.Y + MinLineDistance)
                     {
                         break;
                     }
-                    if (nextLine.meanBrightness < currentLine.meanBrightness)
+                    if (nextLine.MeanBrightness < currentLine.MeanBrightness)
                     {
                         currentLine = nextLine;
                     }
@@ -365,7 +365,7 @@ namespace PartituraMagica
             {
                 for (int j = r.YInt; j < r.Bottom; j++)
                 {
-                    brightness += image.Brightness(i, j);
+                    brightness += _image.Brightness(i, j);
                 }
             }
             double mean = brightness/(r.Width*r.Height);
@@ -375,18 +375,18 @@ namespace PartituraMagica
 
         private class LinePattern
         {
-            public readonly double meanBrightness;
-            public readonly Rect rect;
+            public readonly double MeanBrightness;
+            public readonly Rect Rect;
 
             public LinePattern(Rect r, double mean)
             {
-                rect = r;
-                meanBrightness = mean;
+                Rect = r;
+                MeanBrightness = mean;
             }
 
             public override string ToString()
             {
-                return rect + "(" + meanBrightness + ")";
+                return Rect + "(" + MeanBrightness + ")";
             }
         }
     }

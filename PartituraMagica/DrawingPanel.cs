@@ -11,17 +11,17 @@ namespace PartituraMagica
 {
     internal class DrawingPanel : IDrawingPanel
     {
-        private static readonly Brush selectedColor = Brushes.LightGreen;
-        private static readonly Brush notSelectedColor = Brushes.DarkSlateBlue;
+        private static readonly Brush SelectedColor = Brushes.LightGreen;
+        private static readonly Brush NotSelectedColor = Brushes.DarkSlateBlue;
 
-        private string currentImagePath;
-        private Dictionary<int, Clipping> id2clipping;
-        private readonly Dictionary<string, GreyImage> imageCache = new Dictionary<string, GreyImage>();
-        private readonly Canvas pageCanvas;
+        private string _currentImagePath;
+        private Dictionary<int, Clipping> _id2Clipping;
+        private readonly Dictionary<string, GreyImage> _imageCache = new Dictionary<string, GreyImage>();
+        private readonly Canvas _pageCanvas;
 
         public DrawingPanel(Canvas pageCanvas)
         {
-            this.pageCanvas = pageCanvas;
+            this._pageCanvas = pageCanvas;
             Clear();
         }
 
@@ -29,20 +29,20 @@ namespace PartituraMagica
         {
             Clipping c = new Clipping();
 
-            c.r.StrokeThickness = Page.ClickTolerance;
-            c.r.Stroke = notSelectedColor;
+            c.R.StrokeThickness = Page.ClickTolerance;
+            c.R.Stroke = NotSelectedColor;
 
             SetCoords(c, coordinates);
 
-            pageCanvas.Children.Add(c.r);
-            pageCanvas.Children.Add(c.t);
-            id2clipping[id] = c;
+            _pageCanvas.Children.Add(c.R);
+            _pageCanvas.Children.Add(c.T);
+            _id2Clipping[id] = c;
         }
 
         public void AddOrUpdateRectangle(int id, Rect coordinates)
         {
             Clipping c;
-            if (id2clipping.TryGetValue(id, out c))
+            if (_id2Clipping.TryGetValue(id, out c))
             {
                 SetCoords(c, coordinates);
             }
@@ -54,39 +54,39 @@ namespace PartituraMagica
 
         public void RemoveRectangle(int id)
         {
-            Clipping i = id2clipping[id];
-            pageCanvas.Children.Remove(i.r);
-            pageCanvas.Children.Remove(i.t);
-            id2clipping.Remove(id);
+            Clipping i = _id2Clipping[id];
+            _pageCanvas.Children.Remove(i.R);
+            _pageCanvas.Children.Remove(i.T);
+            _id2Clipping.Remove(id);
         }
 
         public void SelectRectangle(int id)
         {
             //we could optimize by just changing zindex of last selected rect
             //but this requires to store last selected id.
-            foreach (Clipping c in id2clipping.Values)
+            foreach (Clipping c in _id2Clipping.Values)
             {
-                Panel.SetZIndex(c.r, 0);
-                Panel.SetZIndex(c.t, 2);
+                Panel.SetZIndex(c.R, 0);
+                Panel.SetZIndex(c.T, 2);
             }
-            Clipping selectedClipping = id2clipping[id];
-            selectedClipping.r.Stroke = selectedColor;
-            selectedClipping.t.Foreground = selectedColor;
-            Panel.SetZIndex(selectedClipping.r, 1); //bring to top			
-            Panel.SetZIndex(selectedClipping.t, 3); //text on top of rectangle
+            Clipping selectedClipping = _id2Clipping[id];
+            selectedClipping.R.Stroke = SelectedColor;
+            selectedClipping.T.Foreground = SelectedColor;
+            Panel.SetZIndex(selectedClipping.R, 1); //bring to top			
+            Panel.SetZIndex(selectedClipping.T, 3); //text on top of rectangle
         }
 
         public void DeselectRectangle(int id)
         {
-            Clipping selectedClipping = id2clipping[id];
-            selectedClipping.r.Stroke = notSelectedColor;
-            selectedClipping.t.Foreground = notSelectedColor;
+            Clipping selectedClipping = _id2Clipping[id];
+            selectedClipping.R.Stroke = NotSelectedColor;
+            selectedClipping.T.Foreground = NotSelectedColor;
         }
 
         public void Clear()
         {
-            pageCanvas.Children.Clear();
-            id2clipping = new Dictionary<int, Clipping>();
+            _pageCanvas.Children.Clear();
+            _id2Clipping = new Dictionary<int, Clipping>();
         }
 
         public Point DrawImage(string path)
@@ -100,31 +100,31 @@ namespace PartituraMagica
             image.Source = bm.RawImage;
             image.Effect = new NegativeEffect();
 
-            pageCanvas.Width = bm.RawImage.Width;
-            pageCanvas.Height = bm.RawImage.Height;
-            pageCanvas.Children.Add(image);
-            currentImagePath = path;
+            _pageCanvas.Width = bm.RawImage.Width;
+            _pageCanvas.Height = bm.RawImage.Height;
+            _pageCanvas.Children.Add(image);
+            _currentImagePath = path;
             return new Point(image.Width, image.Height);
         }
 
         public void LabelRectangle(int id, string label)
         {
-            Clipping i = id2clipping[id];
+            Clipping i = _id2Clipping[id];
             if (label == null || label.Length == 0)
             {
                 //hide i.t
-                i.t.Visibility = Visibility.Collapsed;
+                i.T.Visibility = Visibility.Collapsed;
             }
             else
             {
-                i.t.Text = label;
-                i.t.Visibility = Visibility.Visible;
+                i.T.Text = label;
+                i.T.Visibility = Visibility.Visible;
             }
         }
 
         public IGreyImage CurrentImage
         {
-            get { return GetImage(currentImagePath); }
+            get { return GetImage(_currentImagePath); }
         }
 
         public IGreyImage GetImage(string path)
@@ -134,42 +134,42 @@ namespace PartituraMagica
 
         private static void SetCoords(Clipping c, Rect coordinates)
         {
-            double thickness = c.r.StrokeThickness;
+            double thickness = c.R.StrokeThickness;
             double left = coordinates.X - thickness/2.0;
             double top = coordinates.Y - thickness/2.0;
 
-            c.r.Width = coordinates.Width + thickness;
-            c.r.Height = coordinates.Height + thickness;
-            Canvas.SetLeft(c.r, left);
-            Canvas.SetTop(c.r, top);
-            Canvas.SetLeft(c.t, left + Page.ClickTolerance);
-            Canvas.SetTop(c.t, top + Page.ClickTolerance);
+            c.R.Width = coordinates.Width + thickness;
+            c.R.Height = coordinates.Height + thickness;
+            Canvas.SetLeft(c.R, left);
+            Canvas.SetTop(c.R, top);
+            Canvas.SetLeft(c.T, left + Page.ClickTolerance);
+            Canvas.SetTop(c.T, top + Page.ClickTolerance);
         }
 
         private GreyImage LoadImage(string path)
         {
-            if (!imageCache.ContainsKey(path))
+            if (!_imageCache.ContainsKey(path))
             {
                 BitmapImage bm = new BitmapImage();
                 // BitmapImage.UriSource must be in a BeginInit/EndInit block
                 bm.BeginInit();
                 bm.UriSource = new Uri(path);
                 bm.EndInit();
-                imageCache[path] = new GreyImage(path, bm);
+                _imageCache[path] = new GreyImage(path, bm);
             }
-            return imageCache[path];
+            return _imageCache[path];
         }
 
         private class Clipping
         {
-            public readonly Rectangle r;
-            public readonly TextBlock t;
+            public readonly Rectangle R;
+            public readonly TextBlock T;
 
             public Clipping()
             {
-                r = new Rectangle();
-                t = new TextBlock();
-                t.FontSize = 24;
+                R = new Rectangle();
+                T = new TextBlock();
+                T.FontSize = 24;
             }
         }
     }

@@ -11,20 +11,20 @@ namespace PartituraMagica
 
         public bool CanExecute()
         {
-            return p.Active.IsOpen;
+            return P.Active.IsOpen;
         }
 
 
         public void Execute()
         {
             Debug.Assert(CanExecute());
-            p.MainWindow.SignalWait(true);
-            BoxFinder b = new BoxFinder(p.Panel.CurrentImage);
+            P.MainWindow.SignalWait(true);
+            BoxFinder b = new BoxFinder(P.Panel.CurrentImage);
             foreach (Rect r in b.Execute())
             {
-                new AddBoxCommand(r, p).TryExecute();
+                new AddBoxCommand(r, P).TryExecute();
             }
-            p.MainWindow.SignalWait(false);
+            P.MainWindow.SignalWait(false);
         }
     }
 }
