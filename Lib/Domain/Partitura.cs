@@ -1,6 +1,13 @@
 ﻿using System;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Soap;
+using System.Runtime.Serialization;
+
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Diagnostics;
 using System.Windows;
 
 namespace PartituraMagica
@@ -8,24 +15,31 @@ namespace PartituraMagica
     [Serializable]
     public struct PartituraMemento
     {
-        public PartituraMemento(ICollection<Page> pages, string partPattern)
+        public PartituraMemento(ICollection<Page> pages, String partPattern)
         {
-            PartPattern = partPattern;
-            this._pages = new ArrayList(pages.Count);
+            this.partPattern = partPattern;
+            this.pages = new ArrayList(pages.Count);
             foreach (Page p in pages)
             {
-                this._pages.Add(p.ToMemento());
+                this.pages.Add(p.ToMemento());
             }
         }
-
-        private readonly ArrayList _pages;
-
+        private ArrayList pages;
+        private String partPattern;
         public ICollection Pages
         {
-            get { return _pages; }
+            get
+            {
+                return this.pages;
+            }
         }
-
-        public string PartPattern { get; }
+        public String PartPattern
+        {
+            get
+            {
+                return partPattern;
+            }
+        }
     }
 
     /** 
@@ -34,42 +48,47 @@ namespace PartituraMagica
      * boxes are grouped into Parts (according to the repetition structure
      * of the piece.
      */
-
     public class Partitura : IPlayablePartitura
     {
-        private bool _dirty;
-        private readonly ILabelProvider _labelProvider;
-        private readonly List<Page> _pages;
-        private string _partPattern;
+        private List<Page> pages;
+        private bool dirty;
+        private ILabelProvider labelProvider;
+        private string partPattern;
 
         public Partitura()
         {
-            _pages = new List<Page>();
-            _dirty = false;
+            this.pages = new List<Page>();
+            this.dirty = false;
             //@todo p3 not nice to depend on a class outside the
             //domain "package" here cause this would be a cyclic dependency
-            _labelProvider = new AbcLabelProvider(this);
+            this.labelProvider = new AbcLabelProvider(this);
         }
 
         public Partitura(PartituraMemento p)
             : this()
         {
-            _partPattern = p.PartPattern;
+            this.partPattern = p.PartPattern;
             foreach (object o in p.Pages)
             {
-                _pages.Add(new Page((PageMemento) o));
+                this.pages.Add(new Page((PageMemento)o));
             }
+        }
+
+        public PartituraMemento ToMemento()
+        {
+            this.dirty = false;
+            return new PartituraMemento(this.pages, this.partPattern);
         }
 
         public bool Dirty
         {
             get
             {
-                if (_dirty)
+                if (this.dirty)
                 {
                     return true;
                 }
-                foreach (Page p in _pages)
+                foreach (Page p in pages)
                 {
                     if (p.Dirty)
                     {
@@ -78,6 +97,24 @@ namespace PartituraMagica
                 }
                 return false;
             }
+        }
+
+        public Page GetPage(int index)
+        {
+            //this makes sure that there is a PageInfo for each index
+            //The index range is defined by the number of available image files!
+            for (int i = pages.Count; i <= index; i++)
+            {
+                pages.Add(new Page());
+                dirty = true;
+            }
+            return pages[index];
+        }
+
+        internal void Paint(int index, IDrawingPanel panel, Point dimensions)
+        {
+            this.labelProvider.PageIndex = index;
+            this.GetPage(index).PaintPage(panel, dimensions, labelProvider);
         }
 
         /// <summary>
@@ -96,62 +133,41 @@ namespace PartituraMagica
             return result;
         }
 
-        public string PartPattern
-        {
-            get { return _partPattern; }
-            set
-            {
-                _dirty = true;
-                _partPattern = value.ToUpper().Trim();
-            }
-        }
-
-        public PartituraMemento ToMemento()
-        {
-            _dirty = false;
-            return new PartituraMemento(_pages, _partPattern);
-        }
-
-        public Page GetPage(int index)
-        {
-            //this makes sure that there is a PageInfo for each index
-            //The index range is defined by the number of available image files!
-            for (int i = _pages.Count; i <= index; i++)
-            {
-                _pages.Add(new Page());
-                _dirty = true;
-            }
-            return _pages[index];
-        }
-
-        internal void Paint(int index, IDrawingPanel panel, Point dimensions)
-        {
-            _labelProvider.PageIndex = index;
-            GetPage(index).PaintPage(panel, dimensions, _labelProvider);
-        }
-
         internal void LabelSelection(IDrawingPanel panel, int pageIndex)
         {
-            _labelProvider.PageIndex = pageIndex;
-            GetPage(pageIndex).LabelSelection(panel, _labelProvider);
+            this.labelProvider.PageIndex = pageIndex;
+            GetPage(pageIndex).LabelSelection(panel, this.labelProvider);
         }
 
         internal void UnLabelSelection(IDrawingPanel panel, int pageIndex)
         {
-            _labelProvider.PageIndex = pageIndex;
-            GetPage(pageIndex).UnLabelSelection(panel, _labelProvider);
+            this.labelProvider.PageIndex = pageIndex;
+            GetPage(pageIndex).UnLabelSelection(panel, this.labelProvider);
         }
 
         public void AddBox(int pageIndex, Rect r, IDrawingPanel panel)
         {
-            _labelProvider.PageIndex = pageIndex;
-            GetPage(pageIndex).AddBox(r, panel, _labelProvider);
+            this.labelProvider.PageIndex = pageIndex;
+            GetPage(pageIndex).AddBox(r, panel, this.labelProvider);
         }
 
         public void RemoveSelectedBox(int pageIndex, IDrawingPanel panel)
         {
-            _labelProvider.PageIndex = pageIndex;
-            GetPage(pageIndex).RemoveSelectedBox(panel, _labelProvider);
+            this.labelProvider.PageIndex = pageIndex;
+            GetPage(pageIndex).RemoveSelectedBox(panel, this.labelProvider);
+        }
+
+        public string PartPattern
+        {
+            get
+            {
+                return this.partPattern;
+            }
+            set
+            {
+                this.dirty = true;
+                this.partPattern = value.ToUpper().Trim();
+            }
         }
     }
 }
