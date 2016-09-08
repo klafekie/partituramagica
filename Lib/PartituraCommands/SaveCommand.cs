@@ -9,7 +9,7 @@ namespace PartituraMagica
         public SaveCommand(bool saveAs, ICommandParameters p)
             : base(p)
         {
-            this._saveAs = saveAs;
+            _saveAs = saveAs;
         }
 
         public void Execute()

@@ -32,7 +32,7 @@ namespace PartituraMagica
                 {
                     // Quick fix for crash on color image input. TODO p3: should similar corrections needed elsewhere?
                     int bytesPerPixel = RawImage.Format.BitsPerPixel/8;
-                        // BitsPerPixel is normally 1 for grayscale; seen 32 for color image input [jed]
+                    // BitsPerPixel is normally 1 for grayscale; seen 32 for color image input [jed]
                     _pixels = new byte[Width*Height*bytesPerPixel];
                     int stride = (RawImage.PixelWidth*RawImage.Format.BitsPerPixel + 7)/8;
                     RawImage.CopyPixels(_pixels, stride, 0);

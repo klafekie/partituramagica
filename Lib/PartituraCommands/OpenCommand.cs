@@ -17,7 +17,7 @@ namespace PartituraMagica
         public OpenCommand(string path, ICommandParameters p)
             : base(p)
         {
-            this._path = path;
+            _path = path;
         }
 
         public void Execute()

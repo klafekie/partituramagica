@@ -17,7 +17,7 @@ namespace PartituraMagica
         public SplitBoxCommand(Point pos, ICommandParameters p)
             : base(p)
         {
-            this._pos = pos;
+            _pos = pos;
         }
 
         public bool CanExecute()

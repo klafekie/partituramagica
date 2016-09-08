@@ -30,10 +30,10 @@ namespace PartituraMagica
 
         public ClippingD3D(IGreyImage image, Rect coords, bool invertColors, Color foregroundColor)
         {
-            this._image = image;
-            this._invertColors = invertColors;
-            this._foregroundColor = foregroundColor;
-            this._coords = new Rect(coords);
+            _image = image;
+            _invertColors = invertColors;
+            _foregroundColor = foregroundColor;
+            _coords = new Rect(coords);
         }
 
         public float Width

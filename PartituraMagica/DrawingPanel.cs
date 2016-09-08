@@ -13,15 +13,15 @@ namespace PartituraMagica
     {
         private static readonly Brush SelectedColor = Brushes.LightGreen;
         private static readonly Brush NotSelectedColor = Brushes.DarkSlateBlue;
-
-        private string _currentImagePath;
-        private Dictionary<int, Clipping> _id2Clipping;
         private readonly Dictionary<string, GreyImage> _imageCache = new Dictionary<string, GreyImage>();
         private readonly Canvas _pageCanvas;
 
+        private string _currentImagePath;
+        private Dictionary<int, Clipping> _id2Clipping;
+
         public DrawingPanel(Canvas pageCanvas)
         {
-            this._pageCanvas = pageCanvas;
+            _pageCanvas = pageCanvas;
             Clear();
         }
 

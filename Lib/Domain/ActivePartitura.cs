@@ -14,7 +14,7 @@ namespace PartituraMagica
 
         public ActivePartitura(IFileSystem fileSystem)
         {
-            this._fileSystem = fileSystem;
+            _fileSystem = fileSystem;
         }
 
         public string Path { get; private set; }
@@ -78,10 +78,7 @@ namespace PartituraMagica
 
         public Page CurrentPage
         {
-            get
-            {
-                return Partitura?.GetPage(CurrentPageIndex);
-            }
+            get { return Partitura?.GetPage(CurrentPageIndex); }
         }
 
 

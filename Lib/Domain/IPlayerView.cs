@@ -18,18 +18,12 @@ namespace PartituraMagica
 
     public interface IPlayerView : IDisposable
     {
-        double XPos { get; }
+        double XPos { get; set; }
 
-        /**
-         * returns an instance that knows the currently played part.
-         */
-        IPartNavigator PartNavigator { get; }
         /** 
          * Initialize the views graphical objects using the given clippings
          */
         void Init(string partPattern, IEnumerable<Clipping> clippings);
-
-        void GotoLine(int lineIndex);
 
         void StartScrolling();
 
@@ -39,5 +33,7 @@ namespace PartituraMagica
         event LineEndEvent LineEndReached;
 
         PlayerMemento ToMemento();
+        void JumpBackward();
+        void RegisterEvents(IPartNavigator navigator);
     }
 }

@@ -6,7 +6,7 @@
 
         protected PartituraCommandBase(ICommandParameters p)
         {
-            this.P = p;
+            P = p;
         }
     }
 

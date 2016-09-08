@@ -10,7 +10,7 @@ namespace PartituraMagica
         public ShowPageCommand(int index, ICommandParameters p)
             : base(p)
         {
-            this._index = index;
+            _index = index;
         }
 
         public void Execute()

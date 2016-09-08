@@ -24,6 +24,8 @@ namespace PartituraMagica
             Paused = true;
         }
 
+        public IPartNavigator Navigator { get; set; }
+
         public bool Paused
         {
             get { return _paused; }
@@ -35,18 +37,16 @@ namespace PartituraMagica
             }
         }
 
-        public int JumpsCount { get; set; }
-
         public float Speed { get; set; }
 
         private void BtnJumpForward_Click(object sender, EventArgs e)
         {
-            JumpsCount--;
+            Navigator?.JumpForwardClicked();
         }
 
         private void BtnJumpBack_Click(object sender, EventArgs e)
         {
-            JumpsCount++;
+            Navigator?.JumpBackwardClicked();
         }
 
         private void btnFaster_Click(object sender, EventArgs e)

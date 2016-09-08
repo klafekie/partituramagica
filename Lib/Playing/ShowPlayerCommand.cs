@@ -24,12 +24,13 @@ namespace PartituraMagica
                 IList<Part> allParts = P.Active.Partitura.GetAllParts(P.Active.GetPageCount());
 
                 IPlayerView view = _createView();
-                using (Navigator n = new Navigator(P.Active.Partitura.PartPattern, allParts, view))
-                {
-                    P.MainWindow.IsEnabled = false;
-                    n.Start();
-                    P.MainWindow.IsEnabled = true;
-                }
+                PartNavigator n = new PartNavigator(P.Active.Partitura.PartPattern, allParts, view);
+
+                view.RegisterEvents(n);
+                P.MainWindow.IsEnabled = false;
+                n.PlayerOpened();
+                P.MainWindow.IsEnabled = true;
+
                 bool test = P.MainWindow.Activate();
                 //Debug.WriteLine("Activate Success = " + test);
             }

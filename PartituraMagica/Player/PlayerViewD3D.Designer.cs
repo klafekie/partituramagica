@@ -69,7 +69,6 @@
             // 
             // speedStrip
             // 
-            this.speedStrip.JumpsCount = 0;
             this.speedStrip.Dock = System.Windows.Forms.DockStyle.None;
             this.speedStrip.Font = new System.Drawing.Font("Lucida Console", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.speedStrip.Location = new System.Drawing.Point(303, 0);
@@ -88,7 +87,6 @@
         "B",
         "C",
         "D"};
-            this.partsStrip.Current = 0;
             this.partsStrip.Dock = System.Windows.Forms.DockStyle.None;
             this.partsStrip.Font = new System.Drawing.Font("Lucida Console", 18F, System.Drawing.FontStyle.Bold);
             this.partsStrip.Location = new System.Drawing.Point(3, 0);

@@ -39,7 +39,7 @@ namespace PartituraMagica
 
         public BoxFinder(IGreyImage image)
         {
-            this._image = image;
+            _image = image;
         }
 
         private int LinePatternWidth

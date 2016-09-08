@@ -16,7 +16,7 @@ namespace PartituraMagica
             Panel = panel;
             FileSystem = new FileSystem();
             Active = new ActivePartitura(FileSystem);
-            this._mainWindow = mainWindow;
+            _mainWindow = mainWindow;
 
             string[] args = Environment.GetCommandLineArgs();
             if (args.Length == 2)

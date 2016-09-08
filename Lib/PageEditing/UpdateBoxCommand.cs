@@ -11,8 +11,8 @@ namespace PartituraMagica
         public UpdateBoxCommand(Point lastPos, Point newPos, ICommandParameters p)
             : base(p)
         {
-            this._lastPos = lastPos;
-            this._newPos = newPos;
+            _lastPos = lastPos;
+            _newPos = newPos;
         }
 
         public bool CanExecute()

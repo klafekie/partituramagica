@@ -10,7 +10,7 @@ namespace PartituraMagica
         public SelectItemCommand(Point pos, ICommandParameters p)
             : base(p)
         {
-            this.Pos = pos;
+            Pos = pos;
         }
 
         public bool CanExecute()

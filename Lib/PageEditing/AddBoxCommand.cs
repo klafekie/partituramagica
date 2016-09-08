@@ -16,7 +16,7 @@ namespace PartituraMagica
         public AddBoxCommand(Rect r, ICommandParameters p)
             : base(p)
         {
-            this._r = r;
+            _r = r;
         }
 
         public bool CanExecute()

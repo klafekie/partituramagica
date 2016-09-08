@@ -22,7 +22,7 @@ namespace PartituraMagica
         private const float LineDistance = 10F;
 
         private readonly List<ClippingD3D> _clippingD3Ds = new List<ClippingD3D>();
-            // [Renamed from 'lines' jed 20150118]
+        // [Renamed from 'lines' jed 20150118]
 
         private readonly ApplicationConfiguration _configuration = new ApplicationConfiguration();
         private readonly Direct3D _d3D;
@@ -46,8 +46,8 @@ namespace PartituraMagica
             InitializeComponent();
             WindowState = FormWindowState.Maximized;
 
-            this._pageFiles = pageFiles;
-            this._imageLoader = imageLoader;
+            _pageFiles = pageFiles;
+            _imageLoader = imageLoader;
             zoomStrip.XZoom = memento.XZoom;
             zoomStrip.YZoom = memento.YZoom;
             speedStrip.Speed = memento.Speed;
@@ -56,6 +56,17 @@ namespace PartituraMagica
             _d3D = new Direct3D();
             CreateDevice();
         }
+
+        public double XPos
+        {
+            get
+            {
+                Debug.Assert(_lastZoomX > 0F);
+                return _viewXPos - (double) _currentLine*LineDistance;
+            }
+        }
+
+        double IPlayerView.XPos { get; set; }
 
         public void Init(string partPattern, IEnumerable<Clipping> clips)
         {
@@ -81,15 +92,9 @@ namespace PartituraMagica
                 parts[i] = partPattern[i].ToString();
             }
             partsStrip.Parts = parts;
-            partsStrip.Current = 0;
+
             _viewXPos = 0;
             _currentLine = 0;
-        }
-
-        public void GotoLine(int lineIndex)
-        {
-            _currentLine = lineIndex;
-            _viewXPos = _clippingD3Ds[lineIndex].XPos;
         }
 
         public void StartScrolling()
@@ -109,15 +114,6 @@ namespace PartituraMagica
             Enabled = false;
         }
 
-        public double XPos
-        {
-            get
-            {
-                Debug.Assert(_lastZoomX > 0F);
-                return _viewXPos - (double) _currentLine*LineDistance;
-            }
-        }
-
         public event LineEndEvent LineEndReached;
 
         public PlayerMemento ToMemento()
@@ -130,9 +126,20 @@ namespace PartituraMagica
             };
         }
 
-        public IPartNavigator PartNavigator
+        public void JumpBackward()
         {
-            get { return partsStrip; }
+            _viewXPos -= 250d;
+        }
+
+        public void RegisterEvents(IPartNavigator navigator)
+        {
+            partsStrip.RegisterEvents(navigator);
+        }
+
+        public void GotoLine(int lineIndex)
+        {
+            _currentLine = lineIndex;
+            _viewXPos = _clippingD3Ds[lineIndex].XPos;
         }
 
         protected override void Dispose(bool disposing)
@@ -226,12 +233,6 @@ namespace PartituraMagica
             }
 
             _device.Present();
-
-            if (speedStrip.JumpsCount != 0)
-            {
-                _viewXPos = Math.Max(0, _viewXPos - speedStrip.JumpsCount*250);
-                speedStrip.JumpsCount = 0;
-            }
 
             if (!speedStrip.Paused)
             {

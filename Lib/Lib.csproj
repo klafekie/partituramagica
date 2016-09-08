@@ -88,7 +88,8 @@
     <Compile Include="PartituraCommands\SaveCommand.cs" />
     <Compile Include="PartituraCommands\ShowPageCommand.cs" />
     <Compile Include="Playing\IPartNavigator.cs" />
-    <Compile Include="Playing\Navigator.cs" />
+    <Compile Include="Playing\PartNavigator.cs" />
+    <Compile Include="Playing\PartPositionProvider.cs" />
     <Compile Include="Playing\ShowPlayerCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

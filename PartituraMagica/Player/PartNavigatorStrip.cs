@@ -5,11 +5,10 @@ using System.Windows.Forms;
 namespace PartituraMagica
 {
     /** 
-     * This view can be used to navigate arbitrary parts.
-     * In our case Parts or (later) Pages
+     * This view can be used to navigate arbitrary parts.     
      */
 
-    public partial class PartNavigatorStrip : ToolStrip, IPartNavigator
+    public partial class PartNavigatorStrip : ToolStrip
     {
         private readonly ToolStripItem _btnFirst;
         private readonly ToolStripItem _btnLast;
@@ -19,10 +18,12 @@ namespace PartituraMagica
         private readonly List<KeyValuePair<string, ToolStripButton>> _partButtons =
             new List<KeyValuePair<string, ToolStripButton>>();
 
+        private int _lastPartIndex;
+        private IPartNavigator _navigator;
+
         private string _partName;
 
         private string[] _parts;
-        private int _current;
 
         public PartNavigatorStrip()
         {
@@ -53,7 +54,7 @@ namespace PartituraMagica
                 //b.AutoSize = false;
             }
         }
-        
+
         /* should be set to a combination of Modifiers. The resulting keyboard shortcuts
          * for navigating are as follows:
          * First <= Modifiers + Home
@@ -95,19 +96,16 @@ namespace PartituraMagica
             }
         }
 
-        public int Current
+        private void AdjustIfNecessary(int partIndex)
         {
-            get { return _current; }
-            set
+            bool changed = _lastPartIndex != partIndex;
+            _lastPartIndex = partIndex;
+            if (changed)
             {
-                bool changed = _current != value;
-                _current = value;
-                if (changed)
-                {
-                    Adjust(false);
-                }
+                Adjust(false);
             }
         }
+
 
         public event Action<int> PartChanged;
 
@@ -151,9 +149,9 @@ namespace PartituraMagica
                 entry.Value.Checked = false;
             }
 
-            if (_partButtons.Count > _current)
+            if (_partButtons.Count > _lastPartIndex)
             {
-                _partButtons[_current].Value.Checked = true;
+                _partButtons[_lastPartIndex].Value.Checked = true;
             }
 
             foreach (KeyValuePair<string, ToolStripButton> entry in _partButtons)
@@ -175,51 +173,40 @@ namespace PartituraMagica
 
         private void btnLast_Click(object sender, EventArgs e)
         {
-            if (_current < _parts.Length - 1)
-            {
-                Current = _parts.Length - 1;
-            }
-            OnPartClicked();
+            _navigator?.LastPartClicked();
+            AdjustIfNecessary(_navigator.CurrentPartIndex);
         }
 
         private void btnNext_Click(object sender, EventArgs e)
         {
-            bool cancel = OnNextPartClicked();
-            if (!cancel && _current < _parts.Length - 1)
-            {
-                Current++;
-            }
-            OnPartClicked();
+            _navigator?.NextPartClicked();
+            AdjustIfNecessary(_navigator.CurrentPartIndex);
         }
 
         private void btnPrevious_Click(object sender, EventArgs e)
         {
-            bool cancel = OnPreviousPartClicked();
-            if (!cancel && _current > 0)
-            {
-                Current--;
-            }
-            OnPartClicked();
+            _navigator?.PreviousPartClicked();
+            AdjustIfNecessary(_navigator.CurrentPartIndex);
         }
 
         private void btnFirst_Click(object sender, EventArgs e)
         {
-            Current = 0;
-            OnPartClicked();
+            _navigator?.FirstPartClicked();
+            AdjustIfNecessary(_navigator.CurrentPartIndex);
         }
 
         private void b_Click(object sender, EventArgs e)
         {
             ToolStripButton b = (ToolStripButton) sender;
-            Current = _partButtons.FindIndex(entry => entry.Value == b);
-            OnPartClicked();
+            _navigator.PartClicked(_partButtons.FindIndex(entry => entry.Value == b));
+            AdjustIfNecessary(_navigator.CurrentPartIndex);
         }
 
         protected virtual void OnPartChanged()
         {
             if (PartChanged != null)
             {
-                PartChanged(_current);
+                PartChanged(_lastPartIndex);
             }
         }
 
@@ -227,7 +214,7 @@ namespace PartituraMagica
         {
             if (PartClicked != null)
             {
-                PartClicked(_current);
+                PartClicked(_lastPartIndex);
             }
         }
 
@@ -290,6 +277,11 @@ namespace PartituraMagica
                 return;
             }
             _partButtons[index].Value.PerformClick();
+        }
+
+        public void RegisterEvents(IPartNavigator navigator)
+        {
+            _navigator = navigator;
         }
     }
 }

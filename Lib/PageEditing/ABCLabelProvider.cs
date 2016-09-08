@@ -7,12 +7,12 @@ namespace PartituraMagica
 
     internal class AbcLabelProvider : ILabelProvider
     {
-        private int _pageIndex;
         private readonly Partitura _partitura;
+        private int _pageIndex;
 
         public AbcLabelProvider(Partitura partitura)
         {
-            this._partitura = partitura;
+            _partitura = partitura;
             _pageIndex = -1;
         }
 
