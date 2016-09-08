@@ -19,10 +19,7 @@ namespace PartituraMagica
 
     public partial class PlayerViewD3D : Form, IPlayerView
     {
-        private const float LineDistance = 10F;
-
         private readonly List<ClippingD3D> _clippingD3Ds = new List<ClippingD3D>();
-        // [Renamed from 'lines' jed 20150118]
 
         private readonly ApplicationConfiguration _configuration = new ApplicationConfiguration();
         private readonly Direct3D _d3D;
@@ -30,7 +27,6 @@ namespace PartituraMagica
         private readonly IntPtr _ownerHandle;
         private readonly IPageFiles _pageFiles;
         private bool _closed = true;
-        private int _currentLine;
 
         private Device _device;
         private float _lastZoomX;
@@ -38,7 +34,6 @@ namespace PartituraMagica
         private bool _rendering;
 
         //position in view specific coordinates		
-        private double _viewXPos;
 
         public PlayerViewD3D(IPageFiles pageFiles, IImageLoader imageLoader, IntPtr owner, PlayerMemento memento)
         {
@@ -57,18 +52,9 @@ namespace PartituraMagica
             CreateDevice();
         }
 
-        public double XPos
-        {
-            get
-            {
-                Debug.Assert(_lastZoomX > 0F);
-                return _viewXPos - (double) _currentLine*LineDistance;
-            }
-        }
+        public double XPos { get; set; }
 
-        double IPlayerView.XPos { get; set; }
-
-        public void Init(string partPattern, IEnumerable<Clipping> clips)
+        public void Init(string partPattern, IEnumerable<Clipping> clips, double lineDistance)
         {
             _clippingD3Ds.Clear();
             foreach (Clipping c in clips)
@@ -83,7 +69,7 @@ namespace PartituraMagica
             foreach (ClippingD3D l in _clippingD3Ds)
             {
                 l.Init(_device, offset);
-                offset += l.Width + LineDistance;
+                offset += l.Width + (float)lineDistance;
             }
 
             string[] parts = new string[partPattern.Length];
@@ -93,8 +79,7 @@ namespace PartituraMagica
             }
             partsStrip.Parts = parts;
 
-            _viewXPos = 0;
-            _currentLine = 0;
+            XPos = 0;
         }
 
         public void StartScrolling()
@@ -114,7 +99,7 @@ namespace PartituraMagica
             Enabled = false;
         }
 
-        public event LineEndEvent LineEndReached;
+        public event Action ViewHasScrolled;
 
         public PlayerMemento ToMemento()
         {
@@ -128,42 +113,31 @@ namespace PartituraMagica
 
         public void JumpBackward()
         {
-            _viewXPos -= 250d;
+            XPos -= 250d;
         }
 
         public void RegisterEvents(IPartNavigator navigator)
         {
             partsStrip.RegisterEvents(navigator);
-        }
-
-        public void GotoLine(int lineIndex)
-        {
-            _currentLine = lineIndex;
-            _viewXPos = _clippingD3Ds[lineIndex].XPos;
+            speedStrip.RegisterEvents(navigator);
         }
 
         protected override void Dispose(bool disposing)
         {
             _rendering = false;
-            if (disposing && (components != null))
+            if (disposing)
             {
-                components.Dispose();
+                components?.Dispose();
             }
             base.Dispose(disposing);
 
-            if (_device != null)
-            {
-                _device.Dispose();
-            }
+            _device?.Dispose();
             foreach (ClippingD3D l in _clippingD3Ds)
             {
                 l.Dispose();
             }
             ClippingD3D.Cleanup();
-            if (_d3D != null)
-            {
-                _d3D.Dispose();
-            }
+            _d3D?.Dispose();
         }
 
         private void CreateDevice()
@@ -220,8 +194,8 @@ namespace PartituraMagica
                 float zoomY;
                 zoomStrip.GetNextZoom(out _lastZoomX, out zoomY);
                 _device.SetTransform(TransformState.World,
-                    Matrix.Scaling(_lastZoomX, zoomY, 1F)*
-                    Matrix.Translation((float) -_viewXPos*_lastZoomX, 0, 0));
+                    Matrix.Scaling(_lastZoomX, zoomY, 1F) *
+                    Matrix.Translation((float)-XPos * _lastZoomX, 0, 0));
                 for (int i = 0; i < _clippingD3Ds.Count; i++)
                 {
                     _clippingD3Ds[i].Render(_device);
@@ -236,29 +210,17 @@ namespace PartituraMagica
 
             if (!speedStrip.Paused)
             {
-                if (_viewXPos < _clippingD3Ds.Last().Right)
+                //TODO shouldn't that logic be put into navigatior?
+                if (XPos < _clippingD3Ds.Last().Right)
                 {
                     if (!speedStrip.Paused)
                     {
-                        _viewXPos += speedStrip.Speed;
-                    }
-                    if (_viewXPos > _clippingD3Ds[_currentLine].Right)
-                    {
-                        if (!OnLineEndReached())
-                        {
-                            _currentLine++;
-                        }
+                        XPos += speedStrip.Speed;
+                        ViewHasScrolled?.Invoke();
                     }
                 }
             }
             //}
-        }
-
-        protected bool OnLineEndReached()
-        {
-            bool cancel = false;
-            LineEndReached?.Invoke(_currentLine, ref cancel);
-            return cancel;
         }
 
         private void PlayerViewD3D_KeyDown(object sender, KeyEventArgs e)

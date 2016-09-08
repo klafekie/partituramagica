@@ -4,14 +4,6 @@ using System.Collections.Generic;
 namespace PartituraMagica
 {
     /** 
-     * <param name="cancel">implementors can prevent the view from scrolling to the next line by setting this to true"</param>
-     * <param name="line" summary="index of the line that has reached its end"/>
-     */
-
-    public delegate void LineEndEvent(int line, ref bool cancel);
-
-
-    /** 
      * represents a view that can display (and scroll) a continuous
      * "stream" of musical lines (clippings)
      */
@@ -23,14 +15,17 @@ namespace PartituraMagica
         /** 
          * Initialize the views graphical objects using the given clippings
          */
-        void Init(string partPattern, IEnumerable<Clipping> clippings);
+        void Init(string partPattern, IEnumerable<Clipping> clippings, double lineDistance);
 
         void StartScrolling();
 
         /**
-         * Event triggered when the view has scrolled until the end of a line.
+         * Event triggered when the view has scrolled forward. 
+         * It is NOT fired when the position is changed by navigation.
+         * 
+         * Take care that event handlers to nothing that takes much time!
          */
-        event LineEndEvent LineEndReached;
+        event Action ViewHasScrolled;
 
         PlayerMemento ToMemento();
         void JumpBackward();

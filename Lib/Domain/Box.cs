@@ -2,9 +2,6 @@
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Collections;
-using System.Threading;
 using System.Windows;
 
 namespace PartituraMagica

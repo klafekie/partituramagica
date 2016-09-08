@@ -18,10 +18,7 @@ namespace PartituraMagica
         private readonly List<KeyValuePair<string, ToolStripButton>> _partButtons =
             new List<KeyValuePair<string, ToolStripButton>>();
 
-        private int _lastPartIndex;
         private IPartNavigator _navigator;
-
-        private string _partName;
 
         private string[] _parts;
 
@@ -96,25 +93,6 @@ namespace PartituraMagica
             }
         }
 
-        private void AdjustIfNecessary(int partIndex)
-        {
-            bool changed = _lastPartIndex != partIndex;
-            _lastPartIndex = partIndex;
-            if (changed)
-            {
-                Adjust(false);
-            }
-        }
-
-
-        public event Action<int> PartChanged;
-
-        public event Action<int> PartClicked;
-
-        public event CancellableEvent PreviousPartClicked;
-
-        public event CancellableEvent NextPartClicked;
-
         private void Adjust(bool partsChanged)
         {
             if (partsChanged)
@@ -149,93 +127,45 @@ namespace PartituraMagica
                 entry.Value.Checked = false;
             }
 
-            if (_partButtons.Count > _lastPartIndex)
-            {
-                _partButtons[_lastPartIndex].Value.Checked = true;
-            }
 
+            _partButtons[_navigator.CurrentPartIndex].Value.Checked = true;
+
+            //todo why do this over and over again?
             foreach (KeyValuePair<string, ToolStripButton> entry in _partButtons)
             {
                 entry.Value.ToolTipText =
-                    string.Format("Go to {0} {1}", _partName, entry.Value.Text);
+                    string.Format("Go to part {0}", entry.Value.Text);
             }
-            _btnFirst.ToolTipText =
-                string.Format("Go to first {0}", _partName);
-            _btnNext.ToolTipText =
-                string.Format("Go to next {0}", _partName);
-            _btnPrevious.ToolTipText =
-                string.Format("Go to previous {0}", _partName);
-            _btnLast.ToolTipText =
-                string.Format("Go to last {0}", _partName);
-
-            OnPartChanged();
+            _btnFirst.ToolTipText = "Go to first part";
+            _btnNext.ToolTipText = "Go to next part";
+            _btnPrevious.ToolTipText = "Go to previous part";
+            _btnLast.ToolTipText = "Go to last part";
         }
 
         private void btnLast_Click(object sender, EventArgs e)
         {
             _navigator?.LastPartClicked();
-            AdjustIfNecessary(_navigator.CurrentPartIndex);
         }
 
         private void btnNext_Click(object sender, EventArgs e)
         {
             _navigator?.NextPartClicked();
-            AdjustIfNecessary(_navigator.CurrentPartIndex);
         }
 
         private void btnPrevious_Click(object sender, EventArgs e)
         {
             _navigator?.PreviousPartClicked();
-            AdjustIfNecessary(_navigator.CurrentPartIndex);
         }
 
         private void btnFirst_Click(object sender, EventArgs e)
         {
             _navigator?.FirstPartClicked();
-            AdjustIfNecessary(_navigator.CurrentPartIndex);
         }
 
         private void b_Click(object sender, EventArgs e)
         {
-            ToolStripButton b = (ToolStripButton) sender;
+            ToolStripButton b = (ToolStripButton)sender;
             _navigator.PartClicked(_partButtons.FindIndex(entry => entry.Value == b));
-            AdjustIfNecessary(_navigator.CurrentPartIndex);
-        }
-
-        protected virtual void OnPartChanged()
-        {
-            if (PartChanged != null)
-            {
-                PartChanged(_lastPartIndex);
-            }
-        }
-
-        protected virtual void OnPartClicked()
-        {
-            if (PartClicked != null)
-            {
-                PartClicked(_lastPartIndex);
-            }
-        }
-
-        protected virtual bool OnPreviousPartClicked()
-        {
-            bool cancel = false;
-            if (PreviousPartClicked != null)
-            {
-                PreviousPartClicked(ref cancel);
-            }
-            return cancel;
-        }
-
-        protected virtual bool OnNextPartClicked()
-        {
-            bool cancel = false;
-            if (NextPartClicked != null)
-            {
-                NextPartClicked(ref cancel);
-            }
-            return cancel;
         }
 
         public void HandleKeyDown(object sender, KeyEventArgs e)
@@ -282,6 +212,7 @@ namespace PartituraMagica
         public void RegisterEvents(IPartNavigator navigator)
         {
             _navigator = navigator;
+            _navigator.CurrentPartIndexChanged += () => Adjust(false);
         }
     }
 }

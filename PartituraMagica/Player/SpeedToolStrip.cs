@@ -11,6 +11,7 @@ namespace PartituraMagica
     public partial class SpeedToolStrip : ToolStrip
     {
         private bool _paused;
+        private IPartNavigator _navigator;
 
         public SpeedToolStrip()
         {
@@ -24,7 +25,7 @@ namespace PartituraMagica
             Paused = true;
         }
 
-        public IPartNavigator Navigator { get; set; }
+        
 
         public bool Paused
         {
@@ -41,12 +42,12 @@ namespace PartituraMagica
 
         private void BtnJumpForward_Click(object sender, EventArgs e)
         {
-            Navigator?.JumpForwardClicked();
+            _navigator?.JumpForwardClicked();
         }
 
         private void BtnJumpBack_Click(object sender, EventArgs e)
         {
-            Navigator?.JumpBackwardClicked();
+            _navigator?.JumpBackwardClicked();
         }
 
         private void btnFaster_Click(object sender, EventArgs e)
@@ -108,6 +109,11 @@ namespace PartituraMagica
                     }
                     break;
             }
+        }
+
+        public void RegisterEvents(IPartNavigator navigator)
+        {
+            _navigator = navigator;
         }
     }
 }

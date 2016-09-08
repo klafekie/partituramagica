@@ -1,4 +1,6 @@
-﻿namespace PartituraMagica
+﻿using System;
+
+namespace PartituraMagica
 {
     public delegate void CancellableEvent(ref bool cancel);
 
@@ -12,6 +14,8 @@
     public interface IPartNavigator
     {
         int CurrentPartIndex { get; }
+        event Action CurrentPartIndexChanged;
+        
         void PartClicked(int index);
 
         /** going to previous part can be prevented by listeners
