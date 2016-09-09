@@ -82,11 +82,6 @@
             // 
             // partsStrip
             // 
-            this.partsStrip.Parts = new string[] {
-        "A",
-        "B",
-        "C",
-        "D"};
             this.partsStrip.Dock = System.Windows.Forms.DockStyle.None;
             this.partsStrip.Font = new System.Drawing.Font("Lucida Console", 18F, System.Drawing.FontStyle.Bold);
             this.partsStrip.Location = new System.Drawing.Point(3, 0);

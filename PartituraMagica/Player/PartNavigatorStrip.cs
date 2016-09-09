@@ -126,8 +126,7 @@ namespace PartituraMagica
             {
                 entry.Value.Checked = false;
             }
-
-
+            
             _partButtons[_navigator.CurrentPartIndex].Value.Checked = true;
 
             //todo why do this over and over again?

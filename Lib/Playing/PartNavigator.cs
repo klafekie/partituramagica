@@ -27,11 +27,12 @@ namespace PartituraMagica.Playing
             get { return _currentPartIndex; }
             private set
             {
-                if (_currentPartIndex != value)
+                bool changed = _currentPartIndex != value;
+                _currentPartIndex = value;
+                if (changed)
                 {
                     CurrentPartIndexChanged?.Invoke();
                 }
-                _currentPartIndex = value;
             }
         }
 
