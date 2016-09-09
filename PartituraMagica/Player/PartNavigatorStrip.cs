@@ -26,9 +26,7 @@ namespace PartituraMagica
         {
             InitializeComponent();
             ImageList = imageList1; //ImageList property cannot be set in designer.						
-            //@todo p1 impl Bookmark feature
-
-
+            
             _btnFirst = Items.Add("First", ImageList.Images["first"]);
             _btnFirst.Click += btnFirst_Click;
             _btnPrevious = Items.Add("Previous", ImageList.Images["previous"]);
@@ -48,7 +46,6 @@ namespace PartituraMagica
                 b.ImageScaling = ToolStripItemImageScaling.None;
                 b.DisplayStyle = ToolStripItemDisplayStyle.Image;
                 b.AutoSize = true;
-                //b.AutoSize = false;
             }
         }
 
@@ -112,15 +109,22 @@ namespace PartituraMagica
                     {
                         ToolStripButton b = new ToolStripButton(_parts[i]);
                         b.Click += b_Click;
-                        //b.AutoSize = false;
-                        //b.Width = 36;
-                        //b.Height = 36;
                         _partButtons.Add(new KeyValuePair<string, ToolStripButton>(
                             _parts[i], b));
                         Items.Insert(insertIndex, b);
                     }
                     _partButtons.Reverse();
                 }
+
+                foreach (KeyValuePair<string, ToolStripButton> entry in _partButtons)
+                {
+                    entry.Value.ToolTipText =
+                        string.Format("Go to part {0}", entry.Value.Text);
+                }
+                _btnFirst.ToolTipText = "Go to first part";
+                _btnNext.ToolTipText = "Go to next part";
+                _btnPrevious.ToolTipText = "Go to previous part";
+                _btnLast.ToolTipText = "Go to last part";
             }
             foreach (KeyValuePair<string, ToolStripButton> entry in _partButtons)
             {
@@ -128,37 +132,27 @@ namespace PartituraMagica
             }
             
             _partButtons[_navigator.CurrentPartIndex].Value.Checked = true;
-
-            //todo why do this over and over again?
-            foreach (KeyValuePair<string, ToolStripButton> entry in _partButtons)
-            {
-                entry.Value.ToolTipText =
-                    string.Format("Go to part {0}", entry.Value.Text);
-            }
-            _btnFirst.ToolTipText = "Go to first part";
-            _btnNext.ToolTipText = "Go to next part";
-            _btnPrevious.ToolTipText = "Go to previous part";
-            _btnLast.ToolTipText = "Go to last part";
+            
         }
 
         private void btnLast_Click(object sender, EventArgs e)
         {
-            _navigator?.LastPartClicked();
+            _navigator.LastPartClicked();
         }
 
         private void btnNext_Click(object sender, EventArgs e)
         {
-            _navigator?.NextPartClicked();
+            _navigator.NextPartClicked();
         }
 
         private void btnPrevious_Click(object sender, EventArgs e)
         {
-            _navigator?.PreviousPartClicked();
+            _navigator.PreviousPartClicked();
         }
 
         private void btnFirst_Click(object sender, EventArgs e)
         {
-            _navigator?.FirstPartClicked();
+            _navigator.FirstPartClicked();
         }
 
         private void b_Click(object sender, EventArgs e)
@@ -167,6 +161,7 @@ namespace PartituraMagica
             _navigator.PartClicked(_partButtons.FindIndex(entry => entry.Value == b));
         }
 
+        //todo move keyboard handling to a separate class. join all key handle methods from other toolstrips
         public void HandleKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Modifiers == Modifiers)

@@ -42,12 +42,12 @@ namespace PartituraMagica
 
         private void BtnJumpForward_Click(object sender, EventArgs e)
         {
-            _navigator?.JumpForwardClicked();
+            _navigator.JumpForwardClicked();
         }
 
         private void BtnJumpBack_Click(object sender, EventArgs e)
         {
-            _navigator?.JumpBackwardClicked();
+            _navigator.JumpBackwardClicked();
         }
 
         private void btnFaster_Click(object sender, EventArgs e)
@@ -94,6 +94,10 @@ namespace PartituraMagica
             switch (e.KeyCode)
             {
                 case Keys.Space:
+                    if (_navigator.IsPartituraFinished())
+                    {
+                        _navigator.FirstPartClicked();
+                    }
                     Paused = false; //use property setter
                     break;
                 case Keys.Left:

@@ -28,5 +28,6 @@ namespace PartituraMagica
         void FirstPartClicked();
         void JumpForwardClicked();
         void JumpBackwardClicked();
+        bool IsPartituraFinished();
     }
 }

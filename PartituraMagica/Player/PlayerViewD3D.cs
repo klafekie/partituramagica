@@ -32,6 +32,7 @@ namespace PartituraMagica
         private float _lastZoomX;
 
         private bool _rendering;
+        private IPartNavigator _navigator;
 
         //position in view specific coordinates		
 
@@ -111,13 +112,9 @@ namespace PartituraMagica
             };
         }
 
-        public void JumpBackward()
-        {
-            XPos -= 250d;
-        }
-
         public void RegisterEvents(IPartNavigator navigator)
         {
+            _navigator = navigator;
             partsStrip.RegisterEvents(navigator);
             speedStrip.RegisterEvents(navigator);
         }
@@ -210,8 +207,7 @@ namespace PartituraMagica
 
             if (!speedStrip.Paused)
             {
-                //TODO shouldn't that logic be put into navigatior?
-                if (XPos < _clippingD3Ds.Last().Right)
+                if (!_navigator.IsPartituraFinished())
                 {
                     if (!speedStrip.Paused)
                     {

@@ -9,7 +9,7 @@ namespace PartituraMagica.Playing
 
     public class PartNavigator : IPartNavigator
     {
-        private static readonly double MinPartScroll = 50D;
+        private static readonly double MinPartScroll = 150D;
         private readonly PartPositionProvider _calculator;
         private readonly IPlayerView _view;
         private int _currentPartIndex;
@@ -91,6 +91,12 @@ namespace PartituraMagica.Playing
             double viewXPos = Math.Max(_view.XPos - 250d, 0d);
             CurrentPartIndex = _calculator.GetPatternIndexFromXPosition(viewXPos);
             _view.XPos = viewXPos;
+        }
+
+        public bool IsPartituraFinished()
+        {
+            var patternEndXPos = _calculator.GetPatternEndXPos();
+            return _view.XPos >= patternEndXPos;
         }
 
         public void JumpForwardClicked()

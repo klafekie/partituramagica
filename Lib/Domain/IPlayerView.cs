@@ -28,7 +28,7 @@ namespace PartituraMagica
         event Action ViewHasScrolled;
 
         PlayerMemento ToMemento();
-        void JumpBackward();
+        
         void RegisterEvents(IPartNavigator navigator);
     }
 }
