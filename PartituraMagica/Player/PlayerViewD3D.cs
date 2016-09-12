@@ -60,7 +60,7 @@ namespace PartituraMagica
             _clippingD3Ds.Clear();
             foreach (Clipping c in clips)
             {
-                string path = _pageFiles.GetImage(c.PageIndex);
+                string path = _pageFiles.GetImagePath(c.PageIndex);
                 IGreyImage image = _imageLoader.GetImage(path);
                 ClippingD3D line = new ClippingD3D(image, c.Coords, _configuration.InvertColors, _configuration.Color);
                 _clippingD3Ds.Add(line);

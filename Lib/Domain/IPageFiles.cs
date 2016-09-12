@@ -7,7 +7,7 @@
 
     public interface IPageFiles
     {
-        string GetImage(int index);
+        string GetImagePath(int index);
         int GetPageCount();
     }
 }

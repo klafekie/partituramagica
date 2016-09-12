@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace PartituraMagica
@@ -34,13 +35,13 @@ namespace PartituraMagica
         {
             if (Path != null && !newPath.Equals(Path))
             {
-                ICollection<string> oldImages = new List<string>(GetAllImages(Path));
+                var oldImages = GetAllImages(Path).OrderBy(p => p);
+                int index = 0;
                 foreach (string oldImage in oldImages)
                 {
-                    string newDir = System.IO.Path.GetDirectoryName(newPath);
-                    string fileName = System.IO.Path.GetFileName(oldImage);
-                    string newImage = System.IO.Path.Combine(newDir, fileName);
+                    string newImage = GetImagePath(index, newPath);
                     _fileSystem.Copy(oldImage, newImage);
+                    index++;
                 }
             }
             using (Stream str = _fileSystem.OpenWrite(newPath))
@@ -61,7 +62,7 @@ namespace PartituraMagica
 
         public string CurrentImagePath
         {
-            get { return GetImage(CurrentPageIndex, Path); }
+            get { return GetImagePath(CurrentPageIndex, Path); }
         }
 
 
@@ -70,9 +71,9 @@ namespace PartituraMagica
             return GetAllImages(Path).Count;
         }
 
-        public string GetImage(int index)
+        public string GetImagePath(int index)
         {
-            return GetImage(index, Path);
+            return GetImagePath(index, Path);
         }
 
 
@@ -93,7 +94,7 @@ namespace PartituraMagica
             for (int i = 0; i < matchingFiles.Count; i++)
             {
                 if (!matchingFiles.Contains(
-                    GetImage(i, path)))
+                    GetImagePath(i, path)))
                 {
                     throw new PartituraException(
                         "The image files for " + GetPartituraName(path) + " are not properly indexed.\n" +
@@ -119,7 +120,7 @@ namespace PartituraMagica
             return System.IO.Path.GetFileNameWithoutExtension(path);
         }
 
-        private string GetImage(int index, string path)
+        private string GetImagePath(int index, string path)
         {
             string dir = System.IO.Path.GetDirectoryName(path);
             string partituraName = System.IO.Path.GetFileNameWithoutExtension(path);

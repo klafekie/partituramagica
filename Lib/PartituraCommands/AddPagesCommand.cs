@@ -23,7 +23,7 @@ namespace PartituraMagica
             if (sourceFile != null)
             {
                 int index = P.Active.GetPageCount();
-                string destFile = P.Active.GetImage(index);
+                string destFile = P.Active.GetImagePath(index);
                 Debug.Assert(sourceFile != destFile,
                     "cause the index of destFile is always higher than the index of all existing image files");
                 P.FileSystem.Copy(sourceFile, destFile);
