@@ -37,6 +37,7 @@ namespace PartituraMagica
                     }
                     new ShowPageCommand(0, P).TryExecute();
                     P.MainWindow.PartPattern = P.Active.Partitura.PartPattern;
+                    P.MainWindow.ShowPartituraInfo(Path.GetFileNameWithoutExtension(chosenFile), P.Active.CurrentPageIndex, P.Active.GetPageCount());
                 }
             }
         }

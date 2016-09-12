@@ -120,7 +120,6 @@ namespace PartituraMagica
                             _playerView = new PlayerViewD3D(Active, Panel, h.Handle, LoadPlayer());
                             _playerView.VisibleChanged += (o, args) =>
                             {
-                                //todo p1 bind to a better event
                                 if (!_playerView.Visible)
                                 {
                                     SavePlayer(_playerView);

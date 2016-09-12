@@ -32,6 +32,7 @@ namespace PartituraMagica
                 P.Panel.Clear();
                 P.Active.Close();
                 P.DisposePlayerView();
+                P.MainWindow.ClearPartituraInfo();
             }
         }
 

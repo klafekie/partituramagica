@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.IO;
 
 namespace PartituraMagica
 {
@@ -34,6 +35,7 @@ namespace PartituraMagica
                     //show was successfull
                     new AutoFillCommand(P).TryExecute();
                 }
+                P.MainWindow.ShowPartituraInfo(Path.GetFileNameWithoutExtension(P.Active.Path), P.Active.CurrentPageIndex, P.Active.GetPageCount());
             }
         }
     }

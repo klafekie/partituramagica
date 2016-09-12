@@ -59,6 +59,19 @@ namespace PartituraMagica
             set { patternBox.Text = value; }
         }
 
+        public void ShowPartituraInfo(string name, int? currentPageIndex, int? pageCount)
+        {
+            Title = "Partitura Magica - " + name;
+            if (currentPageIndex != null && pageCount != null)
+            {
+                Title += " (" + (currentPageIndex + 1) + " / " + pageCount + ")";
+            }
+        }
+
+        public void ClearPartituraInfo()
+        {
+            Title = "Partitura Magica";
+        }
 
         public void MessageBox(string text)
         {

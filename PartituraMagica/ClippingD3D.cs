@@ -198,7 +198,7 @@ namespace PartituraMagica
                     //can be checked with caps.Texturecaps.SupportsPowerTwo
 
                     Trace.TraceInformation("Cache.Get() loading texture from file: " + image.Path);
-                    int width = 0; // 2048; // 0 means 'use the resolution from file' [todo check]
+                    int width = 0; // 2048; // 0 means 'use the resolution from file'
                     int height = 0; // 2048;
                     int levelCount = 1;
                     Filter filter = Filter.Point; // options a.o.: Triangle / Linear / Point / None;
