@@ -15,7 +15,7 @@ namespace PartituraMagica
         public void Setup()
         {
             _mocks = new MockRepository();
-            _view = _mocks.StrictMock<IPlayerView>();
+            _view = _mocks.DynamicMock<IPlayerView>();
         }
 
         [TearDown]

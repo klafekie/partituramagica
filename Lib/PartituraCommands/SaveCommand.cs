@@ -20,7 +20,7 @@ namespace PartituraMagica
 
             if (_saveAs || path == null)
             {
-                path = P.FileSystem.ShowSaveDialog(FileType.Partitura);
+                path = P.FileSystem.ShowSavePartituraDialog(false);
             }
 
             if (path != null)

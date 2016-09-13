@@ -13,7 +13,7 @@ namespace PartituraMagica
         public void Execute()
         {
             Debug.Assert(CanExecute());
-            string path = P.FileSystem.ShowSaveDialog(FileType.Partitura);
+            string path = P.FileSystem.ShowSavePartituraDialog(false);
 
             if (path != null)
             {
@@ -25,14 +25,8 @@ namespace PartituraMagica
 
                     Partitura partitura = new Partitura();
                     P.Active.Open(path, partitura);
-
-                    //show the first page if we already have at least one image file
-                    //matching on disk
-                    //otherwise add a page, 
-                    if (!new ShowPageCommand(0, P).TryExecute())
-                    {
-                        new AddPagesCommand(P).TryExecute();
-                    }
+                    
+                    new AddPagesCommand(P).Execute();
                     P.MainWindow.ShowPartituraInfo(Path.GetFileNameWithoutExtension(P.Active.Path), P.Active.CurrentPageIndex, P.Active.GetPageCount());
                 }
             }

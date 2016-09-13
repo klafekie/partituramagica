@@ -22,7 +22,7 @@ namespace PartituraMagica
 
         public void Execute()
         {
-            string chosenFile = _path ?? P.FileSystem.ShowOpenDialog(FileType.Partitura);
+            string chosenFile = _path ?? P.FileSystem.ShowOpenPartituraDialog();
             if (chosenFile != null)
             {
                 new ClosePartituraCommand(P).TryExecute();

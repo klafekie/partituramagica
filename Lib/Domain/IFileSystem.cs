@@ -3,12 +3,6 @@ using System.IO;
 
 namespace PartituraMagica
 {
-    public enum FileType
-    {
-        Image,
-        Partitura
-    }
-
     public enum DialogResult
     {
         Yes,
@@ -28,14 +22,15 @@ namespace PartituraMagica
         ICollection<string> GetMatchingFileNames(string path, string pattern);
 
         /**
-         * @return selected file (full path), null if cancel was pressed
+         * @return selected files (full path), empty collection if cancel is pressed
          */
-        string ShowOpenDialog(FileType type);
-
+        ICollection<string> ShowOpenImagesDialog();
+        string ShowOpenPartituraDialog();
+        
         /**
          * @return chosen file (full path), null on cancel
          */
-        string ShowSaveDialog(FileType type);
+        string ShowSavePartituraDialog(bool dummy = false);
 
         /** Do you want to save current Partitura? yes no cancel */
         DialogResult AskToSave();

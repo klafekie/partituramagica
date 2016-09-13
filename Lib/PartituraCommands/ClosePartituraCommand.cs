@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using static System.String;
 
 namespace PartituraMagica
 {
@@ -33,6 +34,7 @@ namespace PartituraMagica
                 P.Active.Close();
                 P.DisposePlayerView();
                 P.MainWindow.ClearPartituraInfo();
+                P.MainWindow.PartPattern = string.Empty;
             }
         }
 

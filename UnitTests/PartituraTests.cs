@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using NUnit.Framework;
 using Rhino.Mocks;
 
@@ -30,7 +31,6 @@ namespace PartituraMagica
             TestNewPartituraAndSave();
             TearDown();
             Setup();
-            TestNewPartituraImagesAlreadyPresent();
             TearDown();
             Setup();
             TestWrongImageFileIndicesOnNew();
@@ -40,27 +40,22 @@ namespace PartituraMagica
         [Test]
         public void TestNewPartituraAndSave()
         {
-            //user chooses a partitura file and the directory contains no
-            //matching image files, so he is queried for the first image file		
+            //user chooses a partitura file he is queried for the image files
 
             //NewCommand
-            Expect.Call(fileSystem.ShowSaveDialog(FileType.Partitura))
+            Expect.Call(fileSystem.ShowSavePartituraDialog(false))
                 .Return("c:\\partituraFile.partitura");
 
             //NewCommand calls AddCommand
-            Expect.Call(fileSystem.ShowOpenDialog(FileType.Image))
-                .Return("d:\\image1.jpg");
-
-            //two AddCommand
-            Expect.Call(fileSystem.ShowOpenDialog(FileType.Image))
-                .Return("d:\\image2.jpg");
-
-            //third AddCommand
-            Expect.Call(fileSystem.ShowOpenDialog(FileType.Image))
-                .Return("d:\\image3.jpg");
+            Expect.Call(fileSystem.ShowOpenImagesDialog())
+                .Return(new List<string>() { "d:\\image1.jpg", "d:\\image2.jpg" });
+        
+            //manually add two more pages
+            Expect.Call(fileSystem.ShowOpenImagesDialog())
+                .Return(new List<string>() { "d:\\image3.jpg", "d:\\image4.jpg"});
 
             //SaveAsCommand
-            Expect.Call(fileSystem.ShowSaveDialog(FileType.Partitura))
+            Expect.Call(fileSystem.ShowSavePartituraDialog(false))
                 .Return("c:\\otherDir\\partituraFile.partitura");
             byte[] buffer = new byte[100000]; //uah, only ok cause it is test code...
             Stream s1 = new MemoryStream(buffer);
@@ -70,7 +65,7 @@ namespace PartituraMagica
                 .Return(s1);
 
             //OpenCommand
-            Expect.Call(fileSystem.ShowOpenDialog(FileType.Partitura))
+            Expect.Call(fileSystem.ShowOpenPartituraDialog())
                 .Return("c:\\otherDir\\partituraFile.partitura");
             Expect.Call(fileSystem.OpenRead("c:\\otherDir\\partituraFile.partitura"))
                 .Return(s2);
@@ -81,17 +76,14 @@ namespace PartituraMagica
             Assert.AreEqual(panel.ImagePath, "c:\\partituraFile-000.jpg",
                 "first added file is immediately displayed");
             Assert.NotNull(ActivePartitura.Partitura);
-            Assert.AreEqual(ActivePartitura.GetPageCount(), 1);
+            Assert.AreEqual(ActivePartitura.GetPageCount(), 2);
             Assert.AreEqual(ActivePartitura.Path, "c:\\partituraFile.partitura");
-
-            new AddPagesCommand(this).Execute();
-            Assert.AreEqual(panel.ImagePath, "c:\\partituraFile-001.jpg",
-                "last added page is immediately displayed");
-
+            
             new AddPagesCommand(this).Execute();
             Assert.AreEqual(panel.ImagePath, "c:\\partituraFile-002.jpg",
                 "last added page is immediately displayed");
-
+            Assert.AreEqual(ActivePartitura.GetPageCount(), 4);
+            
             ////switch between the pages to see that they have the correcct indices
             new ShowPageCommand(0, this).Execute();
             Assert.AreEqual(panel.ImagePath, "c:\\partituraFile-000.jpg");
@@ -99,6 +91,8 @@ namespace PartituraMagica
             Assert.AreEqual(panel.ImagePath, "c:\\partituraFile-001.jpg");
             new ShowPageCommand(2, this).Execute();
             Assert.AreEqual(panel.ImagePath, "c:\\partituraFile-002.jpg");
+            new ShowPageCommand(3, this).Execute();
+            Assert.AreEqual(panel.ImagePath, "c:\\partituraFile-003.jpg");
 
             //now safe to another location and reopen to see that there are still the same pages
             new SaveCommand(true, this).Execute();
@@ -113,13 +107,15 @@ namespace PartituraMagica
             Assert.AreEqual(panel.ImagePath, "c:\\otherDir\\partituraFile-001.jpg");
             new ShowPageCommand(2, this).Execute();
             Assert.AreEqual(panel.ImagePath, "c:\\otherDir\\partituraFile-002.jpg");
+            new ShowPageCommand(3, this).Execute();
+            Assert.AreEqual(panel.ImagePath, "c:\\otherDir\\partituraFile-003.jpg");
         }
 
         [Test]
         public void TestNewPartituraCancelled()
         {
-            Expect.Call(fileSystem.ShowSaveDialog(FileType.Partitura))
-                .Return(null);
+            //Expect.Call(fileSystem.ShowSavePartituraDialog())
+            //    .Return(null);
 
             Mocks.ReplayAll();
             //user presses cancel in fileSystem for the partitura file
@@ -129,46 +125,7 @@ namespace PartituraMagica
             Assert.Null(ActivePartitura.Path);
             Assert.False(new SaveCommand(true, this).CanExecute());
         }
-
-        [Test]
-        public void TestNewPartituraImagesAlreadyPresent()
-        {
-            //user chooses a partitura file and the directory contains 
-            //some matching image files
-
-            fileSystem.GetNames("c:\\").Add("c:\\partituraFile-000.jpg");
-            fileSystem.GetNames("c:\\").Add("c:\\partituraFile-001.jpg");
-
-            //NewCommand
-            Expect.Call(fileSystem.ShowSaveDialog(FileType.Partitura))
-                .Return("c:\\partituraFile.partitura");
-
-            //adding a third page
-            Expect.Call(fileSystem.ShowOpenDialog(FileType.Image))
-                .Return("d:\\image.jpg");
-
-            Mocks.ReplayAll();
-
-            new NewPartituraCommand(this).Execute();
-            Assert.AreEqual(panel.ImagePath, "c:\\partituraFile-000.jpg",
-                "first file is immediately displayed");
-            Assert.NotNull(ActivePartitura.Partitura);
-            Assert.AreEqual(ActivePartitura.GetPageCount(), 2);
-            Assert.AreEqual(ActivePartitura.Path, "c:\\partituraFile.partitura");
-
-            new AddPagesCommand(this).Execute();
-            Assert.AreEqual(panel.ImagePath, "c:\\partituraFile-002.jpg",
-                "last added page is immediately displayed");
-
-            ////switch between the pages to see that they have the correcct indices
-            new ShowPageCommand(0, this).Execute();
-            Assert.AreEqual(panel.ImagePath, "c:\\partituraFile-000.jpg");
-            new ShowPageCommand(1, this).Execute();
-            Assert.AreEqual(panel.ImagePath, "c:\\partituraFile-001.jpg");
-            new ShowPageCommand(2, this).Execute();
-            Assert.AreEqual(panel.ImagePath, "c:\\partituraFile-002.jpg");
-        }
-
+        
         [Test]
         public void TestWrongImageFileIndicesOnNew()
         {
@@ -179,7 +136,7 @@ namespace PartituraMagica
             fileSystem.GetNames("c:\\").Add("c:\\partituraFile-000.jpg");
 
             //NewCommand
-            Expect.Call(fileSystem.ShowSaveDialog(FileType.Partitura))
+            Expect.Call(fileSystem.ShowSavePartituraDialog(false))
                 .Return("c:\\partituraFile.partitura");
 
             Mocks.ReplayAll();

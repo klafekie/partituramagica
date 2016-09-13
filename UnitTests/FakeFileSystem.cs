@@ -13,16 +13,21 @@ namespace PartituraMagica
             return GetNames(path);
         }
 
-        public virtual string ShowOpenDialog(FileType type)
+        public virtual ICollection<string> ShowOpenImagesDialog()
         {
-            throw new NotImplementedException();
+            return null;
         }
 
-        public virtual string ShowSaveDialog(FileType type)
+        public virtual string ShowOpenPartituraDialog()
         {
-            throw new NotImplementedException();
+            return null;
         }
 
+        public virtual string ShowSavePartituraDialog(bool dummy)
+        {
+            return null;
+        }
+       
         public virtual DialogResult AskToSave()
         {
             throw new NotImplementedException();
