@@ -22,7 +22,7 @@ namespace PartituraMagica
             Point dimensions = P.Panel.DrawImage(P.Active.CurrentImagePath);
 
             P.Active.Partitura.Paint(_index, P.Panel, dimensions);
-            P.MainWindow.ShowPartituraInfo(Path.GetFileNameWithoutExtension(P.Active.Path), P.Active.CurrentPageIndex, P.Active.GetPageCount());
+            P.MainWindow.ShowPartituraInfo(P.Active);
         }
 
         public bool CanExecute()

@@ -11,7 +11,7 @@ namespace PartituraMagica
 
         public bool CanExecute()
         {
-            return P.Active.IsOpen;
+            return P.Active.IsOpen && P.Active.GetPageCount() > 0;
         }
 
 

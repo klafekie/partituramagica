@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Input;
 
@@ -59,12 +60,20 @@ namespace PartituraMagica
             set { patternBox.Text = value; }
         }
 
-        public void ShowPartituraInfo(string name, int? currentPageIndex, int? pageCount)
+        public void ShowPartituraInfo(IActivePartitura active)
         {
-            Title = "Partitura Magica - " + name;
-            if (currentPageIndex != null && pageCount != null)
+            var pageCount = active.GetPageCount();
+            if (pageCount == 0)
             {
-                Title += " (" + (currentPageIndex + 1) + " / " + pageCount + ")";
+                Title = string.Format("Partitura Magica - {0} (no pages)",
+                    Path.GetFileNameWithoutExtension(active.Path));
+            }
+            else
+            {
+                Title = string.Format("Partitura Magica - {0} ({1} / {2})",
+                    Path.GetFileNameWithoutExtension(active.Path),
+                    active.CurrentPageIndex + 1,
+                    pageCount);
             }
         }
 
@@ -109,13 +118,13 @@ namespace PartituraMagica
 
         private void CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            string name = ((RoutedCommand) e.Command).Name;
+            string name = ((RoutedCommand)e.Command).Name;
             e.CanExecute = _controller.CanExecuteCommand(name);
         }
 
         private void Execute(object sender, ExecutedRoutedEventArgs e)
         {
-            string name = ((RoutedCommand) e.Command).Name;
+            string name = ((RoutedCommand)e.Command).Name;
             _controller.CreateCommand(name).Execute();
         }
 

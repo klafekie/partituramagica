@@ -27,7 +27,7 @@ namespace PartituraMagica
             {
                 P.Active.Save(path);
             }
-            P.MainWindow.ShowPartituraInfo(Path.GetFileNameWithoutExtension(P.Active.Path), P.Active.CurrentPageIndex, P.Active.GetPageCount());
+            P.MainWindow.ShowPartituraInfo(P.Active);
         }
 
         public bool CanExecute()

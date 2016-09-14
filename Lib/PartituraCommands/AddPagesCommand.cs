@@ -41,9 +41,8 @@ namespace PartituraMagica
 
                 //go back to the first added page
                 new ShowPageCommand(firstAddedIndex, P).TryExecute();
-                
-                P.MainWindow.ShowPartituraInfo(Path.GetFileNameWithoutExtension(P.Active.Path), P.Active.CurrentPageIndex, P.Active.GetPageCount());
             }
+            P.MainWindow.ShowPartituraInfo(P.Active);
         }
     }
 }

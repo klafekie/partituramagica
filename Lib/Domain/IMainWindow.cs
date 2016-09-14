@@ -11,9 +11,8 @@ namespace PartituraMagica
         string PartPattern { get; set; }
 
         bool IsEnabled { get; set; }
-
-        //currentPageIndex must be given zero based (and is displayed as one based)
-        void ShowPartituraInfo(string name, int? currentPageIndex, int? pageCount);
+        
+        void ShowPartituraInfo(IActivePartitura active);
         void ClearPartituraInfo();
         
 
