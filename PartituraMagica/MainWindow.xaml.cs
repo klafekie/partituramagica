@@ -1,9 +1,12 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
+using System.Threading;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Markup;
 
 namespace PartituraMagica
 {
@@ -22,6 +25,7 @@ namespace PartituraMagica
 
             InitializeComponent();
 
+            
             _controller = new EditingController(this, new DrawingPanel(PageCanvas));
         }
 

@@ -1,5 +1,8 @@
 ﻿using System.Diagnostics;
+using System.Globalization;
+using System.Threading;
 using System.Windows;
+using System.Windows.Markup;
 using System.Windows.Threading;
 
 namespace PartituraMagica
@@ -24,6 +27,14 @@ namespace PartituraMagica
             Trace.WriteLine("-------------------");
             Trace.TraceInformation("-- Application started --");
             Trace.WriteLine("-------------------");
+
+            Thread.CurrentThread.CurrentCulture =
+                CultureInfo.GetCultureInfo("en-GB");
+            Thread.CurrentThread.CurrentUICulture =
+                CultureInfo.GetCultureInfo("en-GB");
+            //LanguageProperty.OverrideMetadata(typeof(FrameworkElement),
+            //    new FrameworkPropertyMetadata(XmlLanguage.GetLanguage("en-GB")));
+
         }
     }
 }

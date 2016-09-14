@@ -40,7 +40,7 @@
                 <MenuItem Command="{x:Static src:MainWindow.UnLabel}" />
                 <MenuItem Command="{x:Static src:MainWindow.AutoFill}" />
             </MenuItem>
-            <MenuItem Header="Page">
+            <MenuItem Header="Pages">
                 <MenuItem Command="{x:Static src:MainWindow.AddPage}"/>
                 <MenuItem Command="NextPage"/>
                 <MenuItem Command="PreviousPage"/>
