@@ -24,7 +24,6 @@ namespace PartituraMagica
             Trace.WriteLine("hallo listener");
 
             InitializeComponent();
-
             
             _controller = new EditingController(this, new DrawingPanel(PageCanvas));
         }
@@ -57,6 +56,14 @@ namespace PartituraMagica
 
         public static RoutedUICommand ClosePartitura { get; } = new
             RoutedUICommand("Close", "ClosePartitura", typeof(MainWindow));
+
+        public static RoutedUICommand TuningTone{ get; } = new
+            RoutedUICommand("Tuning Tone", "TuningTone", typeof(MainWindow),
+                new InputGestureCollection
+                {
+                    new KeyGesture(Key.T, ModifierKeys.Control)
+                });
+
 
         public string PartPattern
         {

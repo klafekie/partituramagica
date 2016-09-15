@@ -202,7 +202,11 @@
     </None>
     <None Include="Resources\PreviousPageHS.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="440Hz_44100Hz_16bit_05sec_lower.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

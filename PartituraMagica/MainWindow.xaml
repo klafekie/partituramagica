@@ -11,6 +11,7 @@
         <CommandBinding Command="SaveAs" CanExecute="CanExecute" Executed="Execute"/>
         <CommandBinding Command="Delete" CanExecute="CanExecute" Executed="Execute"/>
         <CommandBinding Command="{x:Static src:MainWindow.AddPage}" CanExecute="CanExecute" Executed="Execute"/>
+        <CommandBinding Command="{x:Static src:MainWindow.TuningTone}" CanExecute="CanExecute" Executed="Execute"/>
         <CommandBinding Command="NextPage" CanExecute="CanExecute" Executed="Execute"/>
         <CommandBinding Command="PreviousPage" CanExecute="CanExecute" Executed="Execute"/>
         <CommandBinding Command="{x:Static src:MainWindow.StartPlayer}" CanExecute="CanExecute" Executed="Execute"/>
@@ -24,7 +25,7 @@
         <Menu DockPanel.Dock="Top">
             <MenuItem Name="fileMenu" TabIndex="0" Header="_File">
                 <MenuItem Command="New"/>
-                <MenuItem Command="Open"/>    
+                <MenuItem Command="Open"/>
                 <MenuItem Command="Save"/>
                 <MenuItem Command="SaveAs"/>
                 <MenuItem Command="{x:Static src:MainWindow.ClosePartitura}"/>
@@ -33,7 +34,7 @@
                 <Separator/>
                 <MenuItem Command="{x:Static src:MainWindow.Exit}"/>
             </MenuItem>
-            <MenuItem Header="_Edit">                
+            <MenuItem Header="_Edit">
                 <MenuItem Command="Delete"/>
                 <Separator/>
                 <MenuItem Command="{x:Static src:MainWindow.Label}" />
@@ -44,8 +45,10 @@
                 <MenuItem Command="{x:Static src:MainWindow.AddPage}"/>
                 <MenuItem Command="NextPage"/>
                 <MenuItem Command="PreviousPage"/>
-            </MenuItem>            
-            <MenuItem Command="Help"/>
+            </MenuItem>
+            <MenuItem Header="Tools">
+                <MenuItem Command="{x:Static src:MainWindow.TuningTone}"/>
+            </MenuItem>
             <TextBox Name="patternBox" Width="150"                      
                      PreviewTextInput="patternBox_LostFocus"
                      PreviewLostKeyboardFocus="patternBox_PreviewLostKeyboardFocus"
@@ -54,6 +57,6 @@
         <ScrollViewer HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible">
             <Canvas Name="PageCanvas" MouseMove="PageCanvas_MouseMove"
                 MouseDown="PageCanvas_MouseDown" />
-        </ScrollViewer>        
+        </ScrollViewer>
     </DockPanel>
 </Window>

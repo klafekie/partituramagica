@@ -111,6 +111,8 @@ namespace PartituraMagica
                     return new UnLabelPartCommand(this);
                 case "UpdatePartPattern":
                     return new UpdatePartPatternCommand(this);
+                case "TuningTone":
+                    return new PlayTuningToneCommand();
                 case "StartPlayer":
                     Func<IPlayerView> createView = delegate
                     {
