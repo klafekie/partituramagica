@@ -11,6 +11,7 @@
 "SccLocalPath" = "8:"
 "SccAuxPath" = "8:"
 "SccProvider" = "8:"
+"BackwardsCompatibleGUIDGeneration" = "8:TRUE"
     "Hierarchy"
     {
         "Entry"
@@ -35,6 +36,12 @@
         {
         "MsmKey" = "8:_7DC270557D083DAC6669D234C82E433F"
         "OwnerKey" = "8:_C7318B2D25B4466886010D29B851AED6"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_7E70906432E3448E8C8C4AC16C5458E5"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -200,7 +207,7 @@
                 {
                 "Name" = "8:.NET Framework"
                 "Message" = "8:[VSDNETMSG]"
-                "FrameworkVersion" = "8:3.5.21022 "
+                "FrameworkVersion" = "8:3.5.21022  "
                 "AllowLaterVersions" = "11:FALSE"
                 "InstallUrl" = "8:http://go.microsoft.com/fwlink/?LinkId=76617"
                 }
@@ -308,6 +315,26 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7E70906432E3448E8C8C4AC16C5458E5"
+            {
+            "SourcePath" = "8:..\\PartituraMagica\\440Hz_44100Hz_16bit_05sec_lower.wav"
+            "TargetName" = "8:440Hz_44100Hz_16bit_05sec_lower.wav"
+            "Tag" = "8:"
+            "Folder" = "8:_29A4BF8703F5477FA878E619FF4BFF99"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_982A435FCDAF4819A30BA7CF50D5366D"
@@ -520,7 +547,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Partitura Magica"
         "ProductCode" = "8:{EEA6802E-4BE2-4AAB-8D04-E628076DCDA7}"
-        "PackageCode" = "8:{FE4787D9-4A1E-4FCC-9BA6-71C148CB173C}"
+        "PackageCode" = "8:{E7EBBA43-C225-4847-B865-00A8214476C1}"
         "UpgradeCode" = "8:{D3D32C7C-C176-43D3-A710-AB776A345820}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
