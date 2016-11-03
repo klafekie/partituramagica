@@ -38,12 +38,6 @@ namespace PartituraMagica.Playing
 
         public event Action CurrentPartIndexChanged;
 
-        private void ViewOnViewHasScrolled()
-        {
-            //fires part changed event if really changed
-            CurrentPartIndex = _calculator.GetPatternIndexFromXPosition(_view.XPos);
-        }
-
         public void FirstPartClicked()
         {
             CurrentPartIndex = 0;
@@ -104,6 +98,12 @@ namespace PartituraMagica.Playing
             double viewXPos = Math.Min(_view.XPos + 250d, _calculator.GetPatternEndXPos());
             CurrentPartIndex = _calculator.GetPatternIndexFromXPosition(_view.XPos);
             _view.XPos = viewXPos;
+        }
+
+        private void ViewOnViewHasScrolled()
+        {
+            //fires part changed event if really changed
+            CurrentPartIndex = _calculator.GetPatternIndexFromXPosition(_view.XPos);
         }
 
         public void PlayerOpened()

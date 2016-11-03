@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.IO;
 
 namespace PartituraMagica
 {
@@ -25,7 +24,7 @@ namespace PartituraMagica
 
                     Partitura partitura = new Partitura();
                     P.Active.Open(path, partitura);
-                    
+
                     new AddPagesCommand(P).Execute();
                 }
             }

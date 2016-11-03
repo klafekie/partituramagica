@@ -1,12 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
-using System.Threading;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Markup;
 
 namespace PartituraMagica
 {
@@ -24,7 +21,7 @@ namespace PartituraMagica
             Trace.WriteLine("hallo listener");
 
             InitializeComponent();
-            
+
             _controller = new EditingController(this, new DrawingPanel(PageCanvas));
         }
 
@@ -57,7 +54,7 @@ namespace PartituraMagica
         public static RoutedUICommand ClosePartitura { get; } = new
             RoutedUICommand("Close", "ClosePartitura", typeof(MainWindow));
 
-        public static RoutedUICommand TuningTone{ get; } = new
+        public static RoutedUICommand TuningTone { get; } = new
             RoutedUICommand("Tuning Tone", "TuningTone", typeof(MainWindow),
                 new InputGestureCollection
                 {
@@ -129,13 +126,13 @@ namespace PartituraMagica
 
         private void CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            string name = ((RoutedCommand)e.Command).Name;
+            string name = ((RoutedCommand) e.Command).Name;
             e.CanExecute = _controller.CanExecuteCommand(name);
         }
 
         private void Execute(object sender, ExecutedRoutedEventArgs e)
         {
-            string name = ((RoutedCommand)e.Command).Name;
+            string name = ((RoutedCommand) e.Command).Name;
             _controller.CreateCommand(name).Execute();
         }
 

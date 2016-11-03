@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
 using System.Windows.Forms;
+using PartituraMagica.Player;
 using SlimDX;
 using SlimDX.Direct3D9;
 
@@ -24,15 +24,18 @@ namespace PartituraMagica
         private readonly ApplicationConfiguration _configuration = new ApplicationConfiguration();
         private readonly Direct3D _d3D;
         private readonly IImageLoader _imageLoader;
+        private readonly KeyboardMap _keyboardMap;
         private readonly IntPtr _ownerHandle;
         private readonly IPageFiles _pageFiles;
+        private readonly SpeedManager _speedManager;
         private bool _closed = true;
 
         private Device _device;
         private float _lastZoomX;
+        private IPartNavigator _navigator;
 
         private bool _rendering;
-        private IPartNavigator _navigator;
+        private readonly ZoomManager _zoomManager;
 
         //position in view specific coordinates		
 
@@ -42,11 +45,11 @@ namespace PartituraMagica
             InitializeComponent();
             WindowState = FormWindowState.Maximized;
 
+            _speedManager = new SpeedManager(memento.Speed);
+            _zoomManager = new ZoomManager(memento.XZoom, memento.YZoom);
+            _keyboardMap = new KeyboardMap(_speedManager, _zoomManager);
             _pageFiles = pageFiles;
             _imageLoader = imageLoader;
-            zoomStrip.XZoom = memento.XZoom;
-            zoomStrip.YZoom = memento.YZoom;
-            speedStrip.Speed = memento.Speed;
             _ownerHandle = owner;
 
             _d3D = new Direct3D();
@@ -70,7 +73,7 @@ namespace PartituraMagica
             foreach (ClippingD3D l in _clippingD3Ds)
             {
                 l.Init(_device, offset);
-                offset += l.Width + (float)lineDistance;
+                offset += l.Width + (float) lineDistance;
             }
 
             string[] parts = new string[partPattern.Length];
@@ -87,7 +90,7 @@ namespace PartituraMagica
         {
             IWin32Window w = new Win32Window(_ownerHandle);
             _rendering = true;
-            speedStrip.Paused = false;
+            _speedManager.IsPaused = false;
             _closed = false;
             Enabled = true;
             Show(w);
@@ -106,17 +109,27 @@ namespace PartituraMagica
         {
             return new PlayerMemento
             {
-                Speed = speedStrip.Speed,
-                XZoom = zoomStrip.XZoom,
-                YZoom = zoomStrip.YZoom
+                Speed = _speedManager.Speed,
+                XZoom = _zoomManager.XZoom,
+                YZoom = _zoomManager.YZoom
             };
         }
 
         public void RegisterEvents(IPartNavigator navigator)
         {
             _navigator = navigator;
+            _keyboardMap.RegisterEvents(navigator, this);
             partsStrip.RegisterEvents(navigator);
-            speedStrip.RegisterEvents(navigator);
+            speedStrip.RegisterEvents(navigator, _speedManager);
+            zoomStrip.RegisterEvents(_zoomManager);
+        }
+
+        /** behave as if window was closed, but it is still in memory */
+
+        public new void Hide()
+        {
+            base.Hide();
+            _closed = true;
         }
 
         protected override void Dispose(bool disposing)
@@ -189,10 +202,10 @@ namespace PartituraMagica
             {
                 _device.BeginScene();
                 float zoomY;
-                zoomStrip.GetNextZoom(out _lastZoomX, out zoomY);
+                _zoomManager.GetNextZoom(out _lastZoomX, out zoomY);
                 _device.SetTransform(TransformState.World,
-                    Matrix.Scaling(_lastZoomX, zoomY, 1F) *
-                    Matrix.Translation((float)-XPos * _lastZoomX, 0, 0));
+                    Matrix.Scaling(_lastZoomX, zoomY, 1F)*
+                    Matrix.Translation((float) -XPos*_lastZoomX, 0, 0));
                 for (int i = 0; i < _clippingD3Ds.Count; i++)
                 {
                     _clippingD3Ds[i].Render(_device);
@@ -205,13 +218,13 @@ namespace PartituraMagica
 
             _device.Present();
 
-            if (!speedStrip.Paused)
+            if (!_speedManager.IsPaused)
             {
                 if (!_navigator.IsPartituraFinished())
                 {
-                    if (!speedStrip.Paused)
+                    if (!_speedManager.IsPaused)
                     {
-                        XPos += speedStrip.Speed;
+                        XPos += _speedManager.Speed;
                         ViewHasScrolled?.Invoke();
                     }
                 }
@@ -221,35 +234,12 @@ namespace PartituraMagica
 
         private void PlayerViewD3D_KeyDown(object sender, KeyEventArgs e)
         {
-            partsStrip.HandleKeyDown(sender, e);
-            speedStrip.HandleKeyDown(sender, e);
-            zoomStrip.HandleKeyDown(sender, e);
-            switch (e.KeyCode)
-            {
-                case Keys.F4:
-                    if (e.Modifiers == Keys.Alt)
-                    {
-                        SpecialClose();
-                    }
-                    break;
-                case Keys.Escape:
-                    SpecialClose();
-                    break;
-            }
-        }
-
-        /** behave as if window was closed, but it is still in memory */
-
-        private void SpecialClose()
-        {
-            Hide();
-            _closed = true;
-            //Trace.WriteLine(SimpleTracer.GetData());
+            _keyboardMap.HandleKeyDown(sender, e);
         }
 
         private void PlayerViewD3D_KeyUp(object sender, KeyEventArgs e)
         {
-            speedStrip.HandleKeyUp(sender, e);
+            _keyboardMap.HandleKeyUp(sender, e);
         }
 
         private void PlayerViewD3D_FormClosing(object sender, FormClosingEventArgs e)
@@ -266,7 +256,7 @@ namespace PartituraMagica
                     break; //no cancel
                 case CloseReason.UserClosing:
                     e.Cancel = true; //window is not really closed.
-                    SpecialClose();
+                    Hide();
                     break;
             }
         }

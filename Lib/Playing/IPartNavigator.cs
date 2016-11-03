@@ -15,7 +15,7 @@ namespace PartituraMagica
     {
         int CurrentPartIndex { get; }
         event Action CurrentPartIndexChanged;
-        
+
         void PartClicked(int index);
 
         /** going to previous part can be prevented by listeners

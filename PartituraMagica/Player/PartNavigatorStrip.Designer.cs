@@ -47,7 +47,7 @@
             // NavigationToolStrip
             // 
             this.Font = new System.Drawing.Font("Lucida Console", 18F, System.Drawing.FontStyle.Bold);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.HandleKeyDown);
+            //this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.HandleKeyDown);
             this.ResumeLayout(false);
 
         }

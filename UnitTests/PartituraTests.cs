@@ -48,11 +48,11 @@ namespace PartituraMagica
 
             //NewCommand calls AddCommand
             Expect.Call(fileSystem.ShowOpenImagesDialog())
-                .Return(new List<string>() { "d:\\image1.jpg", "d:\\image2.jpg" });
-        
+                .Return(new List<string> {"d:\\image1.jpg", "d:\\image2.jpg"});
+
             //manually add two more pages
             Expect.Call(fileSystem.ShowOpenImagesDialog())
-                .Return(new List<string>() { "d:\\image3.jpg", "d:\\image4.jpg"});
+                .Return(new List<string> {"d:\\image3.jpg", "d:\\image4.jpg"});
 
             //SaveAsCommand
             Expect.Call(fileSystem.ShowSavePartituraDialog(false))
@@ -78,12 +78,12 @@ namespace PartituraMagica
             Assert.NotNull(ActivePartitura.Partitura);
             Assert.AreEqual(ActivePartitura.GetPageCount(), 2);
             Assert.AreEqual(ActivePartitura.Path, "c:\\partituraFile.partitura");
-            
+
             new AddPagesCommand(this).Execute();
             Assert.AreEqual(panel.ImagePath, "c:\\partituraFile-002.jpg",
                 "last added page is immediately displayed");
             Assert.AreEqual(ActivePartitura.GetPageCount(), 4);
-            
+
             ////switch between the pages to see that they have the correcct indices
             new ShowPageCommand(0, this).Execute();
             Assert.AreEqual(panel.ImagePath, "c:\\partituraFile-000.jpg");
@@ -125,7 +125,7 @@ namespace PartituraMagica
             Assert.Null(ActivePartitura.Path);
             Assert.False(new SaveCommand(true, this).CanExecute());
         }
-        
+
         [Test]
         public void TestWrongImageFileIndicesOnNew()
         {

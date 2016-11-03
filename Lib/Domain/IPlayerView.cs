@@ -28,7 +28,10 @@ namespace PartituraMagica
         event Action ViewHasScrolled;
 
         PlayerMemento ToMemento();
-        
+
         void RegisterEvents(IPartNavigator navigator);
+
+        /* we hide the main window instead of really closing it for performance reasons */
+        void Hide();
     }
 }

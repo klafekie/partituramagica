@@ -91,6 +91,8 @@
     <Compile Include="Playing\PartNavigator.cs" />
     <Compile Include="Playing\PartPositionProvider.cs" />
     <Compile Include="Playing\ShowPlayerCommand.cs" />
+    <Compile Include="Playing\SpeedManager.cs" />
+    <Compile Include="Playing\ZoomManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PlayTuningToneCommand.cs" />
   </ItemGroup>

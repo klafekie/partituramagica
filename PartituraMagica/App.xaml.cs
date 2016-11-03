@@ -2,7 +2,6 @@
 using System.Globalization;
 using System.Threading;
 using System.Windows;
-using System.Windows.Markup;
 using System.Windows.Threading;
 
 namespace PartituraMagica
@@ -34,7 +33,6 @@ namespace PartituraMagica
                 CultureInfo.GetCultureInfo("en-GB");
             //LanguageProperty.OverrideMetadata(typeof(FrameworkElement),
             //    new FrameworkPropertyMetadata(XmlLanguage.GetLanguage("en-GB")));
-
         }
     }
 }

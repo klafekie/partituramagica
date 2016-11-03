@@ -74,9 +74,7 @@
             this.speedStrip.Location = new System.Drawing.Point(303, 0);
             this.speedStrip.MinimumSize = new System.Drawing.Size(0, 43);
             this.speedStrip.Name = "speedStrip";
-            this.speedStrip.Paused = true;
             this.speedStrip.Size = new System.Drawing.Size(432, 43);
-            this.speedStrip.Speed = 0F;
             this.speedStrip.TabIndex = 1;
             this.speedStrip.Text = "Speed";
             // 
@@ -85,7 +83,7 @@
             this.partsStrip.Dock = System.Windows.Forms.DockStyle.None;
             this.partsStrip.Font = new System.Drawing.Font("Lucida Console", 18F, System.Drawing.FontStyle.Bold);
             this.partsStrip.Location = new System.Drawing.Point(3, 0);
-            this.partsStrip.Modifiers = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.None)));
+            //this.partsStrip.Modifiers = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.None)));
             this.partsStrip.Name = "partsStrip";
             this.partsStrip.Size = new System.Drawing.Size(300, 43);
             this.partsStrip.TabIndex = 2;

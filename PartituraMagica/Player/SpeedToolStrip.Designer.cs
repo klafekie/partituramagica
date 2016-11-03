@@ -83,10 +83,7 @@
             this.btnFaster,
             this.btnJumpBack,
             this.btnJumpForward});
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.HandleKeyDown);
-            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.HandleKeyUp);
             this.ResumeLayout(false);
-
 		}
 
 		#endregion

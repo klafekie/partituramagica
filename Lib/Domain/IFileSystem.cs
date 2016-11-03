@@ -26,7 +26,7 @@ namespace PartituraMagica
          */
         ICollection<string> ShowOpenImagesDialog();
         string ShowOpenPartituraDialog();
-        
+
         /**
          * @return chosen file (full path), null on cancel
          */

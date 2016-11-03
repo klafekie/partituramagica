@@ -27,7 +27,7 @@ namespace PartituraMagica
         {
             return null;
         }
-       
+
         public virtual DialogResult AskToSave()
         {
             throw new NotImplementedException();

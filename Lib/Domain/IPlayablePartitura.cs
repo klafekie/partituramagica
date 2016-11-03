@@ -3,8 +3,8 @@
 namespace PartituraMagica
 {
 /** 
-                 * Gives read only access to a Partitura object in order to play it.
-                 */
+                     * Gives read only access to a Partitura object in order to play it.
+                     */
 
     public interface IPlayablePartitura
     {

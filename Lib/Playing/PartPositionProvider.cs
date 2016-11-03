@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
@@ -21,7 +20,7 @@ namespace PartituraMagica.Playing
         public PartPositionProvider(string partPattern, IList<Part> parts)
         {
             //note that we allow that not all labelled parts occur in the pattern.
-            if (String.IsNullOrEmpty(partPattern))
+            if (string.IsNullOrEmpty(partPattern))
             {
                 partPattern = "A";
             }

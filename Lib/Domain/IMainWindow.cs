@@ -11,10 +11,10 @@ namespace PartituraMagica
         string PartPattern { get; set; }
 
         bool IsEnabled { get; set; }
-        
+
         void ShowPartituraInfo(IActivePartitura active);
         void ClearPartituraInfo();
-        
+
 
         void MessageBox(string text);
         void CloseAndExit();
