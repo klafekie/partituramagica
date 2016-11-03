@@ -68,6 +68,7 @@
     <Compile Include="Domain\Partitura.cs" />
     <Compile Include="Domain\PartituraException.cs" />
     <Compile Include="Domain\PlayerMemento.cs" />
+    <Compile Include="Domain\PlayerPositionHolder.cs" />
     <Compile Include="Domain\Rect.cs" />
     <Compile Include="PageEditing\ABCLabelProvider.cs" />
     <Compile Include="PageEditing\AddBoxCommand.cs" />

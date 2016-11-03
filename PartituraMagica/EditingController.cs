@@ -114,11 +114,11 @@ namespace PartituraMagica
                 case "TuningTone":
                     return new PlayTuningToneCommand();
                 case "StartPlayer":
-                    Func<IPlayerView> createView = delegate
+                    Func<PlayerPositionHolder, IPartNavigator, IPlayerView> createView = (positionProvider, playerView) =>
                     {
                         WindowInteropHelper h = new WindowInteropHelper(_mainWindow);
                         
-                        _playerView = new PlayerViewD3D(Active, Panel, h.Handle, LoadPlayer());
+                        _playerView = new PlayerViewD3D(Active, Panel, h.Handle, LoadPlayer(), positionProvider, playerView);
                         _playerView.Closed += (o, args) =>
                         {
                             SavePlayer(_playerView);

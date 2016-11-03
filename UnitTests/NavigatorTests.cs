@@ -76,8 +76,8 @@ namespace PartituraMagica
             _mocks.ReplayAll();
             try
             {
-                PartNavigator n = new PartNavigator(Abccbba, new List<Part>(), _view);
-                n.PlayerOpened();
+                PartNavigator n = new PartNavigator(Abccbba, new List<Part>(), new PlayerPositionHolder());
+                n.PlayerOpened(_view);
                 Assert.Fail("Expected Exception");
             }
             catch (Exception e)
@@ -173,11 +173,10 @@ namespace PartituraMagica
         {
             //view.AppendLine(null);
             LastCall.IgnoreArguments().Repeat.Times(3);
-            _view.XPos = 0;
             _mocks.ReplayAll();
 
-            PartNavigator n = new PartNavigator("A", ThreeParts, _view);
-            n.PlayerOpened();
+            PartNavigator n = new PartNavigator("A", ThreeParts, new PlayerPositionHolder());
+            n.PlayerOpened(_view);
         }
     }
 }

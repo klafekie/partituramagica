@@ -7,9 +7,9 @@ namespace PartituraMagica
 {
     public class ShowPlayerCommand : PartituraCommandBase, ICommand
     {
-        private readonly Func<IPlayerView> _createView;
+        private readonly Func<PlayerPositionHolder, IPartNavigator, IPlayerView> _createView;
 
-        public ShowPlayerCommand(Func<IPlayerView> createView, ICommandParameters p)
+        public ShowPlayerCommand(Func<PlayerPositionHolder, IPartNavigator, IPlayerView> createView, ICommandParameters p)
             : base(p)
         {
             _createView = createView;
@@ -23,12 +23,13 @@ namespace PartituraMagica
 
                 IList<Part> allParts = P.Active.Partitura.GetAllParts(P.Active.GetPageCount());
 
-                IPlayerView view = _createView();
-                PartNavigator n = new PartNavigator(P.Active.Partitura.PartPattern, allParts, view);
-
-                view.RegisterEvents(n);
+                PlayerPositionHolder positionHolder = new PlayerPositionHolder();
+                PartNavigator navigator = new PartNavigator(P.Active.Partitura.PartPattern, allParts, positionHolder);
+                IPlayerView view = _createView(positionHolder, navigator);
+                
+                
                 P.MainWindow.IsEnabled = false;
-                n.PlayerOpened();
+                navigator.PlayerOpened(view);
                 P.MainWindow.IsEnabled = true;
 
                 bool test = P.MainWindow.Activate();

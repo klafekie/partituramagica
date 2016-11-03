@@ -6,21 +6,17 @@ namespace PartituraMagica.Player
     {
         private readonly SpeedManager _speedManager;
         private readonly ZoomManager _zoomManager;
-        private IPartNavigator _navigator;
-        private IPlayerView _playerView;
+        private readonly IPartNavigator _navigator;
+        private readonly IPlayerView _playerView;
 
-        public KeyboardMap(SpeedManager speedManager, ZoomManager zoomManager)
+        public KeyboardMap(SpeedManager speedManager, ZoomManager zoomManager, IPartNavigator navigator, IPlayerView playerView)
         {
             _speedManager = speedManager;
             _zoomManager = zoomManager;
-        }
-
-        public void RegisterEvents(IPartNavigator navigator, IPlayerView playerView)
-        {
             _navigator = navigator;
             _playerView = playerView;
         }
-
+        
         public void HandleKeyDown(object sender, KeyEventArgs e)
         {
             switch (e.KeyCode)

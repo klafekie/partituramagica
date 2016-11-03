@@ -11,13 +11,13 @@ namespace PartituraMagica.Playing
     {
         private static readonly double MinPartScroll = 150D;
         private readonly PartPositionProvider _calculator;
-        private readonly IPlayerView _view;
+        private readonly PlayerPositionHolder _playerPosition;
         private int _currentPartIndex;
 
-        public PartNavigator(string partPattern, IList<Part> parts, IPlayerView view)
+        public PartNavigator(string partPattern, IList<Part> parts, PlayerPositionHolder playerPosition)
         {
-            _view = view;
-            _view.ViewHasScrolled += ViewOnViewHasScrolled;
+            _playerPosition = playerPosition;
+            _playerPosition.ViewHasScrolled += OnViewHasScrolled;
             _calculator = new PartPositionProvider(partPattern, parts);
         }
 
@@ -43,7 +43,7 @@ namespace PartituraMagica.Playing
         public void FirstPartClicked()
         {
             CurrentPartIndex = 0;
-            _view.XPos = _calculator.GetPatternXPosition(0);
+            _playerPosition.XPos = _calculator.GetPatternXPosition(0);
         }
 
         public void PreviousPartClicked()
@@ -52,18 +52,18 @@ namespace PartituraMagica.Playing
             {
                 double currentPartStartPos = _calculator.GetPatternXPosition(CurrentPartIndex);
 
-                if (_view.XPos < currentPartStartPos + MinPartScroll)
+                if (_playerPosition.XPos < currentPartStartPos + MinPartScroll)
                 {
                     CurrentPartIndex--;
                 }
-                _view.XPos = _calculator.GetPatternXPosition(CurrentPartIndex);
+                _playerPosition.XPos = _calculator.GetPatternXPosition(CurrentPartIndex);
             }
         }
 
         public void PartClicked(int partIndex)
         {
             CurrentPartIndex = partIndex;
-            _view.XPos = _calculator.GetPatternXPosition(partIndex);
+            _playerPosition.XPos = _calculator.GetPatternXPosition(partIndex);
         }
 
         public void NextPartClicked()
@@ -71,47 +71,47 @@ namespace PartituraMagica.Playing
             if (_calculator.PatternHasPartsAfter(CurrentPartIndex))
             {
                 CurrentPartIndex++;
-                _view.XPos = _calculator.GetPatternXPosition(CurrentPartIndex);
+                _playerPosition.XPos = _calculator.GetPatternXPosition(CurrentPartIndex);
             }
         }
 
         public void LastPartClicked()
         {
             CurrentPartIndex = _calculator.GetLastPatternIndex();
-            _view.XPos = _calculator.GetPatternXPosition(CurrentPartIndex);
+            _playerPosition.XPos = _calculator.GetPatternXPosition(CurrentPartIndex);
         }
 
         public void JumpBackwardClicked()
         {
             //TODO thread safety??
-            double viewXPos = Math.Max(_view.XPos - 250d, 0d);
+            double viewXPos = Math.Max(_playerPosition.XPos - 250d, 0d);
             CurrentPartIndex = _calculator.GetPatternIndexFromXPosition(viewXPos);
-            _view.XPos = viewXPos;
+            _playerPosition.XPos = viewXPos;
         }
 
         public bool IsPartituraFinished()
         {
             var patternEndXPos = _calculator.GetPatternEndXPos();
-            return _view.XPos >= patternEndXPos;
+            return _playerPosition.XPos >= patternEndXPos;
         }
 
         public void JumpForwardClicked()
         {
-            double viewXPos = Math.Min(_view.XPos + 250d, _calculator.GetPatternEndXPos());
-            CurrentPartIndex = _calculator.GetPatternIndexFromXPosition(_view.XPos);
-            _view.XPos = viewXPos;
+            double viewXPos = Math.Min(_playerPosition.XPos + 250d, _calculator.GetPatternEndXPos());
+            CurrentPartIndex = _calculator.GetPatternIndexFromXPosition(_playerPosition.XPos);
+            _playerPosition.XPos = viewXPos;
         }
 
-        private void ViewOnViewHasScrolled()
+        private void OnViewHasScrolled()
         {
             //fires part changed event if really changed
-            CurrentPartIndex = _calculator.GetPatternIndexFromXPosition(_view.XPos);
+            CurrentPartIndex = _calculator.GetPatternIndexFromXPosition(_playerPosition.XPos);
         }
 
-        public void PlayerOpened()
+        public void PlayerOpened(IPlayerView view)
         {
-            _view.Init(_calculator.PartPattern, _calculator.GetClippings(), PartPositionProvider.LineDistance);
-            _view.StartScrolling();
+            view.Init(_calculator.PartPattern, _calculator.GetClippings(), PartPositionProvider.LineDistance);
+            view.StartScrolling();
         }
     }
 }

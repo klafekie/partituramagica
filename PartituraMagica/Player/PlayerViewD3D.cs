@@ -7,6 +7,8 @@ using System.Windows.Forms;
 using PartituraMagica.Player;
 using SlimDX;
 using SlimDX.Direct3D9;
+using Font = System.Drawing.Font;
+using Resources = PartituraMagica.Properties.Resources;
 
 namespace PartituraMagica
 {
@@ -17,42 +19,60 @@ namespace PartituraMagica
 
     public partial class PlayerViewD3D : Form, IPlayerView
     {
+        private const int PartAButtonIndex = 2;
         private readonly List<ClippingD3D> _clippingD3Ds = new List<ClippingD3D>();
 
         private readonly ApplicationConfiguration _configuration = new ApplicationConfiguration();
         private readonly Direct3D _d3D;
         private readonly IImageLoader _imageLoader;
         private readonly KeyboardMap _keyboardMap;
+        private readonly IPartNavigator _navigator;
         private readonly IntPtr _ownerHandle;
         private readonly IPageFiles _pageFiles;
+        private readonly PlayerPositionHolder _positionHolder;
         private readonly SpeedManager _speedManager;
         private readonly ZoomManager _zoomManager;
 
         private Device _device;
         private float _lastZoomX;
-        private IPartNavigator _navigator;
 
-        private bool _rendering;
-        private const int PartAButtonIndex = 2;
+        private bool _isRendering;
 
-        public PlayerViewD3D(IPageFiles pageFiles, IImageLoader imageLoader, IntPtr owner, PlayerMemento memento)
+        public PlayerViewD3D(IPageFiles pageFiles, IImageLoader imageLoader, IntPtr owner, PlayerMemento memento,
+            PlayerPositionHolder positionHolder, IPartNavigator partNavigator)
         {
             Trace.WriteLine("ctor of PlayerViewD3D");
             InitializeComponent();
             WindowState = FormWindowState.Maximized;
 
+            _navigator = partNavigator;
             _speedManager = new SpeedManager(memento.Speed);
             _zoomManager = new ZoomManager(memento.XZoom, memento.YZoom);
-            _keyboardMap = new KeyboardMap(_speedManager, _zoomManager);
+            _keyboardMap = new KeyboardMap(_speedManager, _zoomManager, _navigator, this);
             _pageFiles = pageFiles;
             _imageLoader = imageLoader;
             _ownerHandle = owner;
+            _positionHolder = positionHolder;
+
+            _navigator.CurrentPartIndexChanged += () =>
+            {
+                for (int i = 0; i < _navigator.PartCount; i++)
+                {
+                    var button = (ToolStripButton) toolStrip1.Items[i + PartAButtonIndex];
+                    button.Checked = i == _navigator.CurrentPartIndex;
+                }
+            };
+            _speedManager.IsPausedChanged += () =>
+            {
+                btnPauseResume.Checked = _speedManager.IsPaused;
+                btnPauseResume.Image = _speedManager.IsPaused
+                    ? Resources.play_button
+                    : Resources.pause;
+            };
 
             _d3D = new Direct3D();
             CreateDevice();
         }
-
-        public double XPos { get; set; }
 
         public void Init(string partPattern, IEnumerable<Clipping> clips, double lineDistance)
         {
@@ -69,7 +89,7 @@ namespace PartituraMagica
             foreach (ClippingD3D l in _clippingD3Ds)
             {
                 l.Init(_device, offset);
-                offset += l.Width + (float)lineDistance;
+                offset += l.Width + (float) lineDistance;
             }
 
             string[] parts = new string[partPattern.Length];
@@ -79,36 +99,13 @@ namespace PartituraMagica
             }
             CreatePartButtons(parts);
 
-            XPos = 0;
-        }
-
-        private void CreatePartButtons(string[] partStrings)
-        {
-            int partIndex = partStrings.Length - 1;
-            foreach (var partString in partStrings.Reverse())
-            {
-                var button = new ToolStripButton();
-                button.DisplayStyle = ToolStripItemDisplayStyle.Text;
-                button.Font = new System.Drawing.Font("Segoe UI", 26.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
-                button.ImageTransparentColor = Color.Magenta;
-                button.Name = partString;
-                button.Size = new Size(49, 51);
-                button.Text = partString;
-                toolStrip1.Items.Insert(PartAButtonIndex, button);
-
-                int index = partIndex;
-                button.Click += (sender, args) =>
-                {
-                    _navigator.PartClicked(index);
-                };
-                partIndex--;
-            }
+            _positionHolder.XPos = 0;
         }
 
         public void StartScrolling()
         {
             IWin32Window w = new Win32Window(_ownerHandle);
-            _rendering = true;
+            _isRendering = true;
             _speedManager.IsPaused = false;
 
             Enabled = true;
@@ -118,11 +115,9 @@ namespace PartituraMagica
             {
                 Application.DoEvents();
                 Render();
-            } while (_rendering);
+            } while (_isRendering);
             Enabled = false;
         }
-
-        public event Action ViewHasScrolled;
 
         public PlayerMemento ToMemento()
         {
@@ -134,30 +129,31 @@ namespace PartituraMagica
             };
         }
 
-        public void RegisterEvents(IPartNavigator navigator)
+        private void CreatePartButtons(string[] partStrings)
         {
-            _navigator = navigator;
-            _navigator.CurrentPartIndexChanged += () =>
+            int partIndex = partStrings.Length - 1;
+            foreach (var partString in partStrings.Reverse())
             {
-                for (int i = 0; i < _navigator.PartCount; i++)
+                var button = new ToolStripButton
                 {
-                    var button = (ToolStripButton) toolStrip1.Items[i + PartAButtonIndex];
-                    button.Checked = i == _navigator.CurrentPartIndex;
-                }
-            };
-            _speedManager.IsPausedChanged += () =>
-            {
-                btnPauseResume.Checked = _speedManager.IsPaused;
-                btnPauseResume.Image = _speedManager.IsPaused
-                    ? Properties.Resources.play_button
-                    : Properties.Resources.pause;
-            };
-            _keyboardMap.RegisterEvents(navigator, this);
+                    DisplayStyle = ToolStripItemDisplayStyle.Text,
+                    Font = new Font("Segoe UI", 26.25F, FontStyle.Bold, GraphicsUnit.Point, 0),
+                    ImageTransparentColor = Color.Magenta,
+                    Name = partString,
+                    Size = new Size(49, 51),
+                    Text = partString
+                };
+                toolStrip1.Items.Insert(PartAButtonIndex, button);
+
+                int index = partIndex;
+                button.Click += (sender, args) => { _navigator.PartClicked(index); };
+                partIndex--;
+            }
         }
 
         protected override void Dispose(bool disposing)
         {
-            _rendering = false;
+            _isRendering = false;
             if (disposing)
             {
                 components?.Dispose();
@@ -214,7 +210,7 @@ namespace PartituraMagica
                 return;
             }
 
-            if (!_rendering)
+            if (!_isRendering)
             {
                 //Debug.Write(".");
                 return;
@@ -228,7 +224,7 @@ namespace PartituraMagica
                 _zoomManager.GetNextZoom(out _lastZoomX, out zoomY);
                 _device.SetTransform(TransformState.World,
                     Matrix.Scaling(_lastZoomX, zoomY, 1F) *
-                    Matrix.Translation((float)-XPos * _lastZoomX, 0, 0));
+                    Matrix.Translation((float) -_positionHolder.XPos * _lastZoomX, 0, 0));
                 for (int i = 0; i < _clippingD3Ds.Count; i++)
                 {
                     _clippingD3Ds[i].Render(_device);
@@ -247,8 +243,7 @@ namespace PartituraMagica
                 {
                     if (!_speedManager.IsPaused)
                     {
-                        XPos += _speedManager.Speed;
-                        ViewHasScrolled?.Invoke();
+                        _positionHolder.ScrollForwardBy(_speedManager.Speed);
                     }
                 }
             }
@@ -263,17 +258,6 @@ namespace PartituraMagica
         private void PlayerViewD3D_KeyUp(object sender, KeyEventArgs e)
         {
             _keyboardMap.HandleKeyUp(sender, e);
-        }
-
-
-        private class Win32Window : IWin32Window
-        {
-            public Win32Window(IntPtr w)
-            {
-                Handle = w;
-            }
-
-            public IntPtr Handle { get; }
         }
 
         private void btnFirstPart_Click(object sender, EventArgs e)
@@ -339,6 +323,17 @@ namespace PartituraMagica
         private void btnSmaller_Click(object sender, EventArgs e)
         {
             _zoomManager.ZoomOut(true);
+        }
+
+
+        private class Win32Window : IWin32Window
+        {
+            public Win32Window(IntPtr w)
+            {
+                Handle = w;
+            }
+
+            public IntPtr Handle { get; }
         }
     }
 }
