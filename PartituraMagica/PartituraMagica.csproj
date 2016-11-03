@@ -111,6 +111,7 @@
     <Compile Include="EditingController.cs" />
     <Compile Include="GreyImage.cs" />
     <Compile Include="ClippingD3D.cs" />
+    <Compile Include="Player\ScrollingPanel.cs" />
     <Compile Include="Player\KeyboardMap.cs" />
     <Compile Include="Player\PlayerViewD3D.cs">
       <SubType>Form</SubType>
