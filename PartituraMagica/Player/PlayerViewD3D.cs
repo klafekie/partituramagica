@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using PartituraMagica.Player;
 using SlimDX;
@@ -12,9 +13,6 @@ namespace PartituraMagica
     /**
      * Uses Direct3D to implement a smooth scrolling view.
      * Contains custom controls for navigating, zooming, speed control
-     * 
-     * For performance reasons the view is not disposed when the user
-     * closes it. Instead it is just hidden.
      */
 
     public partial class PlayerViewD3D : Form, IPlayerView
@@ -29,7 +27,6 @@ namespace PartituraMagica
         private readonly IPageFiles _pageFiles;
         private readonly SpeedManager _speedManager;
         private readonly ZoomManager _zoomManager;
-        private bool _closed = true;
 
         private Device _device;
         private float _lastZoomX;
@@ -79,9 +76,24 @@ namespace PartituraMagica
             {
                 parts[i] = partPattern[i].ToString();
             }
-            //partsStrip.Parts = parts;
+            CreatePartButtons(parts);
 
             XPos = 0;
+        }
+
+        private void CreatePartButtons(string[] partStrings)
+        {
+            foreach (var partString in partStrings.Reverse())
+            {
+                var button = new ToolStripButton();
+                button.DisplayStyle = ToolStripItemDisplayStyle.Text;
+                button.Font = new System.Drawing.Font("Segoe UI", 26.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
+                button.ImageTransparentColor = Color.Magenta;
+                button.Name = partString;
+                button.Size = new Size(49, 51);
+                button.Text = partString;
+                toolStrip1.Items.Insert(2, button);
+            }
         }
 
         public void StartScrolling()
@@ -89,7 +101,7 @@ namespace PartituraMagica
             IWin32Window w = new Win32Window(_ownerHandle);
             _rendering = true;
             _speedManager.IsPaused = false;
-            _closed = false;
+
             Enabled = true;
             Show(w);
 
@@ -97,7 +109,7 @@ namespace PartituraMagica
             {
                 Application.DoEvents();
                 Render();
-            } while (!_closed);
+            } while (_rendering);
             Enabled = false;
         }
 
@@ -117,19 +129,8 @@ namespace PartituraMagica
         {
             _navigator = navigator;
             _keyboardMap.RegisterEvents(navigator, this);
-            //partsStrip.RegisterEvents(navigator);
-            //speedStrip.RegisterEvents(navigator, _speedManager);
-            //zoomStrip.RegisterEvents(_zoomManager);
         }
-
-        /** behave as if window was closed, but it is still in memory */
-
-        public new void Hide()
-        {
-            base.Hide();
-            _closed = true;
-        }
-
+        
         protected override void Dispose(bool disposing)
         {
             _rendering = false;
@@ -240,25 +241,7 @@ namespace PartituraMagica
             _keyboardMap.HandleKeyUp(sender, e);
         }
 
-        private void PlayerViewD3D_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            _closed = true;
-            switch (e.CloseReason)
-            {
-                case CloseReason.ApplicationExitCall:
-                case CloseReason.FormOwnerClosing:
-                case CloseReason.MdiFormClosing:
-                case CloseReason.None:
-                case CloseReason.TaskManagerClosing:
-                case CloseReason.WindowsShutDown:
-                    break; //no cancel
-                case CloseReason.UserClosing:
-                    e.Cancel = true; //window is not really closed.
-                    Hide();
-                    break;
-            }
-        }
-
+        
         private class Win32Window : IWin32Window
         {
             public Win32Window(IntPtr w)
@@ -267,6 +250,72 @@ namespace PartituraMagica
             }
 
             public IntPtr Handle { get; }
+        }
+
+        private void btnFirstPart_Click(object sender, EventArgs e)
+        {
+            _navigator.FirstPartClicked();
+        }
+
+        private void btnPreviousPart_Click(object sender, EventArgs e)
+        {
+            _navigator.PreviousPartClicked();
+        }
+
+        private void btnNextPart_Click(object sender, EventArgs e)
+        {
+            _navigator.NextPartClicked();
+        }
+
+        private void btnLastPart_Click(object sender, EventArgs e)
+        {
+            _navigator.LastPartClicked();
+        }
+
+        private void btnJumpBackward_Click(object sender, EventArgs e)
+        {
+            _navigator.JumpBackwardClicked();
+        }
+
+        private void btnPauseResume_Click(object sender, EventArgs e)
+        {
+            _speedManager.TogglePaused();
+            //todo change label / state
+        }
+
+        private void btnJumpForward_Click(object sender, EventArgs e)
+        {
+            _navigator.JumpForwardClicked();
+        }
+
+        private void btnSlower_Click(object sender, EventArgs e)
+        {
+            _speedManager.DecreaseSpeed();
+        }
+
+        private void btnFaster_Click(object sender, EventArgs e)
+        {
+            _speedManager.IncreaseSpeed();
+        }
+
+        private void btnZoomIn_Click(object sender, EventArgs e)
+        {
+            _zoomManager.ZoomIn(false);
+        }
+
+        private void btnWider_Click(object sender, EventArgs e)
+        {
+            _zoomManager.ZoomIn(true);
+        }
+
+        private void btnZoomOut_Click(object sender, EventArgs e)
+        {
+            _zoomManager.ZoomOut(false);
+        }
+
+        private void btnSmaller_Click(object sender, EventArgs e)
+        {
+            _zoomManager.ZoomOut(true);
         }
     }
 }

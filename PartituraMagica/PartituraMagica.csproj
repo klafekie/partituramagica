@@ -112,12 +112,6 @@
     <Compile Include="GreyImage.cs" />
     <Compile Include="ClippingD3D.cs" />
     <Compile Include="Player\KeyboardMap.cs" />
-    <Compile Include="Player\PartNavigatorStrip.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Player\PartNavigatorStrip.Designer.cs">
-      <DependentUpon>PartNavigatorStrip.cs</DependentUpon>
-    </Compile>
     <Compile Include="Player\PlayerViewD3D.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -150,9 +144,6 @@
     <Compile Include="Player\ZoomToolStrip.Designer.cs">
       <DependentUpon>ZoomToolStrip.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="Player\PartNavigatorStrip.resx">
-      <DependentUpon>PartNavigatorStrip.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Player\PlayerViewD3D.resx">
       <DependentUpon>PlayerViewD3D.cs</DependentUpon>
       <SubType>Designer</SubType>

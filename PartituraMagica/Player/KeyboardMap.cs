@@ -28,11 +28,11 @@ namespace PartituraMagica.Player
                 case Keys.F4:
                     if (e.Modifiers == Keys.Alt)
                     {
-                        _playerView.Hide();
+                        _playerView.Close();
                     }
                     break;
                 case Keys.Escape:
-                    _playerView.Hide();
+                    _playerView.Close();
                     break;
                 case Keys.Oemplus:
                 case Keys.Add:

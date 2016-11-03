@@ -117,17 +117,13 @@ namespace PartituraMagica
                     Func<IPlayerView> createView = delegate
                     {
                         WindowInteropHelper h = new WindowInteropHelper(_mainWindow);
-                        if (_playerView == null)
+                        
+                        _playerView = new PlayerViewD3D(Active, Panel, h.Handle, LoadPlayer());
+                        _playerView.Closed += (o, args) =>
                         {
-                            _playerView = new PlayerViewD3D(Active, Panel, h.Handle, LoadPlayer());
-                            _playerView.VisibleChanged += (o, args) =>
-                            {
-                                if (!_playerView.Visible)
-                                {
-                                    SavePlayer(_playerView);
-                                }
-                            };
-                        }
+                            SavePlayer(_playerView);
+                            _playerView = null;
+                        };
                         return _playerView;
                     };
                     return new ShowPlayerCommand(createView, this);
@@ -145,7 +141,7 @@ namespace PartituraMagica
             using (Stream str = FileSystem.OpenRead(PlayerRuntimePath))
             {
                 BinaryFormatter sf = new BinaryFormatter();
-                return (PlayerMemento) sf.Deserialize(str);
+                return (PlayerMemento)sf.Deserialize(str);
             }
         }
 

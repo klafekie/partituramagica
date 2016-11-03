@@ -108,7 +108,6 @@ namespace PartituraMagica.Playing
 
         public void PlayerOpened()
         {
-            //TPDO why does view need the partPattern?
             _view.Init(_calculator.PartPattern, _calculator.GetClippings(), PartPositionProvider.LineDistance);
             _view.StartScrolling();
         }

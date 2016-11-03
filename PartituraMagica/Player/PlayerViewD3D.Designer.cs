@@ -16,27 +16,25 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PlayerViewD3D));
             this.panel1 = new System.Windows.Forms.Panel();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.btnFirstPart = new System.Windows.Forms.ToolStripButton();
             this.btnPreviousPart = new System.Windows.Forms.ToolStripButton();
-            this.btnPartA = new System.Windows.Forms.ToolStripButton();
             this.btnNextPart = new System.Windows.Forms.ToolStripButton();
             this.btnLastPart = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.btnJumpBackward = new System.Windows.Forms.ToolStripButton();
             this.btnPauseResume = new System.Windows.Forms.ToolStripButton();
             this.btnJumpForward = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.btnSlower = new System.Windows.Forms.ToolStripButton();
             this.btnFaster = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.btnZoomIn = new System.Windows.Forms.ToolStripButton();
+            this.btnWider = new System.Windows.Forms.ToolStripButton();
             this.btnZoomOut = new System.Windows.Forms.ToolStripButton();
             this.btnSmaller = new System.Windows.Forms.ToolStripButton();
-            this.btnWider = new System.Windows.Forms.ToolStripButton();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
@@ -48,7 +46,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1006, 212);
+            this.panel1.Size = new System.Drawing.Size(1006, 227);
             this.panel1.TabIndex = 1;
             // 
             // toolStripContainer1
@@ -57,7 +55,7 @@
             // toolStripContainer1.ContentPanel
             // 
             this.toolStripContainer1.ContentPanel.Controls.Add(this.panel1);
-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(1006, 212);
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(1006, 227);
             this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
             this.toolStripContainer1.Name = "toolStripContainer1";
@@ -77,7 +75,6 @@
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnFirstPart,
             this.btnPreviousPart,
-            this.btnPartA,
             this.btnNextPart,
             this.btnLastPart,
             this.toolStripSeparator1,
@@ -94,26 +91,8 @@
             this.btnSmaller});
             this.toolStrip1.Location = new System.Drawing.Point(3, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(628, 54);
+            this.toolStrip1.Size = new System.Drawing.Size(579, 39);
             this.toolStrip1.TabIndex = 0;
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 54);
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 54);
-            // 
-            // toolStripSeparator3
-            // 
-            this.toolStripSeparator3.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 54);
             // 
             // btnFirstPart
             // 
@@ -122,8 +101,9 @@
             this.btnFirstPart.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnFirstPart.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnFirstPart.Name = "btnFirstPart";
-            this.btnFirstPart.Size = new System.Drawing.Size(36, 51);
-            this.btnFirstPart.Text = "toolStripButton1";
+            this.btnFirstPart.Size = new System.Drawing.Size(36, 36);
+            this.btnFirstPart.Text = "Show First Part";
+            this.btnFirstPart.Click += new System.EventHandler(this.btnFirstPart_Click);
             // 
             // btnPreviousPart
             // 
@@ -132,18 +112,9 @@
             this.btnPreviousPart.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnPreviousPart.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnPreviousPart.Name = "btnPreviousPart";
-            this.btnPreviousPart.Size = new System.Drawing.Size(36, 51);
-            this.btnPreviousPart.Text = "toolStripButton1";
-            // 
-            // btnPartA
-            // 
-            this.btnPartA.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.btnPartA.Font = new System.Drawing.Font("Segoe UI", 26.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnPartA.Image = ((System.Drawing.Image)(resources.GetObject("btnPartA.Image")));
-            this.btnPartA.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnPartA.Name = "btnPartA";
-            this.btnPartA.Size = new System.Drawing.Size(49, 51);
-            this.btnPartA.Text = "A";
+            this.btnPreviousPart.Size = new System.Drawing.Size(36, 36);
+            this.btnPreviousPart.Text = "Show Previous Part";
+            this.btnPreviousPart.Click += new System.EventHandler(this.btnPreviousPart_Click);
             // 
             // btnNextPart
             // 
@@ -152,8 +123,9 @@
             this.btnNextPart.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnNextPart.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnNextPart.Name = "btnNextPart";
-            this.btnNextPart.Size = new System.Drawing.Size(36, 51);
-            this.btnNextPart.Text = "toolStripButton1";
+            this.btnNextPart.Size = new System.Drawing.Size(36, 36);
+            this.btnNextPart.Text = "Show Next Part";
+            this.btnNextPart.Click += new System.EventHandler(this.btnNextPart_Click);
             // 
             // btnLastPart
             // 
@@ -162,8 +134,15 @@
             this.btnLastPart.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnLastPart.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnLastPart.Name = "btnLastPart";
-            this.btnLastPart.Size = new System.Drawing.Size(36, 51);
-            this.btnLastPart.Text = "toolStripButton1";
+            this.btnLastPart.Size = new System.Drawing.Size(36, 36);
+            this.btnLastPart.Text = "Show Last Part";
+            this.btnLastPart.Click += new System.EventHandler(this.btnLastPart_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 39);
             // 
             // btnJumpBackward
             // 
@@ -172,8 +151,9 @@
             this.btnJumpBackward.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnJumpBackward.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnJumpBackward.Name = "btnJumpBackward";
-            this.btnJumpBackward.Size = new System.Drawing.Size(36, 51);
-            this.btnJumpBackward.Text = "toolStripButton1";
+            this.btnJumpBackward.Size = new System.Drawing.Size(36, 36);
+            this.btnJumpBackward.Text = "Jump Back";
+            this.btnJumpBackward.Click += new System.EventHandler(this.btnJumpBackward_Click);
             // 
             // btnPauseResume
             // 
@@ -183,8 +163,9 @@
             this.btnPauseResume.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnPauseResume.Margin = new System.Windows.Forms.Padding(5, 1, 5, 2);
             this.btnPauseResume.Name = "btnPauseResume";
-            this.btnPauseResume.Size = new System.Drawing.Size(36, 51);
-            this.btnPauseResume.Text = "toolStripButton1";
+            this.btnPauseResume.Size = new System.Drawing.Size(36, 36);
+            this.btnPauseResume.Text = "Resume";
+            this.btnPauseResume.Click += new System.EventHandler(this.btnPauseResume_Click);
             // 
             // btnJumpForward
             // 
@@ -193,8 +174,15 @@
             this.btnJumpForward.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnJumpForward.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnJumpForward.Name = "btnJumpForward";
-            this.btnJumpForward.Size = new System.Drawing.Size(36, 51);
-            this.btnJumpForward.Text = "toolStripButton1";
+            this.btnJumpForward.Size = new System.Drawing.Size(36, 36);
+            this.btnJumpForward.Text = "Jump Forward";
+            this.btnJumpForward.Click += new System.EventHandler(this.btnJumpForward_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 39);
             // 
             // btnSlower
             // 
@@ -203,8 +191,9 @@
             this.btnSlower.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnSlower.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnSlower.Name = "btnSlower";
-            this.btnSlower.Size = new System.Drawing.Size(36, 51);
-            this.btnSlower.Text = "toolStripButton1";
+            this.btnSlower.Size = new System.Drawing.Size(36, 36);
+            this.btnSlower.Text = "Slower";
+            this.btnSlower.Click += new System.EventHandler(this.btnSlower_Click);
             // 
             // btnFaster
             // 
@@ -213,8 +202,15 @@
             this.btnFaster.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnFaster.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnFaster.Name = "btnFaster";
-            this.btnFaster.Size = new System.Drawing.Size(36, 51);
-            this.btnFaster.Text = "toolStripButton1";
+            this.btnFaster.Size = new System.Drawing.Size(36, 36);
+            this.btnFaster.Text = "Faster";
+            this.btnFaster.Click += new System.EventHandler(this.btnFaster_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 39);
             // 
             // btnZoomIn
             // 
@@ -223,8 +219,20 @@
             this.btnZoomIn.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnZoomIn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnZoomIn.Name = "btnZoomIn";
-            this.btnZoomIn.Size = new System.Drawing.Size(36, 51);
-            this.btnZoomIn.Text = "toolStripButton1";
+            this.btnZoomIn.Size = new System.Drawing.Size(36, 36);
+            this.btnZoomIn.Text = "Zoom In";
+            this.btnZoomIn.Click += new System.EventHandler(this.btnZoomIn_Click);
+            // 
+            // btnWider
+            // 
+            this.btnWider.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnWider.Image = global::PartituraMagica.Properties.Resources.resize;
+            this.btnWider.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.btnWider.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnWider.Name = "btnWider";
+            this.btnWider.Size = new System.Drawing.Size(36, 36);
+            this.btnWider.Text = "Widen";
+            this.btnWider.Click += new System.EventHandler(this.btnWider_Click);
             // 
             // btnZoomOut
             // 
@@ -234,8 +242,9 @@
             this.btnZoomOut.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnZoomOut.Margin = new System.Windows.Forms.Padding(10, 1, 0, 2);
             this.btnZoomOut.Name = "btnZoomOut";
-            this.btnZoomOut.Size = new System.Drawing.Size(36, 51);
-            this.btnZoomOut.Text = "toolStripButton1";
+            this.btnZoomOut.Size = new System.Drawing.Size(36, 36);
+            this.btnZoomOut.Text = "Zoom Out";
+            this.btnZoomOut.Click += new System.EventHandler(this.btnZoomOut_Click);
             // 
             // btnSmaller
             // 
@@ -244,18 +253,9 @@
             this.btnSmaller.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnSmaller.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnSmaller.Name = "btnSmaller";
-            this.btnSmaller.Size = new System.Drawing.Size(36, 51);
-            this.btnSmaller.Text = "toolStripButton1";
-            // 
-            // btnWider
-            // 
-            this.btnWider.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnWider.Image = global::PartituraMagica.Properties.Resources.resize;
-            this.btnWider.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.btnWider.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnWider.Name = "btnWider";
-            this.btnWider.Size = new System.Drawing.Size(36, 51);
-            this.btnWider.Text = "toolStripButton1";
+            this.btnSmaller.Size = new System.Drawing.Size(36, 36);
+            this.btnSmaller.Text = "Narrow";
+            this.btnSmaller.Click += new System.EventHandler(this.btnSmaller_Click);
             // 
             // PlayerViewD3D
             // 
@@ -266,7 +266,6 @@
             this.Name = "PlayerViewD3D";
             this.Text = "PlayerView";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.PlayerViewD3D_FormClosing);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.PlayerViewD3D_KeyDown);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.PlayerViewD3D_KeyUp);
             this.toolStripContainer1.ContentPanel.ResumeLayout(false);
@@ -287,7 +286,6 @@
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton btnFirstPart;
         private System.Windows.Forms.ToolStripButton btnPreviousPart;
-        private System.Windows.Forms.ToolStripButton btnPartA;
         private System.Windows.Forms.ToolStripButton btnNextPart;
         private System.Windows.Forms.ToolStripButton btnLastPart;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
