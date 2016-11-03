@@ -184,12 +184,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\DoubleRightArrowHS.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\DoubleLeftArrowHS.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\NavBack.png" />
   </ItemGroup>
   <ItemGroup>
@@ -264,6 +258,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\resize.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\pause.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
