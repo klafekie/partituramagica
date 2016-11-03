@@ -28,6 +28,7 @@ namespace PartituraMagica
         private readonly IntPtr _ownerHandle;
         private readonly IPageFiles _pageFiles;
         private readonly SpeedManager _speedManager;
+        private readonly ZoomManager _zoomManager;
         private bool _closed = true;
 
         private Device _device;
@@ -35,7 +36,6 @@ namespace PartituraMagica
         private IPartNavigator _navigator;
 
         private bool _rendering;
-        private readonly ZoomManager _zoomManager;
 
         //position in view specific coordinates		
 
@@ -204,8 +204,8 @@ namespace PartituraMagica
                 float zoomY;
                 _zoomManager.GetNextZoom(out _lastZoomX, out zoomY);
                 _device.SetTransform(TransformState.World,
-                    Matrix.Scaling(_lastZoomX, zoomY, 1F)*
-                    Matrix.Translation((float) -XPos*_lastZoomX, 0, 0));
+                    Matrix.Scaling(_lastZoomX, zoomY, 1F) *
+                    Matrix.Translation((float) -XPos * _lastZoomX, 0, 0));
                 for (int i = 0; i < _clippingD3Ds.Count; i++)
                 {
                     _clippingD3Ds[i].Render(_device);

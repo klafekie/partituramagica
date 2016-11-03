@@ -48,6 +48,7 @@
                 _yZoomDelta = 0;
             }
         }
+
         public void ZoomOut(bool xOnly)
         {
             _xZoomDelta = -15;
@@ -73,6 +74,7 @@
         * a bit bigger until the actual target zoom value is reached.
         * This results in a nice "animated" zoom in/out behaviour
         */
+
         public void GetNextZoom(out float zoomXRes, out float zoomYRes)
         {
             if (_xZoomDelta > 0)

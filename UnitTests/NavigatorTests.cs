@@ -91,7 +91,7 @@ namespace PartituraMagica
         public void NextPartTest()
         {
             //view.AppendLine(null);
-            LastCall.IgnoreArguments().Repeat.Times(3 + 4 + 2*1 + 2*4 + 3);
+            LastCall.IgnoreArguments().Repeat.Times(3 + 4 + 2 * 1 + 2 * 4 + 3);
 
 
             //we "scroll" to the middle of each part before jumping to the next

@@ -135,8 +135,8 @@ namespace PartituraMagica
         private static void SetCoords(Clipping c, Rect coordinates)
         {
             double thickness = c.R.StrokeThickness;
-            double left = coordinates.X - thickness/2.0;
-            double top = coordinates.Y - thickness/2.0;
+            double left = coordinates.X - thickness / 2.0;
+            double top = coordinates.Y - thickness / 2.0;
 
             c.R.Width = coordinates.Width + thickness;
             c.R.Height = coordinates.Height + thickness;

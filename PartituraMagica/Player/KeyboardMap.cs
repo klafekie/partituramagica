@@ -4,10 +4,10 @@ namespace PartituraMagica.Player
 {
     public class KeyboardMap
     {
-        private IPartNavigator _navigator;
-        private IPlayerView _playerView;
         private readonly SpeedManager _speedManager;
         private readonly ZoomManager _zoomManager;
+        private IPartNavigator _navigator;
+        private IPlayerView _playerView;
 
         public KeyboardMap(SpeedManager speedManager, ZoomManager zoomManager)
         {

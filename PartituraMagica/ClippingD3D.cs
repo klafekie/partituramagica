@@ -77,8 +77,8 @@ namespace PartituraMagica
                 //Debug.WriteLine("offset: " + offset.ToString());
                 DataStream stream = _mesh.LockVertexBuffer(LockFlags.None);
 
-                float width = _image.Width*96F/(float) _image.DpiX;
-                float height = _image.Height*96F/(float) _image.DpiY;
+                float width = _image.Width * 96F / (float) _image.DpiX;
+                float height = _image.Height * 96F / (float) _image.DpiY;
 
                 var vertices = new PositionedColoredTextured[_mesh.VertexCount];
                 for (int i = 0; i < _mesh.VertexCount; ++i)
@@ -92,15 +92,15 @@ namespace PartituraMagica
                 for (int i = 0; i < _mesh.VertexCount; ++i)
                 {
                     var vertice = vertices[i];
-                    float left = (float) _coords.X/width;
-                    float top = (float) _coords.Y/height;
-                    float right = (float) _coords.Right/width;
-                    float bottom = (float) _coords.Bottom/height;
+                    float left = (float) _coords.X / width;
+                    float top = (float) _coords.Y / height;
+                    float right = (float) _coords.Right / width;
+                    float bottom = (float) _coords.Bottom / height;
 
                     vertice.Color = _foregroundColor.ToArgb();
                     vertice.Tu = vertice.X >= 0 ? right : left;
                     vertice.Tv = vertice.Y >= 0 ? top : bottom;
-                    vertice.X += offset + (float) _coords.Width/2F;
+                    vertice.X += offset + (float) _coords.Width / 2F;
                     //Debug.WriteLine(String.Format("{0}: ({1}; {2}; {3}) u:{4} v:{5}", i, vertice.X, vertice.Y, vertice.Z, vertice.Tu, vertice.Tv));
 
                     stream.Write(vertice);

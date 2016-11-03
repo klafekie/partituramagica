@@ -84,7 +84,7 @@ namespace PartituraMagica
             //image width should be 1000
             if (y < 200 || y > 282 || x < 100 || x > 900)
                 return 1F;
-            int mod = y%20;
+            int mod = y % 20;
             if (mod == 0)
                 return 0.45F;
             if (mod == 1)
@@ -99,7 +99,7 @@ namespace PartituraMagica
             //first line at y=200
             if (y < 200 || y > 302)
                 return 1F;
-            int mod = y%20;
+            int mod = y % 20;
             if (mod == 0)
                 return 0.45F;
             if (mod == 1)
@@ -166,7 +166,7 @@ namespace PartituraMagica
         [Test]
         public void Chess()
         {
-            _image.Brightness = (x, y) => x%2 == 0 ^ y%2 == 0 ? 1F : 0F;
+            _image.Brightness = (x, y) => x % 2 == 0 ^ y % 2 == 0 ? 1F : 0F;
             _mocks.ReplayAll();
 
             BoxFinder f = new BoxFinder(_image);

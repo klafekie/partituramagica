@@ -34,7 +34,7 @@ namespace PartituraMagica
 
         private Rect CreateRect(Point pos)
         {
-            double defaultWidth = 2*Page.ClickTolerance + 1;
+            double defaultWidth = 2 * Page.ClickTolerance + 1;
             double defaultHeight = defaultWidth;
             Rect r = new Rect(pos.X - defaultWidth, pos.Y - defaultHeight,
                 defaultWidth, defaultHeight);
