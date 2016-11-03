@@ -15,7 +15,6 @@ namespace PartituraMagica.Player
         private readonly Direct3D _d3D;
         private readonly IImageLoader _imageLoader;
         private readonly IPartNavigator _navigator;
-        private readonly IntPtr _ownerHandle;
         private readonly IPageFiles _pageFiles;
 
         private readonly IntPtr _panelHandle;
@@ -34,7 +33,6 @@ namespace PartituraMagica.Player
         {
             _pageFiles = pageFiles;
             _imageLoader = imageLoader;
-            _ownerHandle = owner;
             _panelHandle = panelHandle;
             _positionHolder = positionHolder;
             _navigator = navigator;

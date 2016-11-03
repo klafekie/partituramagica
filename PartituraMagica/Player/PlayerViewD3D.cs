@@ -18,17 +18,15 @@ namespace PartituraMagica
     {
         private const int PartAButtonIndex = 2;
 
-        private readonly KeyboardMap _keyboardMap;
         private readonly IPartNavigator _navigator;
-        private readonly IntPtr _ownerHandle;
-
-        private readonly PlayerPositionHolder _positionHolder;
-
-        private readonly ScrollingPanel _scrollPanel;
         private readonly SpeedManager _speedManager;
         private readonly ZoomManager _zoomManager;
+        private readonly KeyboardMap _keyboardMap;
 
-        public PlayerViewD3D(IPageFiles pageFiles, IImageLoader imageLoader, IntPtr owner, PlayerMemento memento,
+        private readonly IntPtr _ownerHandle;
+        private readonly ScrollingPanel _scrollPanel;
+
+        public PlayerViewD3D(IPageFiles pageFiles, IImageLoader imageLoader, IntPtr ownerHandle, PlayerMemento memento,
             PlayerPositionHolder positionHolder, IPartNavigator partNavigator)
         {
             Trace.WriteLine("ctor of PlayerViewD3D");
@@ -36,12 +34,12 @@ namespace PartituraMagica
             WindowState = FormWindowState.Maximized;
 
             _navigator = partNavigator;
+            _ownerHandle = ownerHandle;
             _speedManager = new SpeedManager(memento.Speed);
             _zoomManager = new ZoomManager(memento.XZoom, memento.YZoom);
-            _scrollPanel = new ScrollingPanel(pageFiles, imageLoader, owner, panel1.Handle, positionHolder,
+            _scrollPanel = new ScrollingPanel(pageFiles, imageLoader, ownerHandle, panel1.Handle, positionHolder,
                 partNavigator, _speedManager, _zoomManager);
             _keyboardMap = new KeyboardMap(_speedManager, _zoomManager, _navigator, this);
-            _positionHolder = positionHolder;
 
             _navigator.CurrentPartIndexChanged += () =>
             {
