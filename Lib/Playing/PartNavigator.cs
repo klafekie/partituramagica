@@ -36,6 +36,8 @@ namespace PartituraMagica.Playing
             }
         }
 
+        public int PartCount => _calculator.GetLastPatternIndex() + 1;
+
         public event Action CurrentPartIndexChanged;
 
         public void FirstPartClicked()

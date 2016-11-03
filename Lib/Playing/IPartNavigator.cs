@@ -14,6 +14,7 @@ namespace PartituraMagica
     public interface IPartNavigator
     {
         int CurrentPartIndex { get; }
+        int PartCount { get; }
         event Action CurrentPartIndexChanged;
 
         void PartClicked(int index);
