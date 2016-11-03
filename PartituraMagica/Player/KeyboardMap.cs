@@ -34,29 +34,6 @@ namespace PartituraMagica.Player
                 case Keys.Escape:
                     _playerView.Hide();
                     break;
-            }
-            if (e.Modifiers == (Keys.None | Keys.Control))
-            {
-                switch (e.KeyCode)
-                {
-                    case Keys.Left:
-                        _navigator.PreviousPartClicked();
-                        break;
-                    case Keys.Right:
-                        _navigator.NextPartClicked();
-                        break;
-                    case Keys.Home:
-                        _navigator.FirstPartClicked();
-                        break;
-                    case Keys.End:
-                        _navigator.LastPartClicked();
-                        break;
-                    default:
-                        break;
-                }
-            }
-            switch (e.KeyCode)
-            {
                 case Keys.Oemplus:
                 case Keys.Add:
                     if (e.Modifiers == Keys.None)
@@ -86,6 +63,18 @@ namespace PartituraMagica.Player
                     case Keys.Oemplus:
                     case Keys.Add:
                         _zoomManager.ZoomIn(e.Shift);
+                        break;
+                    case Keys.Left:
+                        _navigator.PreviousPartClicked();
+                        break;
+                    case Keys.Right:
+                        _navigator.NextPartClicked();
+                        break;
+                    case Keys.Home:
+                        _navigator.FirstPartClicked();
+                        break;
+                    case Keys.End:
+                        _navigator.LastPartClicked();
                         break;
                 }
             }

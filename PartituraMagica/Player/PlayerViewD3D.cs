@@ -37,8 +37,6 @@ namespace PartituraMagica
 
         private bool _rendering;
 
-        //position in view specific coordinates		
-
         public PlayerViewD3D(IPageFiles pageFiles, IImageLoader imageLoader, IntPtr owner, PlayerMemento memento)
         {
             Trace.WriteLine("ctor of PlayerViewD3D");
@@ -81,7 +79,7 @@ namespace PartituraMagica
             {
                 parts[i] = partPattern[i].ToString();
             }
-            partsStrip.Parts = parts;
+            //partsStrip.Parts = parts;
 
             XPos = 0;
         }
@@ -119,9 +117,9 @@ namespace PartituraMagica
         {
             _navigator = navigator;
             _keyboardMap.RegisterEvents(navigator, this);
-            partsStrip.RegisterEvents(navigator);
-            speedStrip.RegisterEvents(navigator, _speedManager);
-            zoomStrip.RegisterEvents(_zoomManager);
+            //partsStrip.RegisterEvents(navigator);
+            //speedStrip.RegisterEvents(navigator, _speedManager);
+            //zoomStrip.RegisterEvents(_zoomManager);
         }
 
         /** behave as if window was closed, but it is still in memory */
