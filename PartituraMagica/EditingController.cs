@@ -114,18 +114,20 @@ namespace PartituraMagica
                 case "TuningTone":
                     return new PlayTuningToneCommand();
                 case "StartPlayer":
-                    Func<PlayerPositionHolder, IPartNavigator, IPlayerView> createView = (positionProvider, playerView) =>
-                    {
-                        WindowInteropHelper h = new WindowInteropHelper(_mainWindow);
-                        
-                        _playerView = new PlayerViewD3D(Active, Panel, h.Handle, LoadPlayer(), positionProvider, playerView);
-                        _playerView.Closed += (o, args) =>
+                    Func<PlayerPositionHolder, IPartNavigator, IPlayerView> createView =
+                        (positionProvider, playerView) =>
                         {
-                            SavePlayer(_playerView);
-                            _playerView = null;
+                            WindowInteropHelper h = new WindowInteropHelper(_mainWindow);
+
+                            _playerView = new PlayerViewD3D(Active, Panel, h.Handle, LoadPlayer(), positionProvider,
+                                playerView);
+                            _playerView.Closed += (o, args) =>
+                            {
+                                SavePlayer(_playerView);
+                                _playerView = null;
+                            };
+                            return _playerView;
                         };
-                        return _playerView;
-                    };
                     return new ShowPlayerCommand(createView, this);
                 default:
                     throw new ArgumentException("unknown command");
@@ -141,7 +143,7 @@ namespace PartituraMagica
             using (Stream str = FileSystem.OpenRead(PlayerRuntimePath))
             {
                 BinaryFormatter sf = new BinaryFormatter();
-                return (PlayerMemento)sf.Deserialize(str);
+                return (PlayerMemento) sf.Deserialize(str);
             }
         }
 

@@ -3,6 +3,7 @@
 namespace PartituraMagica
 {
     /** helper class to avoid the circular dependency between IPlayerView and PartNavigator */
+
     public class PlayerPositionHolder
     {
         public double XPos { get; set; }

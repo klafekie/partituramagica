@@ -7,6 +7,7 @@ namespace PartituraMagica
      * represents a view that can display (and scroll) a continuous
      * "stream" of musical lines (clippings)
      */
+
     public interface IPlayerView : IDisposable
     {
         /** 
@@ -17,7 +18,7 @@ namespace PartituraMagica
         void StartScrolling();
 
         PlayerMemento ToMemento();
-        
+
         void Close();
     }
 }

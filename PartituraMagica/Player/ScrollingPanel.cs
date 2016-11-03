@@ -7,28 +7,30 @@ using SlimDX.Direct3D9;
 
 namespace PartituraMagica.Player
 {
-    class ScrollingPanel : IDisposable
+    internal class ScrollingPanel : IDisposable
     {
-        private readonly ApplicationConfiguration _configuration = new ApplicationConfiguration();
         private readonly List<ClippingD3D> _clippingD3Ds = new List<ClippingD3D>();
+        private readonly ApplicationConfiguration _configuration = new ApplicationConfiguration();
 
         private readonly Direct3D _d3D;
         private readonly IImageLoader _imageLoader;
-        
-        private readonly IntPtr _panelHandle;
-        private readonly IPageFiles _pageFiles;
-        private readonly PlayerPositionHolder _positionHolder;
         private readonly IPartNavigator _navigator;
+        private readonly IntPtr _ownerHandle;
+        private readonly IPageFiles _pageFiles;
+
+        private readonly IntPtr _panelHandle;
+        private readonly PlayerPositionHolder _positionHolder;
         private readonly SpeedManager _speedManager;
         private readonly ZoomManager _zoomManager;
 
         private Device _device;
-        private float _lastZoomX;
 
         private bool _isRendering;
-        private readonly IntPtr _ownerHandle;
+        private float _lastZoomX;
 
-        public ScrollingPanel(IPageFiles pageFiles, IImageLoader imageLoader, IntPtr owner, IntPtr panelHandle, PlayerPositionHolder positionHolder, IPartNavigator navigator, SpeedManager speedManager, ZoomManager zoomManager)
+        public ScrollingPanel(IPageFiles pageFiles, IImageLoader imageLoader, IntPtr owner, IntPtr panelHandle,
+            PlayerPositionHolder positionHolder, IPartNavigator navigator, SpeedManager speedManager,
+            ZoomManager zoomManager)
         {
             _pageFiles = pageFiles;
             _imageLoader = imageLoader;
@@ -41,6 +43,18 @@ namespace PartituraMagica.Player
 
             _d3D = new Direct3D();
             CreateDevice();
+        }
+
+        public void Dispose()
+        {
+            _isRendering = false;
+            _device?.Dispose();
+            foreach (ClippingD3D l in _clippingD3Ds)
+            {
+                l.Dispose();
+            }
+            ClippingD3D.Cleanup();
+            _d3D?.Dispose();
         }
 
         public void Init(string partPattern, IEnumerable<Clipping> clips, double lineDistance)
@@ -58,7 +72,7 @@ namespace PartituraMagica.Player
             foreach (ClippingD3D l in _clippingD3Ds)
             {
                 l.Init(_device, offset);
-                offset += l.Width + (float)lineDistance;
+                offset += l.Width + (float) lineDistance;
             }
 
             string[] parts = new string[partPattern.Length];
@@ -79,18 +93,6 @@ namespace PartituraMagica.Player
                 Application.DoEvents();
                 Render();
             } while (_isRendering);
-        }
-
-        public void Dispose()
-        {
-            _isRendering = false;
-            _device?.Dispose();
-            foreach (ClippingD3D l in _clippingD3Ds)
-            {
-                l.Dispose();
-            }
-            ClippingD3D.Cleanup();
-            _d3D?.Dispose();
         }
 
         private void CreateDevice()
@@ -148,7 +150,7 @@ namespace PartituraMagica.Player
                 _zoomManager.GetNextZoom(out _lastZoomX, out zoomY);
                 _device.SetTransform(TransformState.World,
                     Matrix.Scaling(_lastZoomX, zoomY, 1F) *
-                    Matrix.Translation((float)-_positionHolder.XPos * _lastZoomX, 0, 0));
+                    Matrix.Translation((float) -_positionHolder.XPos * _lastZoomX, 0, 0));
                 for (int i = 0; i < _clippingD3Ds.Count; i++)
                 {
                     _clippingD3Ds[i].Render(_device);
@@ -170,7 +172,5 @@ namespace PartituraMagica.Player
             }
             //}
         }
-
-
     }
 }

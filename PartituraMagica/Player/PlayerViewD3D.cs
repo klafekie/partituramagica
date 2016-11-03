@@ -5,8 +5,7 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using PartituraMagica.Player;
-using Font = System.Drawing.Font;
-using Resources = PartituraMagica.Properties.Resources;
+using PartituraMagica.Properties;
 
 namespace PartituraMagica
 {
@@ -18,17 +17,17 @@ namespace PartituraMagica
     public partial class PlayerViewD3D : Form, IPlayerView
     {
         private const int PartAButtonIndex = 2;
-        
+
         private readonly KeyboardMap _keyboardMap;
         private readonly IPartNavigator _navigator;
         private readonly IntPtr _ownerHandle;
 
         private readonly PlayerPositionHolder _positionHolder;
+
+        private readonly ScrollingPanel _scrollPanel;
         private readonly SpeedManager _speedManager;
         private readonly ZoomManager _zoomManager;
-        
-        private readonly ScrollingPanel _scrollPanel;
-        
+
         public PlayerViewD3D(IPageFiles pageFiles, IImageLoader imageLoader, IntPtr owner, PlayerMemento memento,
             PlayerPositionHolder positionHolder, IPartNavigator partNavigator)
         {
@@ -39,7 +38,8 @@ namespace PartituraMagica
             _navigator = partNavigator;
             _speedManager = new SpeedManager(memento.Speed);
             _zoomManager = new ZoomManager(memento.XZoom, memento.YZoom);
-            _scrollPanel = new ScrollingPanel(pageFiles, imageLoader, owner, panel1.Handle, positionHolder, partNavigator, _speedManager, _zoomManager);
+            _scrollPanel = new ScrollingPanel(pageFiles, imageLoader, owner, panel1.Handle, positionHolder,
+                partNavigator, _speedManager, _zoomManager);
             _keyboardMap = new KeyboardMap(_speedManager, _zoomManager, _navigator, this);
             _positionHolder = positionHolder;
 
@@ -63,19 +63,19 @@ namespace PartituraMagica
         public void Init(string partPattern, IEnumerable<Clipping> clips, double lineDistance)
         {
             _scrollPanel.Init(partPattern, clips, lineDistance);
-            
+
             CreatePartButtons(partPattern);
         }
 
         public void StartScrolling()
         {
             IWin32Window w = new Win32Window(_ownerHandle);
-           
+
             _speedManager.IsPaused = false;
 
             Enabled = true;
             Show(w);
-            
+
             _scrollPanel.StartScrolling();
 
             //we return here only if window is closed
@@ -129,7 +129,7 @@ namespace PartituraMagica
 
             _scrollPanel?.Dispose();
         }
-        
+
         private void PlayerViewD3D_KeyDown(object sender, KeyEventArgs e)
         {
             _keyboardMap.HandleKeyDown(sender, e);

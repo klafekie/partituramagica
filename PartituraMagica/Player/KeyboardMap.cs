@@ -4,19 +4,20 @@ namespace PartituraMagica.Player
 {
     public class KeyboardMap
     {
-        private readonly SpeedManager _speedManager;
-        private readonly ZoomManager _zoomManager;
         private readonly IPartNavigator _navigator;
         private readonly IPlayerView _playerView;
+        private readonly SpeedManager _speedManager;
+        private readonly ZoomManager _zoomManager;
 
-        public KeyboardMap(SpeedManager speedManager, ZoomManager zoomManager, IPartNavigator navigator, IPlayerView playerView)
+        public KeyboardMap(SpeedManager speedManager, ZoomManager zoomManager, IPartNavigator navigator,
+            IPlayerView playerView)
         {
             _speedManager = speedManager;
             _zoomManager = zoomManager;
             _navigator = navigator;
             _playerView = playerView;
         }
-        
+
         public void HandleKeyDown(object sender, KeyEventArgs e)
         {
             switch (e.KeyCode)
