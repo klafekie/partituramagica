@@ -8,6 +8,9 @@ namespace PartituraMagica
     [TestFixture]
     internal class TestUtils : ICommandParameters
     {
+
+
+
         protected Partitura Partitura;
         protected FakeDrawingPanel panel;
         protected IActivePartitura ActivePartitura;
