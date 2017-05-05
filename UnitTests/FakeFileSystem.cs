@@ -10,8 +10,6 @@ namespace PartituraMagica
 
         public virtual ICollection<string> GetMatchingFileNames(string path, string pattern)
         {
-
-
             return GetNames(path);
         }
 
