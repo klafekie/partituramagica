@@ -20,15 +20,25 @@ namespace PartituraMagica.Player
      */
 	public partial class PlayerViewD3D : Form, IPlayerView
 	{
+		private class Win32Window : IWin32Window
+		{
+			public Win32Window(IntPtr w)
+			{
+				Handle = w;
+			}
+
+			public IntPtr Handle { get; }
+		}
+
 		private const int PartAButtonIndex = 2;
+		private readonly KeyboardMap _keyboardMap;
 
 		private readonly IPartNavigator _navigator;
-		private readonly SpeedManager _speedManager;
-		private readonly ZoomManager _zoomManager;
-		private readonly KeyboardMap _keyboardMap;
 
 		private readonly IntPtr _ownerHandle;
 		private readonly ScrollingPanel _scrollPanel;
+		private readonly SpeedManager _speedManager;
+		private readonly ZoomManager _zoomManager;
 
 		public PlayerViewD3D(IPageFiles pageFiles, IImageLoader imageLoader, IntPtr ownerHandle, PlayerMemento memento,
 			PlayerPositionHolder positionHolder, IPartNavigator partNavigator)
@@ -199,16 +209,6 @@ namespace PartituraMagica.Player
 		private void btnSmaller_Click(object sender, EventArgs e)
 		{
 			_zoomManager.ZoomOut(true);
-		}
-
-		private class Win32Window : IWin32Window
-		{
-			public Win32Window(IntPtr w)
-			{
-				Handle = w;
-			}
-
-			public IntPtr Handle { get; }
 		}
 	}
 }
