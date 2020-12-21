@@ -6,9 +6,9 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using FontAwesome.Sharp;
 using PartituraMagica.Domain;
 using PartituraMagica.Playing;
-using PartituraMagica.Properties;
 
 #endregion
 
@@ -66,9 +66,9 @@ namespace PartituraMagica.Player
 			_speedManager.IsPausedChanged += () =>
 			{
 				btnPauseResume.Checked = _speedManager.IsPaused;
-				btnPauseResume.Image = _speedManager.IsPaused
-					? Resources.play_button
-					: Resources.pause;
+				btnPauseResume.IconChar = _speedManager.IsPaused
+					? IconChar.Play
+					: IconChar.Pause;
 			};
 		}
 
@@ -111,14 +111,23 @@ namespace PartituraMagica.Player
 			int partIndex = partStrings.Length - 1;
 			foreach (var partString in partStrings.Reverse())
 			{
-				var button = new ToolStripButton
+				var button = new IconToolStripButton
 				{
-					DisplayStyle = ToolStripItemDisplayStyle.Text,
-					Font = new Font("Segoe UI", 26.25F, FontStyle.Bold, GraphicsUnit.Point, 0),
-					ImageTransparentColor = Color.Magenta,
 					Name = partString,
-					Size = new Size(49, 51),
-					Text = partString
+					Text = partString,
+					AutoSize = false,
+					DisplayStyle = ToolStripItemDisplayStyle.Text,
+					Font = new Font("Segoe UI", 26F, FontStyle.Bold),
+					IconChar = IconChar.StepBackward,
+					IconColor = Color.Black,
+					IconFont = IconFont.Auto,
+					IconSize = 40,
+					ImageScaling = ToolStripItemImageScaling.None,
+					ImageTransparentColor = Color.Magenta,
+					Margin = new Padding(0),
+					//intentionally bigger than buttons from designer to avoid vertical misalign issue
+					Size = new Size(52, 60),
+					TextAlign = ContentAlignment.TopCenter
 				};
 				toolStrip1.Items.Insert(PartAButtonIndex, button);
 
