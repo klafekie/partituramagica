@@ -1,28 +1,27 @@
-﻿namespace PartituraMagica
+﻿namespace PartituraMagica.Domain
 {
-    /** 
+	/** 
      * Represents a partitura currently open in the application.
      * Active Partitura knows how to associate image files with 
      * a partitura. At most one active partitura exists at
      * a given time.
      */
+	public interface IActivePartitura : IPageFiles
+	{
+		string Path { get; }
 
-    public interface IActivePartitura : IPageFiles
-    {
-        string Path { get; }
+		Partitura Partitura { get; }
 
-        Partitura Partitura { get; }
+		bool IsOpen { get; }
 
-        bool IsOpen { get; }
+		int CurrentPageIndex { get; set; }
 
-        int CurrentPageIndex { get; set; }
+		string CurrentImagePath { get; }
 
-        string CurrentImagePath { get; }
+		Page CurrentPage { get; }
 
-        Page CurrentPage { get; }
-
-        void Open(string path, Partitura partitura);
-        void Save(string path);
-        void Close();
-    }
+		void Open(string path, Partitura partitura);
+		void Save(string path);
+		void Close();
+	}
 }

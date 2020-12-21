@@ -1,6 +1,6 @@
-﻿namespace PartituraMagica
+﻿namespace PartituraMagica.Domain
 {
-    /** 
+	/** 
      * Everything that can be done by the user within the 
      * main application window results in a corresponding
      * command object being created and executed.
@@ -9,10 +9,9 @@
      * and application logic, simplifies unit testing and allows
      * to implement an "Undo" feature (later)
      */
-
-    public interface ICommand
-    {
-        bool CanExecute();
-        void Execute();
-    }
+	public interface ICommand
+	{
+		bool CanExecute();
+		void Execute();
+	}
 }

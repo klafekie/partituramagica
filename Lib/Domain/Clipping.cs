@@ -1,56 +1,56 @@
-namespace PartituraMagica
+namespace PartituraMagica.Domain
 {
-    /// <summary>
-    /// Represents a rectangular area on a certain input page.
-    /// Related ClippingD3D will be generated for the rendering.
-    /// </summary>
-    public class Clipping
-    {
-        public Clipping(int pageIndex, Rect coords, int id)
-        {
-            PageIndex = pageIndex;
-            Coords = coords;
-            Id = id;
-        }
+	/// <summary>
+	///   Represents a rectangular area on a certain input page.
+	///   Related ClippingD3D will be generated for the rendering.
+	/// </summary>
+	public class Clipping
+	{
+		public Clipping(int pageIndex, Rect coords, int id)
+		{
+			PageIndex = pageIndex;
+			Coords = coords;
+			Id = id;
+		}
 
-        public Clipping(Clipping rhs)
-        {
-            PageIndex = rhs.PageIndex;
-            Coords = new Rect(rhs.Coords);
-            Id = rhs.Id;
-        }
+		public Clipping(Clipping rhs)
+		{
+			PageIndex = rhs.PageIndex;
+			Coords = new Rect(rhs.Coords);
+			Id = rhs.Id;
+		}
 
-        //c'tor for testing
-        public Clipping(int pageIndex, double x, double y, double width, double height)
-        {
-            PageIndex = pageIndex;
-            Coords = new Rect(x, y, width, height);
-            Id = -1;
-        }
+		//c'tor for testing
+		public Clipping(int pageIndex, double x, double y, double width, double height)
+		{
+			PageIndex = pageIndex;
+			Coords = new Rect(x, y, width, height);
+			Id = -1;
+		}
 
-        public int PageIndex { get; set; }
+		public int PageIndex { get; set; }
 
-        public Rect Coords { get; private set; }
+		public Rect Coords { get; private set; }
 
-        /// <summary>
-        /// ID of this object, used for the connection with the ClippingD3D 
-        /// and the editing objects on the drawing panel (Boxes?).
-        /// </summary>
-        public int Id { get; }
+		/// <summary>
+		///   ID of this object, used for the connection with the ClippingD3D
+		///   and the editing objects on the drawing panel (Boxes?).
+		/// </summary>
+		public int Id { get; }
 
-        public void AddAboveAndBelow(double deltaY)
-        {
-            Coords = Coords.AddAboveAndBelow(deltaY);
-        }
+		public void AddAboveAndBelow(double deltaY)
+		{
+			Coords = Coords.AddAboveAndBelow(deltaY);
+		}
 
-        public void MoveTo(double xPos, double yPos)
-        {
-            Coords = Coords.MoveTo(xPos, yPos);
-        }
+		public void MoveTo(double xPos, double yPos)
+		{
+			Coords = Coords.MoveTo(xPos, yPos);
+		}
 
-        public override string ToString()
-        {
-            return Coords.ToString();
-        }
-    }
+		public override string ToString()
+		{
+			return Coords.ToString();
+		}
+	}
 }

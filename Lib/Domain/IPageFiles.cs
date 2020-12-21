@@ -1,13 +1,12 @@
-﻿namespace PartituraMagica
+﻿namespace PartituraMagica.Domain
 {
-    /** 
+	/** 
      * represents an instance that knows how to associate page indices 
      * with file names and how to count the pages
      */
-
-    public interface IPageFiles
-    {
-        string GetImagePath(int index);
-        int GetPageCount();
-    }
+	public interface IPageFiles
+	{
+		string GetImagePath(int index);
+		int GetPageCount();
+	}
 }

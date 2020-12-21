@@ -1,26 +1,28 @@
-﻿using System.Diagnostics;
+﻿#region usings
 
-namespace PartituraMagica
+using System.Diagnostics;
+using PartituraMagica.Domain;
+
+#endregion
+
+namespace PartituraMagica.PartituraCommands
 {
-    public class CloseApplicationCommand : PartituraCommandBase, ICommand
-    {
-        public CloseApplicationCommand(ICommandParameters p)
-            : base(p)
-        {
-        }
+	public class CloseApplicationCommand : PartituraCommandBase, ICommand
+	{
+		public CloseApplicationCommand(ICommandParameters p)
+			: base(p)
+		{
+		}
 
-        public void Execute()
-        {
-            Debug.Assert(CanExecute());
-            if (!P.Active.IsOpen || new ClosePartituraCommand(P).TryExecute())
-            {
-                P.MainWindow.CloseAndExit();
-            }
-        }
+		public void Execute()
+		{
+			Debug.Assert(CanExecute());
+			if (!P.Active.IsOpen || new ClosePartituraCommand(P).TryExecute()) P.MainWindow.CloseAndExit();
+		}
 
-        public bool CanExecute()
-        {
-            return true;
-        }
-    }
+		public bool CanExecute()
+		{
+			return true;
+		}
+	}
 }

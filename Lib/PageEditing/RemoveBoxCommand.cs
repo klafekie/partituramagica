@@ -1,26 +1,31 @@
-﻿using System.Diagnostics;
+﻿#region usings
 
-namespace PartituraMagica
+using System.Diagnostics;
+using PartituraMagica.Domain;
+
+#endregion
+
+namespace PartituraMagica.PageEditing
 {
-    /** removes the currently selected box. 
-     */
+	/**
+	 * removes the currently selected box.
+	 */
+	public class RemoveBoxCommand : PartituraCommandBase, ICommand
+	{
+		public RemoveBoxCommand(ICommandParameters p)
+			: base(p)
+		{
+		}
 
-    public class RemoveBoxCommand : PartituraCommandBase, ICommand
-    {
-        public RemoveBoxCommand(ICommandParameters p)
-            : base(p)
-        {
-        }
+		public bool CanExecute()
+		{
+			return P.Active.CurrentPage != null && P.Active.CurrentPage.IsBoxSelected();
+		}
 
-        public bool CanExecute()
-        {
-            return P.Active.CurrentPage != null && P.Active.CurrentPage.IsBoxSelected();
-        }
-
-        public void Execute()
-        {
-            Debug.Assert(CanExecute());
-            P.Active.Partitura.RemoveSelectedBox(P.Active.CurrentPageIndex, P.Panel);
-        }
-    }
+		public void Execute()
+		{
+			Debug.Assert(CanExecute());
+			P.Active.Partitura.RemoveSelectedBox(P.Active.CurrentPageIndex, P.Panel);
+		}
+	}
 }

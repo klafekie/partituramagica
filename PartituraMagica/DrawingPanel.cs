@@ -1,4 +1,6 @@
-﻿using System;
+﻿#region usings
+
+using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -6,171 +8,169 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using LearnWPF.Effects;
+using PartituraMagica.Domain;
+
+#endregion
 
 namespace PartituraMagica
 {
-    internal class DrawingPanel : IDrawingPanel
-    {
-        private static readonly Brush SelectedColor = Brushes.LightGreen;
-        private static readonly Brush NotSelectedColor = Brushes.DarkSlateBlue;
-        private readonly Dictionary<string, GreyImage> _imageCache = new Dictionary<string, GreyImage>();
-        private readonly Canvas _pageCanvas;
+	internal class DrawingPanel : IDrawingPanel
+	{
+		private class Clipping
+		{
+			public readonly Rectangle R;
+			public readonly TextBlock T;
 
-        private string _currentImagePath;
-        private Dictionary<int, Clipping> _id2Clipping;
+			public Clipping()
+			{
+				R = new Rectangle();
+				T = new TextBlock();
+				T.FontSize = 24;
+			}
+		}
 
-        public DrawingPanel(Canvas pageCanvas)
-        {
-            _pageCanvas = pageCanvas;
-            Clear();
-        }
+		private static readonly Brush SelectedColor = Brushes.LightGreen;
+		private static readonly Brush NotSelectedColor = Brushes.DarkSlateBlue;
+		private readonly Dictionary<string, GreyImage> _imageCache = new Dictionary<string, GreyImage>();
+		private readonly Canvas _pageCanvas;
 
-        public void AddRectangle(int id, Rect coordinates)
-        {
-            Clipping c = new Clipping();
+		private string _currentImagePath;
+		private Dictionary<int, Clipping> _id2Clipping;
 
-            c.R.StrokeThickness = Page.ClickTolerance;
-            c.R.Stroke = NotSelectedColor;
+		public DrawingPanel(Canvas pageCanvas)
+		{
+			_pageCanvas = pageCanvas;
+			Clear();
+		}
 
-            SetCoords(c, coordinates);
+		public void AddRectangle(int id, Rect coordinates)
+		{
+			Clipping c = new Clipping();
 
-            _pageCanvas.Children.Add(c.R);
-            _pageCanvas.Children.Add(c.T);
-            _id2Clipping[id] = c;
-        }
+			c.R.StrokeThickness = Page.ClickTolerance;
+			c.R.Stroke = NotSelectedColor;
 
-        public void AddOrUpdateRectangle(int id, Rect coordinates)
-        {
-            Clipping c;
-            if (_id2Clipping.TryGetValue(id, out c))
-            {
-                SetCoords(c, coordinates);
-            }
-            else
-            {
-                AddRectangle(id, coordinates);
-            }
-        }
+			SetCoords(c, coordinates);
 
-        public void RemoveRectangle(int id)
-        {
-            Clipping i = _id2Clipping[id];
-            _pageCanvas.Children.Remove(i.R);
-            _pageCanvas.Children.Remove(i.T);
-            _id2Clipping.Remove(id);
-        }
+			_pageCanvas.Children.Add(c.R);
+			_pageCanvas.Children.Add(c.T);
+			_id2Clipping[id] = c;
+		}
 
-        public void SelectRectangle(int id)
-        {
-            //we could optimize by just changing zindex of last selected rect
-            //but this requires to store last selected id.
-            foreach (Clipping c in _id2Clipping.Values)
-            {
-                Panel.SetZIndex(c.R, 0);
-                Panel.SetZIndex(c.T, 2);
-            }
-            Clipping selectedClipping = _id2Clipping[id];
-            selectedClipping.R.Stroke = SelectedColor;
-            selectedClipping.T.Foreground = SelectedColor;
-            Panel.SetZIndex(selectedClipping.R, 1); //bring to top			
-            Panel.SetZIndex(selectedClipping.T, 3); //text on top of rectangle
-        }
+		public void AddOrUpdateRectangle(int id, Rect coordinates)
+		{
+			Clipping c;
+			if (_id2Clipping.TryGetValue(id, out c))
+				SetCoords(c, coordinates);
+			else
+				AddRectangle(id, coordinates);
+		}
 
-        public void DeselectRectangle(int id)
-        {
-            Clipping selectedClipping = _id2Clipping[id];
-            selectedClipping.R.Stroke = NotSelectedColor;
-            selectedClipping.T.Foreground = NotSelectedColor;
-        }
+		public void RemoveRectangle(int id)
+		{
+			Clipping i = _id2Clipping[id];
+			_pageCanvas.Children.Remove(i.R);
+			_pageCanvas.Children.Remove(i.T);
+			_id2Clipping.Remove(id);
+		}
 
-        public void Clear()
-        {
-            _pageCanvas.Children.Clear();
-            _id2Clipping = new Dictionary<int, Clipping>();
-        }
+		public void SelectRectangle(int id)
+		{
+			//we could optimize by just changing zindex of last selected rect
+			//but this requires to store last selected id.
+			foreach (Clipping c in _id2Clipping.Values)
+			{
+				Panel.SetZIndex(c.R, 0);
+				Panel.SetZIndex(c.T, 2);
+			}
 
-        public Point DrawImage(string path)
-        {
-            GreyImage bm = LoadImage(path);
+			Clipping selectedClipping = _id2Clipping[id];
+			selectedClipping.R.Stroke = SelectedColor;
+			selectedClipping.T.Foreground = SelectedColor;
+			Panel.SetZIndex(selectedClipping.R, 1); //bring to top			
+			Panel.SetZIndex(selectedClipping.T, 3); //text on top of rectangle
+		}
 
-            Image image = new Image();
-            image.Stretch = Stretch.None;
-            image.Height = bm.RawImage.Height;
-            image.Width = bm.RawImage.Width;
-            image.Source = bm.RawImage;
-            image.Effect = new NegativeEffect();
+		public void DeselectRectangle(int id)
+		{
+			Clipping selectedClipping = _id2Clipping[id];
+			selectedClipping.R.Stroke = NotSelectedColor;
+			selectedClipping.T.Foreground = NotSelectedColor;
+		}
 
-            _pageCanvas.Width = bm.RawImage.Width;
-            _pageCanvas.Height = bm.RawImage.Height;
-            _pageCanvas.Children.Add(image);
-            _currentImagePath = path;
-            return new Point(image.Width, image.Height);
-        }
+		public void Clear()
+		{
+			_pageCanvas.Children.Clear();
+			_id2Clipping = new Dictionary<int, Clipping>();
+		}
 
-        public void LabelRectangle(int id, string label)
-        {
-            Clipping i = _id2Clipping[id];
-            if (label == null || label.Length == 0)
-            {
-                //hide i.t
-                i.T.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                i.T.Text = label;
-                i.T.Visibility = Visibility.Visible;
-            }
-        }
+		public Point DrawImage(string path)
+		{
+			GreyImage bm = LoadImage(path);
 
-        public IGreyImage CurrentImage
-        {
-            get { return GetImage(_currentImagePath); }
-        }
+			Image image = new Image();
+			image.Stretch = Stretch.None;
+			image.Height = bm.RawImage.Height;
+			image.Width = bm.RawImage.Width;
+			image.Source = bm.RawImage;
+			image.Effect = new NegativeEffect();
 
-        public IGreyImage GetImage(string path)
-        {
-            return LoadImage(path);
-        }
+			_pageCanvas.Width = bm.RawImage.Width;
+			_pageCanvas.Height = bm.RawImage.Height;
+			_pageCanvas.Children.Add(image);
+			_currentImagePath = path;
+			return new Point(image.Width, image.Height);
+		}
 
-        private static void SetCoords(Clipping c, Rect coordinates)
-        {
-            double thickness = c.R.StrokeThickness;
-            double left = coordinates.X - thickness / 2.0;
-            double top = coordinates.Y - thickness / 2.0;
+		public void LabelRectangle(int id, string label)
+		{
+			Clipping i = _id2Clipping[id];
+			if (label == null || label.Length == 0)
+			{
+				//hide i.t
+				i.T.Visibility = Visibility.Collapsed;
+			}
+			else
+			{
+				i.T.Text = label;
+				i.T.Visibility = Visibility.Visible;
+			}
+		}
 
-            c.R.Width = coordinates.Width + thickness;
-            c.R.Height = coordinates.Height + thickness;
-            Canvas.SetLeft(c.R, left);
-            Canvas.SetTop(c.R, top);
-            Canvas.SetLeft(c.T, left + Page.ClickTolerance);
-            Canvas.SetTop(c.T, top + Page.ClickTolerance);
-        }
+		public IGreyImage CurrentImage => GetImage(_currentImagePath);
 
-        private GreyImage LoadImage(string path)
-        {
-            if (!_imageCache.ContainsKey(path))
-            {
-                BitmapImage bm = new BitmapImage();
-                // BitmapImage.UriSource must be in a BeginInit/EndInit block
-                bm.BeginInit();
-                bm.UriSource = new Uri(path);
-                bm.EndInit();
-                _imageCache[path] = new GreyImage(path, bm);
-            }
-            return _imageCache[path];
-        }
+		public IGreyImage GetImage(string path)
+		{
+			return LoadImage(path);
+		}
 
-        private class Clipping
-        {
-            public readonly Rectangle R;
-            public readonly TextBlock T;
+		private static void SetCoords(Clipping c, Rect coordinates)
+		{
+			double thickness = c.R.StrokeThickness;
+			double left = coordinates.X - thickness / 2.0;
+			double top = coordinates.Y - thickness / 2.0;
 
-            public Clipping()
-            {
-                R = new Rectangle();
-                T = new TextBlock();
-                T.FontSize = 24;
-            }
-        }
-    }
+			c.R.Width = coordinates.Width + thickness;
+			c.R.Height = coordinates.Height + thickness;
+			Canvas.SetLeft(c.R, left);
+			Canvas.SetTop(c.R, top);
+			Canvas.SetLeft(c.T, left + Page.ClickTolerance);
+			Canvas.SetTop(c.T, top + Page.ClickTolerance);
+		}
+
+		private GreyImage LoadImage(string path)
+		{
+			if (!_imageCache.ContainsKey(path))
+			{
+				BitmapImage bm = new BitmapImage();
+				// BitmapImage.UriSource must be in a BeginInit/EndInit block
+				bm.BeginInit();
+				bm.UriSource = new Uri(path);
+				bm.EndInit();
+				_imageCache[path] = new GreyImage(path, bm);
+			}
+
+			return _imageCache[path];
+		}
+	}
 }

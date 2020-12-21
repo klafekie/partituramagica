@@ -1,217 +1,203 @@
-﻿using System;
+﻿#region usings
+
+using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
 using System.Windows.Interop;
+using PartituraMagica.Domain;
+using PartituraMagica.PageEditing;
+using PartituraMagica.PartituraCommands;
+using PartituraMagica.Player;
+using PartituraMagica.Playing;
+
+#endregion
 
 namespace PartituraMagica
 {
-    internal class EditingController : ICommandParameters, IDisposable
-    {
-        private readonly MainWindow _mainWindow;
-        private PlayerViewD3D _playerView;
+	internal class EditingController : ICommandParameters, IDisposable
+	{
+		private readonly MainWindow _mainWindow;
+		private PlayerViewD3D _playerView;
 
-        public EditingController(MainWindow mainWindow, IDrawingPanel panel)
-        {
-            Panel = panel;
-            FileSystem = new FileSystem();
-            Active = new ActivePartitura(FileSystem);
-            _mainWindow = mainWindow;
+		public EditingController(MainWindow mainWindow, IDrawingPanel panel)
+		{
+			Panel = panel;
+			FileSystem = new FileSystem();
+			Active = new ActivePartitura(FileSystem);
+			_mainWindow = mainWindow;
 
-            string[] args = Environment.GetCommandLineArgs();
-            if (args.Length == 2)
-            {
-                //first arg is the exe name
-                new OpenCommand(args[1], this).Execute();
-            }
-        }
+			string[] args = Environment.GetCommandLineArgs();
+			if (args.Length == 2)
+				//first arg is the exe name
+				new OpenCommand(args[1], this).Execute();
+		}
 
-        public Page CurrentPage
-        {
-            get
-            {
-                if (Active.Partitura != null)
-                {
-                    int index = Active.CurrentPageIndex;
-                    return Active.Partitura.GetPage(index);
-                }
-                return null;
-            }
-        }
+		public Page CurrentPage
+		{
+			get
+			{
+				if (Active.Partitura != null)
+				{
+					int index = Active.CurrentPageIndex;
+					return Active.Partitura.GetPage(index);
+				}
 
-        private string PlayerRuntimePath
-        {
-            get { return Active.Path + ".runtime"; }
-        }
+				return null;
+			}
+		}
 
-        public IActivePartitura Active { get; }
+		private string PlayerRuntimePath => Active.Path + ".runtime";
 
-        public IDrawingPanel Panel { get; }
+		public IActivePartitura Active { get; }
 
-        public IFileSystem FileSystem { get; }
+		public IDrawingPanel Panel { get; }
 
-        public IMainWindow MainWindow
-        {
-            get { return _mainWindow; }
-        }
+		public IFileSystem FileSystem { get; }
 
-        public void DisposePlayerView()
-        {
-            if (_playerView != null)
-            {
-                _playerView.Dispose();
-                _playerView = null;
-            }
-        }
+		public IMainWindow MainWindow => _mainWindow;
 
-        public void Dispose()
-        {
-            DisposePlayerView();
-        }
+		public void DisposePlayerView()
+		{
+			if (_playerView != null)
+			{
+				_playerView.Dispose();
+				_playerView = null;
+			}
+		}
 
-        public ICommand CreateCommand(string name)
-        {
-            bool takesLong;
-            return CreateCommand(name, out takesLong);
-        }
+		public void Dispose()
+		{
+			DisposePlayerView();
+		}
 
-        public ICommand CreateCommand(string name, out bool takesLong)
-        {
-            takesLong = false;
-            switch (name)
-            {
-                case "New":
-                    takesLong = true;
-                    return new NewPartituraCommand(this);
-                case "Open":
-                    return new OpenCommand(this);
-                case "Save":
-                    return new SaveCommand(false, this);
-                case "SaveAs":
-                    return new SaveCommand(true, this);
-                case "CloseApplication":
-                    return new CloseApplicationCommand(this);
-                case "ClosePartitura":
-                    return new ClosePartituraCommand(this);
-                case "Delete":
-                    return new RemoveBoxCommand(this);
-                case "AddPage":
-                    takesLong = true;
-                    return new AddPagesCommand(this);
-                case "AutoFill":
-                    takesLong = true;
-                    return new AutoFillCommand(this);
-                case "NextPage":
-                    return new ShowPageCommand(Active.CurrentPageIndex + 1, this);
-                case "PreviousPage":
-                    return new ShowPageCommand(Active.CurrentPageIndex - 1, this);
-                case "Label":
-                    return new LabelPartCommand(this);
-                case "UnLabel":
-                    return new UnLabelPartCommand(this);
-                case "UpdatePartPattern":
-                    return new UpdatePartPatternCommand(this);
-                case "TuningTone":
-                    return new PlayTuningToneCommand();
-                case "StartPlayer":
-                    Func<PlayerPositionHolder, IPartNavigator, IPlayerView> createView =
-                        (positionProvider, playerView) =>
-                        {
-                            WindowInteropHelper h = new WindowInteropHelper(_mainWindow);
+		public ICommand CreateCommand(string name)
+		{
+			bool takesLong;
+			return CreateCommand(name, out takesLong);
+		}
 
-                            _playerView = new PlayerViewD3D(Active, Panel, h.Handle, LoadPlayer(), positionProvider,
-                                playerView);
-                            _playerView.Closed += (o, args) =>
-                            {
-                                SavePlayer(_playerView);
-                                _playerView = null;
-                            };
-                            return _playerView;
-                        };
-                    return new ShowPlayerCommand(createView, this);
-                default:
-                    throw new ArgumentException("unknown command");
-            }
-        }
+		public ICommand CreateCommand(string name, out bool takesLong)
+		{
+			takesLong = false;
+			switch (name)
+			{
+				case "New":
+					takesLong = true;
+					return new NewPartituraCommand(this);
+				case "Open":
+					return new OpenCommand(this);
+				case "Save":
+					return new SaveCommand(false, this);
+				case "SaveAs":
+					return new SaveCommand(true, this);
+				case "CloseApplication":
+					return new CloseApplicationCommand(this);
+				case "ClosePartitura":
+					return new ClosePartituraCommand(this);
+				case "Delete":
+					return new RemoveBoxCommand(this);
+				case "AddPage":
+					takesLong = true;
+					return new AddPagesCommand(this);
+				case "AutoFill":
+					takesLong = true;
+					return new AutoFillCommand(this);
+				case "NextPage":
+					return new ShowPageCommand(Active.CurrentPageIndex + 1, this);
+				case "PreviousPage":
+					return new ShowPageCommand(Active.CurrentPageIndex - 1, this);
+				case "Label":
+					return new LabelPartCommand(this);
+				case "UnLabel":
+					return new UnLabelPartCommand(this);
+				case "UpdatePartPattern":
+					return new UpdatePartPatternCommand(this);
+				case "TuningTone":
+					return new PlayTuningToneCommand();
+				case "StartPlayer":
+					Func<PlayerPositionHolder, IPartNavigator, IPlayerView> createView =
+						(positionProvider, playerView) =>
+						{
+							WindowInteropHelper h = new WindowInteropHelper(_mainWindow);
 
-        private PlayerMemento LoadPlayer()
-        {
-            if (!FileSystem.FileExists(PlayerRuntimePath))
-            {
-                return new PlayerMemento();
-            }
-            using (Stream str = FileSystem.OpenRead(PlayerRuntimePath))
-            {
-                BinaryFormatter sf = new BinaryFormatter();
-                return (PlayerMemento) sf.Deserialize(str);
-            }
-        }
+							_playerView = new PlayerViewD3D(Active, Panel, h.Handle, LoadPlayer(), positionProvider,
+								playerView);
+							_playerView.Closed += (o, args) =>
+							{
+								SavePlayer(_playerView);
+								_playerView = null;
+							};
+							return _playerView;
+						};
+					return new ShowPlayerCommand(createView, this);
+				default:
+					throw new ArgumentException("unknown command");
+			}
+		}
 
-        private void SavePlayer(IPlayerView view)
-        {
-            using (Stream str = FileSystem.OpenWrite(PlayerRuntimePath))
-            {
-                BinaryFormatter sf = new BinaryFormatter();
-                sf.Serialize(str, view.ToMemento());
-            }
-        }
+		private PlayerMemento LoadPlayer()
+		{
+			if (!FileSystem.FileExists(PlayerRuntimePath)) return new PlayerMemento();
+			using (Stream str = FileSystem.OpenRead(PlayerRuntimePath))
+			{
+				BinaryFormatter sf = new BinaryFormatter();
+				return (PlayerMemento) sf.Deserialize(str);
+			}
+		}
 
-        public bool CanExecuteCommand(string name)
-        {
-            ICommand cmd = CreateCommand(name);
-            if (cmd != null)
-            {
-                return cmd.CanExecute();
-            }
-            return false;
-        }
+		private void SavePlayer(IPlayerView view)
+		{
+			using (Stream str = FileSystem.OpenWrite(PlayerRuntimePath))
+			{
+				BinaryFormatter sf = new BinaryFormatter();
+				sf.Serialize(str, view.ToMemento());
+			}
+		}
 
-        public ICommand CreateMouseDownCommand(Point pos, int clickCount)
-        {
-            ICommand cmd = null;
-            if (clickCount == 1)
-            {
-                cmd = new SelectItemCommand(pos, this);
-                if (!cmd.CanExecute())
-                {
-                    cmd = new AddBoxCommand(pos, this);
-                    if (!cmd.CanExecute())
-                    {
-                        return null;
-                    }
-                }
-            }
-            else
-            {
-                cmd = new SplitBoxCommand(pos, this);
-                if (!cmd.CanExecute())
-                {
-                    return null;
-                }
-            }
-            return cmd;
-        }
+		public bool CanExecuteCommand(string name)
+		{
+			ICommand cmd = CreateCommand(name);
+			if (cmd != null) return cmd.CanExecute();
+			return false;
+		}
 
-        public ICommand CreateMouseMoveCommand(Point lastPos, Point currentPos, bool leftButtonIsDown)
-        {
-            if (leftButtonIsDown)
-            {
-                ICommand cmd = new UpdateBoxCommand(lastPos, currentPos, this);
-                if (cmd.CanExecute())
-                {
-                    return cmd;
-                }
-            }
-            return null;
-        }
+		public ICommand CreateMouseDownCommand(Point pos, int clickCount)
+		{
+			ICommand cmd = null;
+			if (clickCount == 1)
+			{
+				cmd = new SelectItemCommand(pos, this);
+				if (!cmd.CanExecute())
+				{
+					cmd = new AddBoxCommand(pos, this);
+					if (!cmd.CanExecute()) return null;
+				}
+			}
+			else
+			{
+				cmd = new SplitBoxCommand(pos, this);
+				if (!cmd.CanExecute()) return null;
+			}
 
-        public Shape GetShapeAt(Point currentPos)
-        {
-            if (!Active.IsOpen)
-            {
-                return Shape.NothingSpecial;
-            }
-            return CurrentPage.GetShapeTypeAt(currentPos);
-        }
-    }
+			return cmd;
+		}
+
+		public ICommand CreateMouseMoveCommand(Point lastPos, Point currentPos, bool leftButtonIsDown)
+		{
+			if (leftButtonIsDown)
+			{
+				ICommand cmd = new UpdateBoxCommand(lastPos, currentPos, this);
+				if (cmd.CanExecute()) return cmd;
+			}
+
+			return null;
+		}
+
+		public Shape GetShapeAt(Point currentPos)
+		{
+			if (!Active.IsOpen) return Shape.NothingSpecial;
+			return CurrentPage.GetShapeTypeAt(currentPos);
+		}
+	}
 }

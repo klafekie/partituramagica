@@ -9,6 +9,8 @@ using System.Linq;
 using System.Text;
 using System.Diagnostics;
 using System.Windows;
+using PartituraMagica.Domain;
+using PartituraMagica.PageEditing;
 
 namespace PartituraMagica
 {

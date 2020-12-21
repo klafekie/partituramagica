@@ -1,63 +1,57 @@
+#region usings
+
 using System.Windows.Media.Imaging;
+using PartituraMagica.Domain;
+
+#endregion
 
 namespace PartituraMagica
 {
-    internal class GreyImage : IGreyImage
-    {
-        private byte[] _pixels;
+	internal class GreyImage : IGreyImage
+	{
+		private byte[] _pixels;
 
-        public GreyImage(string path, BitmapImage bm)
-        {
-            RawImage = bm;
-            Path = path;
-        }
+		public GreyImage(string path, BitmapImage bm)
+		{
+			RawImage = bm;
+			Path = path;
+		}
 
-        public BitmapImage RawImage { get; }
+		public BitmapImage RawImage { get; }
 
-        public int Width
-        {
-            get { return RawImage.PixelWidth; }
-        }
+		public int Width => RawImage.PixelWidth;
 
-        public int Height
-        {
-            get { return RawImage.PixelHeight; }
-        }
+		public int Height => RawImage.PixelHeight;
 
-        public BrightnessGetter Brightness
-        {
-            get
-            {
-                if (_pixels == null)
-                {
-                    // Quick fix for crash on color image input. TODO p3: should similar corrections needed elsewhere?
-                    int bytesPerPixel = RawImage.Format.BitsPerPixel / 8;
-                    // BitsPerPixel is normally 1 for grayscale; seen 32 for color image input [jed]
-                    _pixels = new byte[Width * Height * bytesPerPixel];
-                    int stride = (RawImage.PixelWidth * RawImage.Format.BitsPerPixel + 7) / 8;
-                    RawImage.CopyPixels(_pixels, stride, 0);
-                }
-                return GetBrightness;
-            }
-        }
+		public BrightnessGetter Brightness
+		{
+			get
+			{
+				if (_pixels == null)
+				{
+					// Quick fix for crash on color image input. TODO p3: should similar corrections needed elsewhere?
+					int bytesPerPixel = RawImage.Format.BitsPerPixel / 8;
+					// BitsPerPixel is normally 1 for grayscale; seen 32 for color image input [jed]
+					_pixels = new byte[Width * Height * bytesPerPixel];
+					int stride = (RawImage.PixelWidth * RawImage.Format.BitsPerPixel + 7) / 8;
+					RawImage.CopyPixels(_pixels, stride, 0);
+				}
+
+				return GetBrightness;
+			}
+		}
 
 
-        public double DpiX
-        {
-            get { return RawImage.DpiX; }
-        }
+		public double DpiX => RawImage.DpiX;
 
-        public double DpiY
-        {
-            get { return RawImage.DpiY; }
-        }
+		public double DpiY => RawImage.DpiY;
 
 
-        public string Path { get; }
+		public string Path { get; }
 
-        private double GetBrightness(int x, int y)
-        {
-            return (double) _pixels[y * Width + x] / 256F;
-        }
-    }
+		private double GetBrightness(int x, int y)
+		{
+			return (double) _pixels[y * Width + x] / 256F;
+		}
+	}
 }
