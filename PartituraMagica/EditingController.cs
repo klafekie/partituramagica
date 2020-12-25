@@ -5,6 +5,7 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
 using System.Windows.Interop;
+using Lamar;
 using PartituraMagica.Domain;
 using PartituraMagica.PageEditing;
 using PartituraMagica.PartituraCommands;
@@ -15,23 +16,11 @@ using PartituraMagica.Playing;
 
 namespace PartituraMagica
 {
-	internal class EditingController : ICommandParameters, IDisposable
+	public class EditingController : ICommandParameters, IDisposable
 	{
+		private readonly IContainer _container;
 		private readonly MainWindow _mainWindow;
 		private PlayerViewD3D _playerView;
-
-		public EditingController(MainWindow mainWindow, IDrawingPanel panel)
-		{
-			Panel = panel;
-			FileSystem = new FileSystem();
-			Active = new ActivePartitura(FileSystem);
-			_mainWindow = mainWindow;
-
-			string[] args = Environment.GetCommandLineArgs();
-			if (args.Length == 2)
-				//first arg is the exe name
-				new OpenCommand(args[1], this).Execute();
-		}
 
 		public Page CurrentPage
 		{
@@ -48,6 +37,20 @@ namespace PartituraMagica
 		}
 
 		private string PlayerRuntimePath => Active.Path + ".runtime";
+
+		public EditingController(MainWindow mainWindow, IDrawingPanel panel, IContainer container)
+		{
+			Panel = panel;
+			_container = container;
+			FileSystem = new FileSystem();
+			Active = new ActivePartitura(FileSystem);
+			_mainWindow = mainWindow;
+
+			string[] args = Environment.GetCommandLineArgs();
+			if (args.Length == 2)
+				//first arg is the exe name
+				new OpenCommand(args[1], this).Execute();
+		}
 
 		public IActivePartitura Active { get; }
 
@@ -73,18 +76,8 @@ namespace PartituraMagica
 
 		public ICommand CreateCommand(string name)
 		{
-			bool takesLong;
-			return CreateCommand(name, out takesLong);
-		}
-
-		public ICommand CreateCommand(string name, out bool takesLong)
-		{
-			takesLong = false;
 			switch (name)
 			{
-				case "New":
-					takesLong = true;
-					return new NewPartituraCommand(this);
 				case "Open":
 					return new OpenCommand(this);
 				case "Save":
@@ -98,10 +91,8 @@ namespace PartituraMagica
 				case "Delete":
 					return new RemoveBoxCommand(this);
 				case "AddPage":
-					takesLong = true;
 					return new AddPagesCommand(this);
 				case "AutoFill":
-					takesLong = true;
 					return new AutoFillCommand(this);
 				case "NextPage":
 					return new ShowPageCommand(Active.CurrentPageIndex + 1, this);
@@ -132,7 +123,7 @@ namespace PartituraMagica
 						};
 					return new ShowPlayerCommand(createView, this);
 				default:
-					throw new ArgumentException("unknown command");
+					return _container.GetInstance<ICommand>(name);
 			}
 		}
 
@@ -167,16 +158,15 @@ namespace PartituraMagica
 			ICommand cmd = null;
 			if (clickCount == 1)
 			{
-				cmd = new SelectItemCommand(pos, this);
+				//TODO cmd = new SelectItemCommand(pos, this);
 				if (!cmd.CanExecute())
-				{
-					cmd = new AddBoxCommand(pos, this);
-					if (!cmd.CanExecute()) return null;
-				}
+					//TODO cmd = new AddBoxCommand(pos, this);
+					if (!cmd.CanExecute())
+						return null;
 			}
 			else
 			{
-				cmd = new SplitBoxCommand(pos, this);
+				//TODO cmd = new SplitBoxCommand(pos, this);
 				if (!cmd.CanExecute()) return null;
 			}
 
@@ -187,8 +177,9 @@ namespace PartituraMagica
 		{
 			if (leftButtonIsDown)
 			{
-				ICommand cmd = new UpdateBoxCommand(lastPos, currentPos, this);
-				if (cmd.CanExecute()) return cmd;
+				//TODO
+				//ICommand cmd = new UpdateBoxCommand(lastPos, currentPos, this);
+				//if (cmd.CanExecute()) return cmd;
 			}
 
 			return null;

@@ -25,7 +25,7 @@ namespace PartituraMagica.PageEditing
 			Debug.Assert(CanExecute());
 			P.MainWindow.SignalWait(true);
 			BoxFinder b = new BoxFinder(P.Panel.CurrentImage);
-			foreach (Rect r in b.Execute()) new AddBoxCommand(r, P).TryExecute();
+			//TODO foreach (Rect r in b.Execute()) new AddBoxCommand(P).TryExecute();
 			P.MainWindow.SignalWait(false);
 		}
 	}

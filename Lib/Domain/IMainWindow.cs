@@ -1,3 +1,9 @@
+#region usings
+
+using System.Windows;
+
+#endregion
+
 namespace PartituraMagica.Domain
 {
 	/**
@@ -10,6 +16,9 @@ namespace PartituraMagica.Domain
 		string PartPattern { get; set; }
 
 		bool IsEnabled { get; set; }
+
+		Point CurrentMousePosition { get; }
+		Point PreviousMousePosition { get; }
 
 		void ShowPartituraInfo(IActivePartitura active);
 		void ClearPartituraInfo();

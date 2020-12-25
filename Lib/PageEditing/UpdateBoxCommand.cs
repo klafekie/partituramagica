@@ -1,7 +1,6 @@
 ﻿#region usings
 
 using System.Diagnostics;
-using System.Windows;
 using PartituraMagica.Domain;
 
 #endregion
@@ -10,27 +9,23 @@ namespace PartituraMagica.PageEditing
 {
 	public class UpdateBoxCommand : PartituraCommandBase, ICommand
 	{
-		private readonly Point _lastPos;
-		private readonly Point _newPos;
-
-		public UpdateBoxCommand(Point lastPos, Point newPos, ICommandParameters p)
+		public UpdateBoxCommand(ICommandParameters p)
 			: base(p)
 		{
-			_lastPos = lastPos;
-			_newPos = newPos;
 		}
 
 		public bool CanExecute()
 		{
 			Page current = P.Active.CurrentPage;
 			if (current == null || !current.IsBoxSelected()) return false;
-			return current.CanUpdateSelectedBox(_lastPos, _newPos);
+			return current.CanUpdateSelectedBox(P.MainWindow.PreviousMousePosition, P.MainWindow.CurrentMousePosition);
 		}
 
 		public void Execute()
 		{
 			Debug.Assert(CanExecute());
-			P.Active.CurrentPage.UpdateSelectedBox(_lastPos, _newPos, P.Panel);
+			P.Active.CurrentPage.UpdateSelectedBox(P.MainWindow.PreviousMousePosition, P.MainWindow.CurrentMousePosition,
+				P.Panel);
 		}
 	}
 }

@@ -11,30 +11,32 @@ namespace PartituraMagica.PageEditing
 	public class AddBoxCommand : PartituraCommandBase, ICommand
 	{
 		private readonly Rect _r;
+		private Rect CurrentRect => _r ?? CreateRect(P.MainWindow.CurrentMousePosition);
 
-		public AddBoxCommand(Point pos, ICommandParameters p)
+		//[DefaultConstructor]
+		public AddBoxCommand(ICommandParameters p)
 			: base(p)
 		{
-			_r = CreateRect(pos);
 		}
 
-		public AddBoxCommand(Rect r, ICommandParameters p)
-			: base(p)
-		{
-			_r = r;
-		}
+		//TODO
+		//public AddBoxCommand(Rect r, ICommandParameters p)
+		//	: base(p)
+		//{
+		//	_r = r;
+		//}
 
 		public bool CanExecute()
 		{
 			return P.Active != null && P.Active.CurrentPage != null &&
-			       !P.Active.CurrentPage.Overlaps(_r);
+			       !P.Active.CurrentPage.Overlaps(CurrentRect);
 		}
 
 		public void Execute()
 		{
 			Debug.Assert(CanExecute());
 			//Trace.TraceInformation("Adding Box at " + r);
-			P.Active.Partitura.AddBox(P.Active.CurrentPageIndex, _r, P.Panel);
+			P.Active.Partitura.AddBox(P.Active.CurrentPageIndex, CurrentRect, P.Panel);
 		}
 
 		private Rect CreateRect(Point pos)

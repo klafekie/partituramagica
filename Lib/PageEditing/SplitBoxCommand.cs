@@ -1,7 +1,6 @@
 ﻿#region usings
 
 using System.Diagnostics;
-using System.Windows;
 using PartituraMagica.Domain;
 
 #endregion
@@ -16,12 +15,9 @@ namespace PartituraMagica.PageEditing
      */
 	public class SplitBoxCommand : PartituraCommandBase, ICommand
 	{
-		private readonly Point _pos;
-
-		public SplitBoxCommand(Point pos, ICommandParameters p)
+		public SplitBoxCommand(ICommandParameters p)
 			: base(p)
 		{
-			_pos = pos;
 		}
 
 		public bool CanExecute()
@@ -32,7 +28,7 @@ namespace PartituraMagica.PageEditing
 		public void Execute()
 		{
 			Debug.Assert(CanExecute());
-			P.Active.CurrentPage.SplitSelectedBox(_pos, P.Panel);
+			P.Active.CurrentPage.SplitSelectedBox(P.MainWindow.CurrentMousePosition, P.Panel);
 		}
 	}
 }
