@@ -47,7 +47,7 @@ namespace PartituraMagica
 			return null;
 		}
 
-		public string ShowSavePartituraDialog(bool dummy)
+		public string ShowSavePartituraDialog()
 		{
 			SaveFileDialog dialog = new SaveFileDialog
 			{

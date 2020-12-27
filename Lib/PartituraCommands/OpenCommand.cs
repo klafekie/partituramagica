@@ -10,24 +10,23 @@ namespace PartituraMagica.PartituraCommands
 {
 	public class OpenCommand : PartituraCommandBase, ICommand
 	{
-		private readonly string _path;
+		public string Path { get; set; }
 
 		public OpenCommand(ICommandParameters p)
 			: base(p)
 		{
-			_path = null;
 		}
 
 		//for testing purposes
-		public OpenCommand(string path, ICommandParameters p)
-			: base(p)
-		{
-			_path = path;
-		}
+		//public OpenCommand(string path, ICommandParameters p)
+		//	: base(p)
+		//{
+		//	_path = path;
+		//}
 
 		public void Execute()
 		{
-			string chosenFile = _path ?? P.FileSystem.ShowOpenPartituraDialog();
+			string chosenFile = Path ?? P.FileSystem.ShowOpenPartituraDialog();
 			if (chosenFile != null)
 			{
 				new ClosePartituraCommand(P).TryExecute();
@@ -41,7 +40,7 @@ namespace PartituraMagica.PartituraCommands
 						P.Active.Open(chosenFile, partitura);
 					}
 
-					new ShowPageCommand(0, P).TryExecute();
+					new ShowFirstPageCommand(P).TryExecute();
 					P.MainWindow.PartPattern = P.Active.Partitura.PartPattern;
 					P.MainWindow.ShowPartituraInfo(P.Active);
 				}

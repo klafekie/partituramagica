@@ -1,5 +1,6 @@
 ﻿#region usings
 
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -14,32 +15,47 @@ using IContainer = Lamar.IContainer;
 namespace PartituraMagica
 {
 	/** 
-     * The application main window
-     */
+   * The application main window
+   */
 	public partial class MainWindow : Window, IMainWindow
 	{
 		private readonly IContainer _container;
-		private Point _lastClickPos;
+		private readonly ICommandParameters _controller;
 
 		public static RoutedUICommand AddPage { get; } = new
-			RoutedUICommand("Add ...", "AddPage", typeof(MainWindow));
+			RoutedUICommand("Add ...", "AddPages", typeof(MainWindow));
 
 		public static RoutedUICommand StartPlayer { get; } = new
-			RoutedUICommand("Start Player", "StartPlayer", typeof(MainWindow),
+			RoutedUICommand("Start Player", "ShowPlayer", typeof(MainWindow),
+				new InputGestureCollection
+				{
+					new KeyGesture(Key.N, ModifierKeys.Control)
+				});
+
+		public static RoutedUICommand NewPartitura { get; } = new
+			RoutedUICommand("New Partitura", "NewPartitura", typeof(MainWindow),
 				new InputGestureCollection
 				{
 					new KeyGesture(Key.Space)
 				});
 
+
+		public static RoutedUICommand RemoveBox { get; } = new
+			RoutedUICommand("Remove Box", "RemoveBox", typeof(MainWindow),
+				new InputGestureCollection
+				{
+					new KeyGesture(Key.Delete)
+				});
+
 		public static RoutedUICommand Label { get; } = new
-			RoutedUICommand("Label As New Part", "Label", typeof(MainWindow),
+			RoutedUICommand("Label As New Part", "LabelPart", typeof(MainWindow),
 				new InputGestureCollection
 				{
 					new KeyGesture(Key.L, ModifierKeys.Control)
 				});
 
 		public static RoutedUICommand UnLabel { get; } = new
-			RoutedUICommand("Remove Label", "UnLabel", typeof(MainWindow));
+			RoutedUICommand("Remove Label", "UnLabelPart", typeof(MainWindow));
 
 		public static RoutedUICommand AutoFill { get; } = new
 			RoutedUICommand("Find Lines", "AutoFill", typeof(MainWindow));
@@ -50,23 +66,30 @@ namespace PartituraMagica
 		public static RoutedUICommand ClosePartitura { get; } = new
 			RoutedUICommand("Close", "ClosePartitura", typeof(MainWindow));
 
+		public static RoutedUICommand ShowNextPage { get; } = new
+			RoutedUICommand("Next Page", "ShowNextPage", typeof(MainWindow));
+
+		public static RoutedUICommand ShowPreviousPage { get; } = new
+			RoutedUICommand("Previous Page", "ShowPreviousPage", typeof(MainWindow));
+
 		public static RoutedUICommand TuningTone { get; } = new
-			RoutedUICommand("Tuning Tone", "TuningTone", typeof(MainWindow),
+			RoutedUICommand("Tuning Tone", "PlayTuningTone", typeof(MainWindow),
 				new InputGestureCollection
 				{
 					new KeyGesture(Key.T, ModifierKeys.Control)
 				});
 
-		public Point PreviousMousePosition { get; set; }
-		public MouseButtonState CurrentMouseButtonState { get; set; }
 
-		public MainWindow(IContainer container)
+		public MainWindow(IContainer container, ICommandParameters controller)
 		{
 			_container = container;
+			_controller = controller;
 			Trace.WriteLine("hallo listener");
 
 			InitializeComponent();
 		}
+
+		public bool IsLeftMouseButtonPressed { get; set; }
 
 
 		public string PartPattern
@@ -77,15 +100,12 @@ namespace PartituraMagica
 
 		public void ShowPartituraInfo(IActivePartitura active)
 		{
-			var pageCount = active.GetPageCount();
+			int pageCount = active.GetPageCount();
 			if (pageCount == 0)
-				Title = string.Format("Partitura Magica - {0} (no pages)",
-					Path.GetFileNameWithoutExtension(active.Path));
+				Title = $"Partitura Magica - {Path.GetFileNameWithoutExtension(active.Path)} (no pages)";
 			else
-				Title = string.Format("Partitura Magica - {0} ({1} / {2})",
-					Path.GetFileNameWithoutExtension(active.Path),
-					active.CurrentPageIndex + 1,
-					pageCount);
+				Title =
+					$"Partitura Magica - {Path.GetFileNameWithoutExtension(active.Path)} ({active.CurrentPageIndex + 1} / {pageCount})";
 		}
 
 		public void ClearPartituraInfo()
@@ -125,6 +145,7 @@ namespace PartituraMagica
 			}
 		}
 
+		public Point PreviousMousePosition { get; set; }
 		public Point CurrentMousePosition { get; set; }
 
 		private ICommand CreateCommand(string name)
@@ -150,51 +171,68 @@ namespace PartituraMagica
 			SetMouseCursor(currentPos);
 			PreviousMousePosition = CurrentMousePosition;
 			CurrentMousePosition = currentPos;
-			CurrentMouseButtonState = e.LeftButton;
+			if (e.LeftButton == MouseButtonState.Pressed) CreateCommand("UpdateBox").TryExecute();
 		}
 
 		private void SetMouseCursor(Point currentPos)
 		{
-			Cursor cursor = Cursors.Arrow;
-			//TODO
-			//Shape type = _controller.GetShapeAt(currentPos);
-			//switch (type)
-			//{
-			//	case Shape.BoxContent:
-			//		cursor = Cursors.Hand;
-			//		break;
-			//	case Shape.BoxLeftTopCorner:
-			//	case Shape.BoxRightBottomCorner:
-			//		cursor = Cursors.SizeNWSE;
-			//		break;
-			//	case Shape.BoxTopMargin:
-			//	case Shape.BoxBottomMargin:
-			//		cursor = Cursors.SizeNS;
-			//		break;
-			//	case Shape.BoxRightTopCorner:
-			//	case Shape.BoxLeftBottomCorner:
-			//		cursor = Cursors.SizeNESW;
-			//		break;
-			//	case Shape.BoxRightMargin:
-			//	case Shape.BoxLeftMargin:
-			//	case Shape.BoxSplitter:
-			//		cursor = Cursors.SizeWE;
-			//		break;
-			//	case Shape.NothingSpecial:
-			//		cursor = Cursors.Arrow;
-			//		break;
-			//	default:
-			//		throw new ApplicationException("unexpected ShapeType");
-			//}
+			Cursor cursor;
+			Shape type = _controller.GetShapeAt(currentPos);
+			switch (type)
+			{
+				case Shape.BoxContent:
+					cursor = Cursors.Hand;
+					break;
+				case Shape.BoxLeftTopCorner:
+				case Shape.BoxRightBottomCorner:
+					cursor = Cursors.SizeNWSE;
+					break;
+				case Shape.BoxTopMargin:
+				case Shape.BoxBottomMargin:
+					cursor = Cursors.SizeNS;
+					break;
+				case Shape.BoxRightTopCorner:
+				case Shape.BoxLeftBottomCorner:
+					cursor = Cursors.SizeNESW;
+					break;
+				case Shape.BoxRightMargin:
+				case Shape.BoxLeftMargin:
+				case Shape.BoxSplitter:
+					cursor = Cursors.SizeWE;
+					break;
+				case Shape.NothingSpecial:
+					cursor = Cursors.Arrow;
+					break;
+				default:
+					throw new ApplicationException("unexpected ShapeType");
+			}
 
 			Mouse.SetCursor(cursor);
 		}
 
 		private void PageCanvas_MouseDown(object sender, MouseButtonEventArgs e)
 		{
-			//Point pos = e.GetPosition(PageCanvas);
-			//_lastClickPos = pos;
-			//_controller.CreateMouseDownCommand(pos, e.ClickCount).TryExecute();
+			PreviousMousePosition = CurrentMousePosition;
+			CurrentMousePosition = e.GetPosition(PageCanvas);
+
+			ICommand cmd;
+			if (e.ClickCount == 1)
+			{
+				cmd = CreateCommand("SelectBox");
+				if (!cmd.CanExecute())
+				{
+					cmd = CreateCommand("AddBox");
+					if (!cmd.CanExecute())
+						return;
+				}
+			}
+			else
+			{
+				cmd = CreateCommand("SplitBox");
+				if (!cmd.CanExecute()) return;
+			}
+
+			cmd.Execute();
 		}
 
 		private void WindowClosing(object sender, CancelEventArgs e)

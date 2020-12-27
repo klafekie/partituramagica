@@ -1,3 +1,9 @@
+#region usings
+
+using System.Windows;
+
+#endregion
+
 namespace PartituraMagica.Domain
 {
 	/**
@@ -32,5 +38,6 @@ namespace PartituraMagica.Domain
 		//@todo p2 this seems not a good place for this method, maybe move playerView instance
 		//elsewhere?
 		void DisposePlayerView();
+		Shape GetShapeAt(Point currentPos);
 	}
 }

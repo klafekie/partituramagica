@@ -37,18 +37,15 @@ namespace PartituraMagica
 			Thread.CurrentThread.CurrentUICulture =
 				CultureInfo.GetCultureInfo("en-GB");
 
-
 			var container = new Container(new BasicRegistry());
 
-			//container.Inject(typeof(IContainer), container, false);
-			MainWindow wnd = container.GetInstance<MainWindow>();
-			var controller = new EditingController(wnd, new DrawingPanel(wnd.PageCanvas), container);
+			container.Inject(typeof(IContainer), container, false);
 
-			//container.Inject(typeof(ICommandParameters), controller, false);
+			//var scanned = container.WhatDidIScan();
+			//var have = container.WhatDoIHave();
+			container.AssertConfigurationIsValid();
 
-			var scanned = container.WhatDidIScan();
-			var have = container.WhatDoIHave();
-
+			var wnd = container.GetInstance<MainWindow>();
 
 			wnd.Show();
 		}

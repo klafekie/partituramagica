@@ -15,26 +15,26 @@ namespace PartituraMagica.Domain
 	}
 
 	/**
-     * offers an abstraction from standard filesystem operations and dialogs
-     */
+   * offers an abstraction from standard filesystem operations and dialogs
+   */
 	public interface IFileSystem
 	{
 		/** return all files in the directory path that match pattern.
-         * returns an empty collection (not null) if nothing matches.
-         */
+     * returns an empty collection (not null) if nothing matches.
+     */
 		ICollection<string> GetMatchingFileNames(string path, string pattern);
 
 		/**
-         * @return selected files (full path), empty collection if cancel is pressed
-         */
+     * @return selected files (full path), empty collection if cancel is pressed
+     */
 		ICollection<string> ShowOpenImagesDialog();
 
 		string ShowOpenPartituraDialog();
 
 		/**
-         * @return chosen file (full path), null on cancel
-         */
-		string ShowSavePartituraDialog(bool dummy = false);
+     * @return chosen file (full path), null on cancel
+     */
+		string ShowSavePartituraDialog();
 
 		/**
 		 * Do you want to save current Partitura? yes no cancel
@@ -42,8 +42,8 @@ namespace PartituraMagica.Domain
 		DialogResult AskToSave();
 
 		/** 
-         * to and from should be abs. paths and have the same file extension!
-         */
+     * to and from should be abs. paths and have the same file extension!
+     */
 		void Copy(string from, string to);
 
 		Stream OpenRead(string path);

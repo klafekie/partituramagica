@@ -1,11 +1,12 @@
 #region usings
 
+using System;
 using System.Collections.Generic;
 using System.Windows;
+using Moq;
 using NUnit.Framework;
 using PartituraMagica.Domain;
 using PartituraMagica.PageEditing;
-using Rhino.Mocks;
 
 #endregion
 
@@ -16,10 +17,9 @@ namespace PartituraMagica
 	{
 		protected Partitura Partitura;
 		protected FakeDrawingPanel panel;
-		protected IActivePartitura ActivePartitura;
-		protected MockRepository Mocks;
-		protected FakeFileSystem fileSystem;
-		protected IMainWindow mainWindow;
+		protected Mock<IActivePartitura> activePartitura;
+		protected Mock<FakeFileSystem> fileSystem;
+		protected Mock<IMainWindow> mainWindow;
 
 		public virtual void Setup()
 		{
@@ -29,21 +29,26 @@ namespace PartituraMagica
 			Partitura.GetPage(0).PaintPage(panel, new Point(1000, 2000),
 				new AbcLabelProvider(Partitura));
 
-			Mocks = new MockRepository();
-			fileSystem = Mocks.PartialMock<FakeFileSystem>();
-			mainWindow = Mocks.DynamicMock<IMainWindow>();
+			fileSystem = new Mock<FakeFileSystem> {CallBase = true};
+			mainWindow = new Mock<IMainWindow>();
 		}
-
 
 		protected void Update(double oldX, double oldY, double newX, double newY)
 		{
-			new UpdateBoxCommand(new Point(oldX, oldY), new Point(newX, newY), this).Execute();
+			mainWindow.Setup(mw => mw.CurrentMousePosition).Returns(new Point(newX, newY));
+			mainWindow.Setup(w => w.PreviousMousePosition).Returns(new Point(oldX, oldY));
+
+			new UpdateBoxCommand(this).Execute();
 		}
 
 		protected void Update(Shape type, double oldX, double oldY, double newX, double newY)
 		{
 			AssertShapeAt(oldX, oldY, type);
-			new UpdateBoxCommand(new Point(oldX, oldY), new Point(newX, newY), this).Execute();
+
+			mainWindow.Setup(w => w.CurrentMousePosition).Returns(new Point(newX, newY));
+			mainWindow.Setup(w => w.PreviousMousePosition).Returns(new Point(oldX, oldY));
+
+			new UpdateBoxCommand(this).Execute();
 		}
 
 		protected void AssertPanelContains(Rect r)
@@ -67,7 +72,10 @@ namespace PartituraMagica
 
 		protected bool CanUpdate(double oldX, double oldY, double newX, double newY)
 		{
-			return new UpdateBoxCommand(new Point(oldX, oldY), new Point(newX, newY), this).CanExecute();
+			mainWindow.Setup(w => w.CurrentMousePosition).Returns(new Point(newX, newY));
+			mainWindow.Setup(w => w.PreviousMousePosition).Returns(new Point(oldX, oldY));
+
+			return new UpdateBoxCommand(this).CanExecute();
 		}
 
 		protected bool CanUpdate(Shape type,
@@ -75,6 +83,36 @@ namespace PartituraMagica
 		{
 			AssertShapeAt(oldX, oldY, type);
 			return CanUpdate(oldX, oldY, newX, newY);
+		}
+
+		protected AddBoxCommand CreateAddBoxCommand(Point pos)
+		{
+			mainWindow.Setup(w => w.CurrentMousePosition).Returns(pos);
+
+			return new AddBoxCommand(this);
+		}
+
+		protected UpdateBoxCommand CreateUpdateBoxCommand(Point oldPos, Point newPos)
+		{
+			mainWindow.Setup(w => w.CurrentMousePosition).Returns(newPos);
+			mainWindow.Setup(w => w.PreviousMousePosition).Returns(oldPos);
+
+			return new UpdateBoxCommand(this);
+		}
+
+		protected SplitBoxCommand CreateSplitBoxCommand(Point pos)
+		{
+			mainWindow.Setup(w => w.CurrentMousePosition).Returns(pos);
+
+			return new SplitBoxCommand(this);
+		}
+
+
+		protected SelectItemCommand CreateSelectItemCommand(Point pos)
+		{
+			mainWindow.Setup(w => w.CurrentMousePosition).Returns(pos);
+
+			return new SelectItemCommand(this);
 		}
 
 		protected void AssertShapeAt(double x, double y, Shape type)
@@ -86,20 +124,22 @@ namespace PartituraMagica
 
 		public IDrawingPanel Panel => panel;
 
-		public IActivePartitura Active => ActivePartitura;
+		public virtual IActivePartitura Active => activePartitura.Object;
 
-		public IFileSystem FileSystem => fileSystem;
+		public IFileSystem FileSystem => fileSystem.Object;
 
 
-		public IMainWindow MainWindow => mainWindow;
+		public IMainWindow MainWindow => mainWindow.Object;
 
 
 		public void DisposePlayerView()
 		{
-			/* Problem: NotImplementedException blocked unit tests during execution of PartituraTests.TestNewPartituraAndSave().
-			 * Solution: do nothing in this method? [jed 20141226]
-			 */
-			//throw new NotImplementedException();
+			//do nothing
+		}
+
+		public Shape GetShapeAt(Point currentPos)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

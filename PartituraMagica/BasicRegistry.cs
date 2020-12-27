@@ -27,14 +27,18 @@ namespace PartituraMagica
 
 		public BasicRegistry()
 		{
+			For<MainWindow>().Use<MainWindow>().Singleton();
+			For<ICommandParameters>().Use<EditingController>().Singleton();
+			For<IDrawingPanel>().Use<DrawingPanel>().Singleton();
 			Scan(_ =>
 			{
+				_.LookForRegistries();
 				// Declare which assemblies to scan
 				_.Assembly("PartituraMagica");
 				_.Assembly("ClassLibrary1");
 
 				// Filter types
-				_.Include(type => type.Name.EndsWith("Command"));
+				_.Include(type => type.Name.EndsWith("Command") || type.Name.EndsWith("ServiceRegistry"));
 				//_.Include(type => type.Name == "NewPartituraCommand" || type.Name == "AddBoxCommand");
 				//_.Exclude(type => type.Name == "AddBoxCommand");
 				//		"A") || type.FullName.StartsWith("System.Windows") || type.FullName == "PartituraMagica.Rect");
@@ -46,6 +50,8 @@ namespace PartituraMagica
 				_.AddAllTypesOf<ICommand>().NameBy(x => x.Name.Replace("Command", ""));
 				//_.WithDefaultConventions(ServiceLifetime.Singleton);
 			});
+			//ForConcreteType<OpenCommand>().Configure
+			//	.SelectConstructor(() => new OpenCommand(null));
 		}
 	}
 }

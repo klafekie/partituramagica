@@ -36,7 +36,7 @@ namespace PartituraMagica.PartituraCommands
 					Debug.Assert(sourceFile != destFile,
 						"cause the index of destFile is always higher than the index of all existing image files");
 					P.FileSystem.Copy(sourceFile, destFile);
-					new ShowPageCommand(index, P).TryExecute();
+					new ShowLastPageCommand(P).TryExecute();
 					if (P.Active.CurrentPageIndex == index)
 						//show was successfull
 						new AutoFillCommand(P).TryExecute();

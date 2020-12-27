@@ -74,7 +74,7 @@
 //        public void BoxesAreSortedTest() 
 //        {		
 
-//            this.mocks.ReplayAll();
+//            this.
 
 //            //boxes are not added in ascending x order
 //            this.partitura.AddBox(0, r2, this.panel);
@@ -96,7 +96,7 @@
 //        [Test]
 //        public void MultiplePagesTest() 
 //        {			
-//            this.mocks.ReplayAll();
+//            this.
 
 //            //boxes are added on different pages without order
 //            this.partitura.AddBox(0, r2, this.panel);
@@ -127,7 +127,7 @@
 //        [Test]
 //        public void EachBoxIsAPart() 
 //        {
-//            mocks.ReplayAll();
+//            
 
 //            ILabelProvider labeller = new ABCLabelProvider(this.partitura);
 

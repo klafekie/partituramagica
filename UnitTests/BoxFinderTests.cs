@@ -2,10 +2,10 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Moq;
 using NUnit.Framework;
 using PartituraMagica.Domain;
 using PartituraMagica.PageEditing;
-using Rhino.Mocks;
 
 #endregion
 
@@ -34,7 +34,7 @@ namespace PartituraMagica
 		[SetUp]
 		public void Setup()
 		{
-			_mocks = new MockRepository();
+			_mocks = new MockRepository(MockBehavior.Default);
 			_image = new FakeImage();
 		}
 
@@ -117,7 +117,6 @@ namespace PartituraMagica
 		public void Black()
 		{
 			_image.Brightness = (x, y) => 0F;
-			_mocks.ReplayAll();
 
 			BoxFinder f = new BoxFinder(_image);
 			IEnumerable<Rect> rects = f.Execute();
@@ -129,7 +128,6 @@ namespace PartituraMagica
 		public void Blanc()
 		{
 			_image.Brightness = (x, y) => 1F;
-			_mocks.ReplayAll();
 
 			BoxFinder f = new BoxFinder(_image);
 			IEnumerable<Rect> rects = f.Execute();
@@ -158,7 +156,6 @@ namespace PartituraMagica
 		public void Chess()
 		{
 			_image.Brightness = (x, y) => (x % 2 == 0) ^ (y % 2 == 0) ? 1F : 0F;
-			_mocks.ReplayAll();
 
 			BoxFinder f = new BoxFinder(_image);
 			IEnumerable<Rect> rects = f.Execute();
@@ -220,7 +217,6 @@ namespace PartituraMagica
 		public void OneSystem()
 		{
 			_image.Brightness = OneSystemImage;
-			_mocks.ReplayAll();
 
 			BoxFinder f = new BoxFinder(_image);
 			List<Rect> lines = f.DetectSystems().ToList();
@@ -236,7 +232,6 @@ namespace PartituraMagica
 		public void ThreeSystems()
 		{
 			_image.Brightness = ThreeSystemsImage;
-			_mocks.ReplayAll();
 
 			BoxFinder f = new BoxFinder(_image);
 			List<Rect> lines = f.DetectSystems().ToList();

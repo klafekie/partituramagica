@@ -18,7 +18,7 @@ namespace PartituraMagica.PartituraCommands
 		{
 			Debug.Assert(CanExecute());
 			DialogResult c = DialogResult.No;
-			ICommand cmd = new SaveCommand(false, P);
+			ICommand cmd = new SaveCommand(P);
 			if (cmd.CanExecute())
 			{
 				c = P.FileSystem.AskToSave();

@@ -2,10 +2,10 @@
 
 using System;
 using System.Collections.Generic;
+using Moq;
 using NUnit.Framework;
 using PartituraMagica.Domain;
 using PartituraMagica.Playing;
-using Rhino.Mocks;
 
 #endregion
 
@@ -19,8 +19,8 @@ namespace PartituraMagica
 		[SetUp]
 		public void Setup()
 		{
-			_mocks = new MockRepository();
-			_view = _mocks.DynamicMock<IPlayerView>();
+			_mocks = new MockRepository(MockBehavior.Default);
+			_view = new Mock<IPlayerView>();
 		}
 
 		[TearDown]
@@ -30,7 +30,7 @@ namespace PartituraMagica
 		}
 
 		private MockRepository _mocks;
-		private IPlayerView _view;
+		private Mock<IPlayerView> _view;
 		private static readonly List<Part> ThreeParts;
 		private static readonly string Abccbba = "ABCCBBA";
 		private static readonly double LA;
@@ -78,11 +78,10 @@ namespace PartituraMagica
 		[Test]
 		public void EmptyPartsTest()
 		{
-			_mocks.ReplayAll();
 			try
 			{
 				PartNavigator n = new PartNavigator(Abccbba, new List<Part>(), new PlayerPositionHolder());
-				n.PlayerOpened(_view);
+				n.PlayerOpened(_view.Object);
 				Assert.Fail("Expected Exception");
 			}
 			catch (Exception e)
@@ -96,7 +95,7 @@ namespace PartituraMagica
 		public void NextPartTest()
 		{
 			//view.AppendLine(null);
-			LastCall.IgnoreArguments().Repeat.Times(3 + 4 + 2 * 1 + 2 * 4 + 3);
+			//TODO LastCall.IgnoreArguments().Repeat.Times(3 + 4 + 2 * 1 + 2 * 4 + 3);
 
 
 			//we "scroll" to the middle of each part before jumping to the next
@@ -148,7 +147,7 @@ namespace PartituraMagica
 			//view.StartScrolling(0);//A
 
 
-			//mocks.ReplayAll();
+			//
 			//Navigator n = new Navigator(ABCCBBA, threeParts, this.view);
 			//n.Start();
 			//n.GoToNextPart();
@@ -177,11 +176,10 @@ namespace PartituraMagica
 		public void OnePartPatternTest()
 		{
 			//view.AppendLine(null);
-			LastCall.IgnoreArguments().Repeat.Times(3);
-			_mocks.ReplayAll();
+			//TODO LastCall.IgnoreArguments().Repeat.Times(3);
 
 			PartNavigator n = new PartNavigator("A", ThreeParts, new PlayerPositionHolder());
-			n.PlayerOpened(_view);
+			n.PlayerOpened(_view.Object);
 		}
 	}
 }

@@ -94,6 +94,7 @@
     <Compile Include="Domain\PlayerMemento.cs" />
     <Compile Include="Domain\PlayerPositionHolder.cs" />
     <Compile Include="Domain\Rect.cs" />
+    <Compile Include="LibServiceRegistry.cs" />
     <Compile Include="PageEditing\ABCLabelProvider.cs" />
     <Compile Include="PageEditing\AddBoxCommand.cs" />
     <Compile Include="PageEditing\AutoFillCommand.cs" />
@@ -110,11 +111,19 @@
     <Compile Include="PartituraCommands\ClosePartituraCommand.cs" />
     <Compile Include="PartituraCommands\NewPartituraCommand.cs" />
     <Compile Include="PartituraCommands\OpenCommand.cs" />
+    <Compile Include="PartituraCommands\SaveAsCommand.cs" />
     <Compile Include="PartituraCommands\SaveCommand.cs" />
+    <Compile Include="PartituraCommands\ShowFirstPageCommand.cs" />
+    <Compile Include="PartituraCommands\ShowLastPageCommand.cs" />
     <Compile Include="PartituraCommands\ShowPageCommand.cs" />
+    <Compile Include="PartituraCommands\ShowNextPageCommand.cs" />
+    <Compile Include="PartituraCommands\ShowPageCommandBase.cs" />
+    <Compile Include="PartituraCommands\ShowPreviousPageCommand.cs" />
     <Compile Include="Playing\IPartNavigator.cs" />
+    <Compile Include="Playing\IPlayerViewFactory.cs" />
     <Compile Include="Playing\PartNavigator.cs" />
     <Compile Include="Playing\PartPositionProvider.cs" />
+    <Compile Include="Playing\PlayerViewFactory.cs" />
     <Compile Include="Playing\ShowPlayerCommand.cs" />
     <Compile Include="Playing\SpeedManager.cs" />
     <Compile Include="Playing\ZoomManager.cs" />

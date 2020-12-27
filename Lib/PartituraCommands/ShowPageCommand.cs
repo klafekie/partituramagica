@@ -1,16 +1,22 @@
 ﻿#region usings
 
 using System.Diagnostics;
-using System.Windows;
+using Lamar;
 using PartituraMagica.Domain;
 
 #endregion
 
 namespace PartituraMagica.PartituraCommands
 {
-	public class ShowPageCommand : PartituraCommandBase, ICommand
+	public class ShowPageCommand : ShowPageCommandBase, ICommand
 	{
 		private readonly int _index;
+
+		[DefaultConstructor]
+		public ShowPageCommand(ICommandParameters p)
+			: base(p)
+		{
+		}
 
 		public ShowPageCommand(int index, ICommandParameters p)
 			: base(p)
@@ -22,17 +28,14 @@ namespace PartituraMagica.PartituraCommands
 		{
 			Debug.Assert(CanExecute());
 			P.Active.CurrentPageIndex = _index;
-			P.Panel.Clear();
-			Point dimensions = P.Panel.DrawImage(P.Active.CurrentImagePath);
-
-			P.Active.Partitura.Paint(_index, P.Panel, dimensions);
-			P.MainWindow.ShowPartituraInfo(P.Active);
+			ExecuteBase();
 		}
 
 		public bool CanExecute()
 		{
-			return P.Active != null && P.Active.IsOpen &&
-			       _index >= 0 && _index < P.Active.GetPageCount();
+			return CanExecuteBase() &&
+			       (_index >= 0 ||
+			        _index < P.Active.GetPageCount());
 		}
 	}
 }

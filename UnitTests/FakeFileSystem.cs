@@ -28,7 +28,7 @@ namespace PartituraMagica
 			return null;
 		}
 
-		public virtual string ShowSavePartituraDialog(bool dummy)
+		public virtual string ShowSavePartituraDialog()
 		{
 			return null;
 		}
@@ -46,17 +46,17 @@ namespace PartituraMagica
 
 		public virtual Stream OpenRead(string path)
 		{
-			throw new NotImplementedException();
+			return null;
 		}
 
 		public virtual Stream OpenWrite(string path)
 		{
-			throw new NotImplementedException();
+			return null;
 		}
 
 		public bool FileExists(string path)
 		{
-			throw new NotImplementedException();
+			return false;
 		}
 
 		public ICollection<string> GetNames(string path)
