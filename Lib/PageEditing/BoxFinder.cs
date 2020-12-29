@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using PartituraMagica.Domain;
 
@@ -80,24 +79,22 @@ namespace PartituraMagica.PageEditing
 		}
 
 		/** 
-         * tries to locate all note lines on the current image
-         * and returns a list of rectangles that enclose each line
-         * result is in screen coordinates
-         */
-		public IEnumerable<Rect> Execute()
+     * tries to locate all note lines on the current image
+     * and returns a list of rectangles that enclose each line
+     * result is in screen coordinates
+     */
+		public List<Rect> Execute()
 		{
 			List<Rect> systems = DetectSystems().ToList();
 			IEnumerable<Rect> boxes = GetBoxes(systems);
 
-			//@todo p2 where can we get the 96 dpi from?
-			//maybe from the paint graphics object?
 			double xFactor = 96D / _image.DpiX;
 			double yFactor = 96D / _image.DpiY;
 
-			return boxes.Select(s => s.Scale(xFactor, yFactor));
+			return boxes.Select(s => s.Scale(xFactor, yFactor)).ToList();
 		}
 
-		public IEnumerable<Rect> GetBoxes(IEnumerable<Rect> systems)
+		public List<Rect> GetBoxes(IEnumerable<Rect> systems)
 		{
 			List<Rect> boxes = new List<Rect>();
 			int systemsCount = systems.Count();
@@ -140,12 +137,10 @@ namespace PartituraMagica.PageEditing
 		{
 			IEnumerable<LinePattern> lineCandidates = GetLineCandidates();
 			IEnumerable<LinePattern> skeletons = SkeletonizeLines(lineCandidates);
-			List<IEnumerable<Rect>> groupedLines = GetGroupedLines(skeletons).ToList();
-			IEnumerable<IEnumerable<Rect>> plausibleGroups = GetPlausibleGroups(groupedLines);
+			var groupedLines = GetGroupedLines(skeletons).ToList();
+			var plausibleGroups = GetPlausibleGroups(groupedLines).ToList();
 
-			IEnumerable<IEnumerable<Rect>> withEndings =
-				from g in plausibleGroups
-				select FindLineEndings(g);
+			var withEndings = plausibleGroups.Select(FindLineEndings).ToList();
 
 			return from system in withEndings
 				let first = system.First()
@@ -153,9 +148,9 @@ namespace PartituraMagica.PageEditing
 				select first.AddBelow(last.Bottom - first.Bottom);
 		}
 
-		private IEnumerable<IEnumerable<Rect>> GetPlausibleGroups(List<IEnumerable<Rect>> groupedLines)
+		private List<List<Rect>> GetPlausibleGroups(List<List<Rect>> groupedLines)
 		{
-			List<IEnumerable<Rect>> groupsWithRightDistance = new List<IEnumerable<Rect>>();
+			List<List<Rect>> groupsWithRightDistance = new List<List<Rect>>();
 			for (int i = 0; i < groupedLines.Count; i++)
 			{
 				Rect lastLineOfCurrent = groupedLines[i].Last();
@@ -183,17 +178,15 @@ namespace PartituraMagica.PageEditing
 				}
 			}
 
-			//it can easily happen that there are more lines found when
-			//@todo p3 for example there is a "Achtelbalken" right above a system
-			//could be improved by a check inside the FindLineEndings method
-			IEnumerable<IEnumerable<Rect>> groupsWithRightCount = from g in groupsWithRightDistance
-				where g.Count() >= 3 && g.Count() <= 8
-				select g;
+			var groupsWithRightCount = groupsWithRightDistance
+				.Where(g => g.Count >= 3 && g.Count <= 8)
+				.ToList();
+
 
 			return groupsWithRightCount;
 		}
 
-		private IEnumerable<Rect> FindLineEndings(IEnumerable<Rect> system)
+		private IEnumerable<Rect> FindLineEndings(List<Rect> system)
 		{
 			//move a smaller LinePattern horizontally until its content is "nearly white"
 			//if no edge was found, we use the full image width
@@ -219,7 +212,7 @@ namespace PartituraMagica.PageEditing
 				select new Rect(left, r.Y, right - left, r.Height);
 		}
 
-		private bool FindEndingAt(IEnumerable<Rect> system, int x, ref int rotationCorrection)
+		private bool FindEndingAt(List<Rect> system, int x, ref int rotationCorrection)
 		{
 			double mean = GetSystemBrightnessAt(system, x, rotationCorrection);
 			double meanAbove = GetSystemBrightnessAt(system, x, rotationCorrection - 1);
@@ -281,9 +274,9 @@ namespace PartituraMagica.PageEditing
 		}
 
 		//put lines that are near to each other into a group
-		private IEnumerable<IEnumerable<Rect>> GetGroupedLines(IEnumerable<LinePattern> skeletons)
+		private List<List<Rect>> GetGroupedLines(IEnumerable<LinePattern> skeletons)
 		{
-			List<IEnumerable<Rect>> groupedLines = new List<IEnumerable<Rect>>();
+			var groupedLines = new List<List<Rect>>();
 			LinePattern lastLine = null;
 			List<Rect> currentPack = new List<Rect>();
 			foreach (LinePattern currentLine in skeletons)
@@ -340,7 +333,7 @@ namespace PartituraMagica.PageEditing
 			for (int j = r.YInt; j < r.Bottom; j++)
 				brightness += _image.Brightness(i, j);
 			double mean = brightness / (r.Width * r.Height);
-			Trace.Assert(mean >= 0F && mean <= 1F);
+			//Trace.Assert(mean >= 0F && mean <= 1F);
 			return mean;
 		}
 	}

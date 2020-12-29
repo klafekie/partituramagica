@@ -17,13 +17,11 @@ namespace PartituraMagica.Domain
 
 		bool IsEnabled { get; set; }
 
-		Point CurrentMousePosition { get; set; }
-		Point PreviousMousePosition { get; set; }
-		bool IsLeftMouseButtonPressed { get; set; }
+		Point? CurrentMousePosition { get; set; }
+		Point? PreviousMousePosition { get; set; }
 
 		void ShowPartituraInfo(IActivePartitura active);
 		void ClearPartituraInfo();
-
 
 		void MessageBox(string text);
 		void CloseAndExit();

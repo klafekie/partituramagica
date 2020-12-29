@@ -9,9 +9,14 @@ namespace PartituraMagica.PartituraCommands
 {
 	public class NewPartituraCommand : PartituraCommandBase, ICommand
 	{
-		public NewPartituraCommand(ICommandParameters p)
+		private readonly ICommandFactory _commandFactory;
+		private readonly IMainWindow _mainWindow;
+
+		public NewPartituraCommand(ICommandParameters p, ICommandFactory commandFactory, IMainWindow mainWindow)
 			: base(p)
 		{
+			_commandFactory = commandFactory;
+			_mainWindow = mainWindow;
 		}
 
 		public void Execute()
@@ -21,7 +26,7 @@ namespace PartituraMagica.PartituraCommands
 
 			if (path != null)
 			{
-				new ClosePartituraCommand(P).TryExecute();
+				_commandFactory.Create<ClosePartituraCommand>().TryExecute();
 
 				if (!P.Active.IsOpen)
 				{
@@ -30,11 +35,11 @@ namespace PartituraMagica.PartituraCommands
 					Partitura partitura = new Partitura();
 					P.Active.Open(path, partitura);
 
-					new AddPagesCommand(P).Execute();
+					_commandFactory.Create<AddPagesCommand>().Execute();
 				}
 			}
 
-			P.MainWindow.ShowPartituraInfo(P.Active);
+			_mainWindow.ShowPartituraInfo(P.Active);
 		}
 
 

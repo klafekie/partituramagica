@@ -19,6 +19,74 @@ namespace PartituraMagica
      */
 	internal class ClippingD3D : IDisposable
 	{
+		//caution: do not change the order of struct members
+		[StructLayout(LayoutKind.Sequential)]
+		private struct PositionedColoredTextured
+		{
+			public float X;
+			public readonly float Y;
+			public readonly float Z;
+			public int Color;
+			public float Tu;
+			public float Tv;
+			public const VertexFormat Format = VertexFormat.Texture1 | VertexFormat.Position | VertexFormat.Diffuse;
+		}
+
+		private class Cache
+		{
+			private static readonly Dictionary<string, Cache> LoadedPages = new Dictionary<string, Cache>();
+
+			public Texture Texture { get; }
+
+			private Cache(Texture t)
+			{
+				Texture = t;
+			}
+
+			public static void Cleanup()
+			{
+				foreach (Cache b in LoadedPages.Values) b.Texture.Dispose();
+				LoadedPages.Clear();
+			}
+
+			public static Cache Get(IGreyImage image, Device dev)
+			{
+				if (!LoadedPages.ContainsKey(image.Path))
+				{
+					//@todo p2 optimize scaling so that it doesn't flicker for low zoom factors
+					//for this we can use mip mapping and find the optimal filter for the texture
+					//maybe multisampling could help??
+
+					//we use a fixed size of 2048x2048 cause some graphic adapters only allow
+					//square textures with a size that is a power of two.
+
+					//@todo p2 if adapter only supports square textures
+					//can be checked with caps.Texturecaps.SquareOnly
+					//if only powers of two are supported:
+					//can be checked with caps.Texturecaps.SupportsPowerTwo
+
+					Trace.TraceInformation("Cache.Get() loading texture from file: " + image.Path);
+					int width = 0; // 2048; // 0 means 'use the resolution from file'
+					int height = 0; // 2048;
+					int levelCount = 1;
+					Filter filter = Filter.Point; // options a.o.: Triangle / Linear / Point / None;
+					Texture texture = Texture.FromFile(dev, image.Path,
+						width, height,
+						levelCount, //mip levels
+						Usage.None, //
+						Format.Unknown, //take from file
+						Pool.Default, //we don't need to lock (change) the content
+						filter, //how to reduce the source image
+						Filter.None, //how to handle transition from one mip map to the smaller/bigger one
+						0x00000000);
+					LoadedPages[image.Path] = new Cache(texture);
+					Trace.TraceInformation("success");
+				}
+
+				return LoadedPages[image.Path];
+			}
+		}
+
 		private readonly Rect _coords;
 
 		private readonly Color _foregroundColor;
@@ -32,14 +100,6 @@ namespace PartituraMagica
 		/// </summary>
 		private Mesh _mesh; // [renamed from 'box' jed 20150118]
 
-		public ClippingD3D(IGreyImage image, Rect coords, bool invertColors, Color foregroundColor)
-		{
-			_image = image;
-			_invertColors = invertColors;
-			_foregroundColor = foregroundColor;
-			_coords = new Rect(coords);
-		}
-
 		public float Width => (float) _coords.Width;
 
 		public float Height => (float) _coords.Height;
@@ -48,9 +108,17 @@ namespace PartituraMagica
 
 		public double Right => XPos + Width;
 
+		public ClippingD3D(IGreyImage image, Rect coords, bool invertColors, Color foregroundColor)
+		{
+			_image = image;
+			_invertColors = invertColors;
+			_foregroundColor = foregroundColor;
+			_coords = new Rect(coords);
+		}
+
 		public void Dispose()
 		{
-			if (_mesh != null) _mesh.Dispose();
+			_mesh?.Dispose();
 		}
 
 		public void Init(Device dev, float offset)
@@ -134,74 +202,6 @@ namespace PartituraMagica
 		public static void Cleanup()
 		{
 			Cache.Cleanup();
-		}
-
-		//caution: do not change the order of struct members
-		[StructLayout(LayoutKind.Sequential)]
-		private struct PositionedColoredTextured
-		{
-			public float X;
-			public readonly float Y;
-			public readonly float Z;
-			public int Color;
-			public float Tu;
-			public float Tv;
-			public const VertexFormat Format = VertexFormat.Texture1 | VertexFormat.Position | VertexFormat.Diffuse;
-		}
-
-		private class Cache
-		{
-			private static readonly Dictionary<string, Cache> LoadedPages = new Dictionary<string, Cache>();
-
-			private Cache(Texture t)
-			{
-				Texture = t;
-			}
-
-			public Texture Texture { get; }
-
-			public static void Cleanup()
-			{
-				foreach (Cache b in LoadedPages.Values) b.Texture.Dispose();
-				LoadedPages.Clear();
-			}
-
-			public static Cache Get(IGreyImage image, Device dev)
-			{
-				if (!LoadedPages.ContainsKey(image.Path))
-				{
-					//@todo p2 optimize scaling so that it doesn't flicker for low zoom factors
-					//for this we can use mip mapping and find the optimal filter for the texture
-					//maybe multisampling could help??
-
-					//we use a fixed size of 2048x2048 cause some graphic adapters only allow
-					//square textures with a size that is a power of two.
-
-					//@todo p2 if adapter only supports square textures
-					//can be checked with caps.Texturecaps.SquareOnly
-					//if only powers of two are supported:
-					//can be checked with caps.Texturecaps.SupportsPowerTwo
-
-					Trace.TraceInformation("Cache.Get() loading texture from file: " + image.Path);
-					int width = 0; // 2048; // 0 means 'use the resolution from file'
-					int height = 0; // 2048;
-					int levelCount = 1;
-					Filter filter = Filter.Point; // options a.o.: Triangle / Linear / Point / None;
-					Texture texture = Texture.FromFile(dev, image.Path,
-						width, height,
-						levelCount, //mip levels
-						Usage.None, //
-						Format.Unknown, //take from file
-						Pool.Default, //we don't need to lock (change) the content
-						filter, //how to reduce the source image
-						Filter.None, //how to handle transition from one mip map to the smaller/bigger one
-						0x00000000);
-					LoadedPages[image.Path] = new Cache(texture);
-					Trace.TraceInformation("success");
-				}
-
-				return LoadedPages[image.Path];
-			}
 		}
 	}
 }

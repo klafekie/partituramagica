@@ -5,7 +5,6 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
 using PartituraMagica.Domain;
-using PartituraMagica.PartituraCommands;
 using PartituraMagica.Player;
 
 #endregion
@@ -14,7 +13,6 @@ namespace PartituraMagica
 {
 	public class EditingController : ICommandParameters, IDisposable
 	{
-		private readonly MainWindow _mainWindow;
 		private PlayerViewD3D _playerView;
 
 		public Page CurrentPage
@@ -33,26 +31,17 @@ namespace PartituraMagica
 
 		private string PlayerRuntimePath => Active.Path + ".runtime";
 
-		public EditingController(MainWindow mainWindow, IDrawingPanel panel)
+		public EditingController()
 		{
-			Panel = panel;
 			FileSystem = new FileSystem();
 			Active = new ActivePartitura(FileSystem);
-			_mainWindow = mainWindow;
-
-			string[] args = Environment.GetCommandLineArgs();
-			if (args.Length == 2)
-				//first arg is the exe name
-				new OpenCommand(this) {Path = args[1]}.Execute();
 		}
 
 		public IActivePartitura Active { get; }
 
-		public IDrawingPanel Panel { get; }
+		public IDrawingPanel Panel { get; set; }
 
 		public IFileSystem FileSystem { get; }
-
-		public IMainWindow MainWindow => _mainWindow;
 
 		public void DisposePlayerView()
 		{
@@ -70,7 +59,7 @@ namespace PartituraMagica
 
 		public void Dispose()
 		{
-			DisposePlayerView();
+			//DisposePlayerView();
 		}
 
 		private PlayerMemento LoadPlayer()

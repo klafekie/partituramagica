@@ -27,7 +27,7 @@ namespace PartituraMagica
 		[TearDown]
 		public virtual void TearDown()
 		{
-			//TODO verify??
+			//TODO p2 verify mocks? use mockrepository?
 		}
 
 		protected int CurrentPageIndex;

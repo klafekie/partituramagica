@@ -76,7 +76,9 @@
     <Compile Include="Domain\Box.cs" />
     <Compile Include="Domain\Clipping.cs" />
     <Compile Include="Domain\CommandBase.cs" />
+    <Compile Include="Domain\CommandFactory.cs" />
     <Compile Include="Domain\IActivePartitura.cs" />
+    <Compile Include="Domain\ICommandFactory.cs" />
     <Compile Include="Domain\ICommand.cs" />
     <Compile Include="Domain\ICommandParameters.cs" />
     <Compile Include="Domain\IDrawingPanel.cs" />
@@ -102,7 +104,7 @@
     <Compile Include="PageEditing\UnLabelPartCommand.cs" />
     <Compile Include="PageEditing\LabelPartCommand.cs" />
     <Compile Include="PageEditing\RemoveBoxCommand.cs" />
-    <Compile Include="PageEditing\SelectItemCommand.cs" />
+    <Compile Include="PageEditing\SelectBoxCommand.cs" />
     <Compile Include="PageEditing\SplitBoxCommand.cs" />
     <Compile Include="PageEditing\UpdateBoxCommand.cs" />
     <Compile Include="PageEditing\UpdatePartPatternCommand.cs" />

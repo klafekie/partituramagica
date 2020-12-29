@@ -95,7 +95,8 @@ namespace PartituraMagica
 		public void NextPartTest()
 		{
 			//view.AppendLine(null);
-			//TODO LastCall.IgnoreArguments().Repeat.Times(3 + 4 + 2 * 1 + 2 * 4 + 3);
+			//TODO p2 Navigator tests
+			//LastCall.IgnoreArguments().Repeat.Times(3 + 4 + 2 * 1 + 2 * 4 + 3);
 
 
 			//we "scroll" to the middle of each part before jumping to the next
@@ -176,7 +177,7 @@ namespace PartituraMagica
 		public void OnePartPatternTest()
 		{
 			//view.AppendLine(null);
-			//TODO LastCall.IgnoreArguments().Repeat.Times(3);
+			//LastCall.IgnoreArguments().Repeat.Times(3);
 
 			PartNavigator n = new PartNavigator("A", ThreeParts, new PlayerPositionHolder());
 			n.PlayerOpened(_view.Object);

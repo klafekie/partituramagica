@@ -9,22 +9,28 @@ namespace PartituraMagica.PageEditing
 {
 	public class UpdateBoxCommand : PartituraCommandBase, ICommand
 	{
-		public UpdateBoxCommand(ICommandParameters p)
+		private readonly IMainWindow _mainWindow;
+
+		public UpdateBoxCommand(ICommandParameters p, IMainWindow mainWindow)
 			: base(p)
 		{
+			_mainWindow = mainWindow;
 		}
 
 		public bool CanExecute()
 		{
 			Page current = P.Active.CurrentPage;
-			if (current == null || !current.IsBoxSelected()) return false;
-			return current.CanUpdateSelectedBox(P.MainWindow.PreviousMousePosition, P.MainWindow.CurrentMousePosition);
+			if (current == null || !current.IsBoxSelected() || _mainWindow.CurrentMousePosition == null ||
+			    _mainWindow.PreviousMousePosition == null) return false;
+			return current.CanUpdateSelectedBox(_mainWindow.PreviousMousePosition.Value,
+				_mainWindow.CurrentMousePosition.Value);
 		}
 
 		public void Execute()
 		{
 			Debug.Assert(CanExecute());
-			P.Active.CurrentPage.UpdateSelectedBox(P.MainWindow.PreviousMousePosition, P.MainWindow.CurrentMousePosition,
+			P.Active.CurrentPage.UpdateSelectedBox(_mainWindow.PreviousMousePosition.Value,
+				_mainWindow.CurrentMousePosition.Value,
 				P.Panel);
 		}
 	}

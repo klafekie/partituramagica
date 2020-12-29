@@ -1,8 +1,7 @@
 ﻿#region usings
 
-using BaselineTypeDiscovery;
 using Lamar;
-using Lamar.Scanning.Conventions;
+using Microsoft.Extensions.DependencyInjection;
 using PartituraMagica.Domain;
 
 #endregion
@@ -11,47 +10,23 @@ namespace PartituraMagica
 {
 	public class BasicRegistry : ServiceRegistry
 	{
-		public class CommandRegistrationConvention : IRegistrationConvention
-		{
-			public void ScanTypes(TypeSet types, ServiceRegistry services)
-			{
-				//foreach (var type in types.FindTypes(TypeClassification.Concretes))
-				//{
-				//	foreach (var itf in type.FindInterfaces((t, criteria) => t.Name == "ICommand", null))
-				//	{
-				//		services.AddTransient(itf, type,).   .Named(type.Name.Replace("Command", ""));
-				//	}
-				//}
-			}
-		}
-
 		public BasicRegistry()
 		{
 			For<MainWindow>().Use<MainWindow>().Singleton();
+			For<IMainWindow>().Use(s => s.GetInstance<MainWindow>());
 			For<ICommandParameters>().Use<EditingController>().Singleton();
-			For<IDrawingPanel>().Use<DrawingPanel>().Singleton();
 			Scan(_ =>
 			{
 				_.LookForRegistries();
-				// Declare which assemblies to scan
+
 				_.Assembly("PartituraMagica");
-				_.Assembly("ClassLibrary1");
+				_.Assembly("ClassLibrary1"); //Lib
 
-				// Filter types
+
 				_.Include(type => type.Name.EndsWith("Command") || type.Name.EndsWith("ServiceRegistry"));
-				//_.Include(type => type.Name == "NewPartituraCommand" || type.Name == "AddBoxCommand");
-				//_.Exclude(type => type.Name == "AddBoxCommand");
-				//		"A") || type.FullName.StartsWith("System.Windows") || type.FullName == "PartituraMagica.Rect");
-
-				// A custom registration convention
-				//_.Convention<CommandRegistrationConvention>();
-
-				// Built in registration conventions
 				_.AddAllTypesOf<ICommand>().NameBy(x => x.Name.Replace("Command", ""));
-				//_.WithDefaultConventions(ServiceLifetime.Singleton);
+				_.WithDefaultConventions(ServiceLifetime.Singleton);
 			});
-			//ForConcreteType<OpenCommand>().Configure
-			//	.SelectConstructor(() => new OpenCommand(null));
 		}
 	}
 }

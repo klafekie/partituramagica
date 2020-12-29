@@ -12,11 +12,13 @@ namespace PartituraMagica.Playing
 	public class ShowPlayerCommand : PartituraCommandBase, ICommand
 	{
 		private readonly IPlayerViewFactory _factory;
+		private readonly IMainWindow _mainWindow;
 
-		public ShowPlayerCommand(IPlayerViewFactory factory, ICommandParameters p)
+		public ShowPlayerCommand(IPlayerViewFactory factory, ICommandParameters p, IMainWindow mainWindow)
 			: base(p)
 		{
 			_factory = factory;
+			_mainWindow = mainWindow;
 		}
 
 		public void Execute()
@@ -32,20 +34,20 @@ namespace PartituraMagica.Playing
 				IPlayerView view = _factory.CreateView(positionHolder, navigator);
 
 
-				P.MainWindow.IsEnabled = false;
+				_mainWindow.IsEnabled = false;
 				navigator.PlayerOpened(view);
-				P.MainWindow.IsEnabled = true;
+				_mainWindow.IsEnabled = true;
 
-				bool test = P.MainWindow.Activate();
+				bool test = _mainWindow.Activate();
 				//Debug.WriteLine("Activate Success = " + test);
 			}
 			catch (Exception e)
 			{
 				Trace.TraceError("Exception when showing the player:");
 				Trace.TraceError(e.ToString());
-				P.MainWindow.MessageBox("A problem with the initialization of DirectX has occurred:\n\n" +
-				                        e.Message +
-				                        "\n\nPlease see ReleaseNotes.doc for troubleshooting hints and restart the application.");
+				_mainWindow.MessageBox("A problem with the initialization of DirectX has occurred:\n\n" +
+				                       e.Message +
+				                       "\n\nPlease see ReleaseNotes.doc for troubleshooting hints and restart the application.");
 			}
 		}
 

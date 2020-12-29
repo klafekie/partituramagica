@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows;
+using Lamar;
 using Moq;
 using NUnit.Framework;
 using PartituraMagica.Domain;
@@ -15,22 +16,26 @@ namespace PartituraMagica
 	[TestFixture]
 	internal class TestUtils : ICommandParameters
 	{
+		protected ICommandFactory Factory;
 		protected Partitura Partitura;
-		protected FakeDrawingPanel panel;
-		protected Mock<IActivePartitura> activePartitura;
-		protected Mock<FakeFileSystem> fileSystem;
-		protected Mock<IMainWindow> mainWindow;
+		public FakeDrawingPanel panel;
+		public Mock<IActivePartitura> activePartitura;
+		public Mock<FakeFileSystem> fileSystem;
+		public Mock<IMainWindow> mainWindow;
 
 		public virtual void Setup()
 		{
 			Partitura = new Partitura();
 			panel = new FakeDrawingPanel();
 			//set pagewidth and height
-			Partitura.GetPage(0).PaintPage(panel, new Point(1000, 2000),
+			Partitura.GetPage(0).PaintPage(Panel, new Point(1000, 2000),
 				new AbcLabelProvider(Partitura));
 
 			fileSystem = new Mock<FakeFileSystem> {CallBase = true};
 			mainWindow = new Mock<IMainWindow>();
+
+			var container = new Container(new TestServiceRegistry(this));
+			Factory = new CommandFactory(container);
 		}
 
 		protected void Update(double oldX, double oldY, double newX, double newY)
@@ -38,7 +43,7 @@ namespace PartituraMagica
 			mainWindow.Setup(mw => mw.CurrentMousePosition).Returns(new Point(newX, newY));
 			mainWindow.Setup(w => w.PreviousMousePosition).Returns(new Point(oldX, oldY));
 
-			new UpdateBoxCommand(this).Execute();
+			Factory.Create<UpdateBoxCommand>().Execute();
 		}
 
 		protected void Update(Shape type, double oldX, double oldY, double newX, double newY)
@@ -48,7 +53,7 @@ namespace PartituraMagica
 			mainWindow.Setup(w => w.CurrentMousePosition).Returns(new Point(newX, newY));
 			mainWindow.Setup(w => w.PreviousMousePosition).Returns(new Point(oldX, oldY));
 
-			new UpdateBoxCommand(this).Execute();
+			Factory.Create<UpdateBoxCommand>().Execute();
 		}
 
 		protected void AssertPanelContains(Rect r)
@@ -75,7 +80,7 @@ namespace PartituraMagica
 			mainWindow.Setup(w => w.CurrentMousePosition).Returns(new Point(newX, newY));
 			mainWindow.Setup(w => w.PreviousMousePosition).Returns(new Point(oldX, oldY));
 
-			return new UpdateBoxCommand(this).CanExecute();
+			return Factory.Create<UpdateBoxCommand>().CanExecute();
 		}
 
 		protected bool CanUpdate(Shape type,
@@ -88,8 +93,7 @@ namespace PartituraMagica
 		protected AddBoxCommand CreateAddBoxCommand(Point pos)
 		{
 			mainWindow.Setup(w => w.CurrentMousePosition).Returns(pos);
-
-			return new AddBoxCommand(this);
+			return Factory.Create<AddBoxCommand>();
 		}
 
 		protected UpdateBoxCommand CreateUpdateBoxCommand(Point oldPos, Point newPos)
@@ -97,22 +101,19 @@ namespace PartituraMagica
 			mainWindow.Setup(w => w.CurrentMousePosition).Returns(newPos);
 			mainWindow.Setup(w => w.PreviousMousePosition).Returns(oldPos);
 
-			return new UpdateBoxCommand(this);
+			return Factory.Create<UpdateBoxCommand>();
 		}
 
 		protected SplitBoxCommand CreateSplitBoxCommand(Point pos)
 		{
 			mainWindow.Setup(w => w.CurrentMousePosition).Returns(pos);
-
-			return new SplitBoxCommand(this);
+			return Factory.Create<SplitBoxCommand>();
 		}
 
-
-		protected SelectItemCommand CreateSelectItemCommand(Point pos)
+		protected SelectBoxCommand CreateSelectItemCommand(Point pos)
 		{
 			mainWindow.Setup(w => w.CurrentMousePosition).Returns(pos);
-
-			return new SelectItemCommand(this);
+			return Factory.Create<SelectBoxCommand>();
 		}
 
 		protected void AssertShapeAt(double x, double y, Shape type)
@@ -122,7 +123,11 @@ namespace PartituraMagica
 				type);
 		}
 
-		public IDrawingPanel Panel => panel;
+		public IDrawingPanel Panel
+		{
+			get => panel;
+			set => throw new NotImplementedException();
+		}
 
 		public virtual IActivePartitura Active => activePartitura.Object;
 
@@ -140,6 +145,26 @@ namespace PartituraMagica
 		public Shape GetShapeAt(Point currentPos)
 		{
 			throw new NotImplementedException();
+		}
+	}
+
+	internal class TestServiceRegistry : ServiceRegistry
+	{
+		public TestServiceRegistry(TestUtils utils)
+		{
+			For<IMainWindow>().Use(utils.MainWindow).Singleton();
+			For<ICommandParameters>().Use(utils).Singleton();
+			Scan(_ =>
+			{
+				_.LookForRegistries();
+
+				_.Assembly("ClassLibrary1");
+				_.Assembly("UnitTests");
+
+				_.Include(type => type.Name.EndsWith("Command") || type.Name.EndsWith("ServiceRegistry"));
+				_.AddAllTypesOf<ICommand>().NameBy(x => x.Name.Replace("Command", ""));
+				//_.WithDefaultConventions(ServiceLifetime.Singleton);
+			});
 		}
 	}
 }

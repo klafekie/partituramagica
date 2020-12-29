@@ -9,9 +9,14 @@ namespace PartituraMagica.PageEditing
 {
 	public class AutoFillCommand : PartituraCommandBase, ICommand
 	{
-		public AutoFillCommand(ICommandParameters p)
+		private readonly ICommandFactory _commandFactory;
+		private readonly IMainWindow _mainWindow;
+
+		public AutoFillCommand(ICommandParameters p, IMainWindow mainWindow, ICommandFactory commandFactory)
 			: base(p)
 		{
+			_mainWindow = mainWindow;
+			_commandFactory = commandFactory;
 		}
 
 		public bool CanExecute()
@@ -19,14 +24,15 @@ namespace PartituraMagica.PageEditing
 			return P.Active.IsOpen && P.Active.GetPageCount() > 0;
 		}
 
-
 		public void Execute()
 		{
 			Debug.Assert(CanExecute());
-			P.MainWindow.SignalWait(true);
+			_mainWindow.SignalWait(true);
 			BoxFinder b = new BoxFinder(P.Panel.CurrentImage);
-			//TODO foreach (Rect r in b.Execute()) new AddBoxCommand(P).TryExecute();
-			P.MainWindow.SignalWait(false);
+
+			foreach (Rect r in b.Execute())
+				_commandFactory.Create<AddBoxCommand>(c => c.Rectangle = r).TryExecute();
+			_mainWindow.SignalWait(false);
 		}
 	}
 }

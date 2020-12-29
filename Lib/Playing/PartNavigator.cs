@@ -81,7 +81,6 @@ namespace PartituraMagica.Playing
 
 		public void JumpBackwardClicked()
 		{
-			//TODO thread safety??
 			double viewXPos = Math.Max(_playerPosition.XPos - 250d, 0d);
 			CurrentPartIndex = _calculator.GetPatternIndexFromXPosition(viewXPos);
 			_playerPosition.XPos = viewXPos;

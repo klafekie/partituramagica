@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using PartituraMagica.Domain;
-using PartituraMagica.PageEditing;
 
 #endregion
 
@@ -12,9 +11,14 @@ namespace PartituraMagica.PartituraCommands
 {
 	public class AddPagesCommand : PartituraCommandBase, ICommand
 	{
-		public AddPagesCommand(ICommandParameters p)
+		private readonly ICommandFactory _commandFactory;
+		private readonly IMainWindow _mainWindow;
+
+		public AddPagesCommand(ICommandParameters p, ICommandFactory commandFactory, IMainWindow mainWindow)
 			: base(p)
 		{
+			_commandFactory = commandFactory;
+			_mainWindow = mainWindow;
 		}
 
 		public bool CanExecute()
@@ -36,17 +40,18 @@ namespace PartituraMagica.PartituraCommands
 					Debug.Assert(sourceFile != destFile,
 						"cause the index of destFile is always higher than the index of all existing image files");
 					P.FileSystem.Copy(sourceFile, destFile);
-					new ShowLastPageCommand(P).TryExecute();
-					if (P.Active.CurrentPageIndex == index)
-						//show was successfull
-						new AutoFillCommand(P).TryExecute();
+					_commandFactory.Create<ShowPageCommand>(c => c.Index = index).TryExecute();
+					//if (P.Active.CurrentPageIndex == index)
+					//show was successfull
+					//TODO fix autofill
+					//_commandFactory.Create<AutoFillCommand>().TryExecute();
 				}
 
 				//go back to the first added page
-				new ShowPageCommand(firstAddedIndex, P).TryExecute();
+				_commandFactory.Create<ShowPageCommand>(c => c.Index = firstAddedIndex).TryExecute();
 			}
 
-			P.MainWindow.ShowPartituraInfo(P.Active);
+			_mainWindow.ShowPartituraInfo(P.Active);
 		}
 	}
 }

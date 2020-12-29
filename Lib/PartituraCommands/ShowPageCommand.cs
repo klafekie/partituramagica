@@ -1,7 +1,6 @@
 ﻿#region usings
 
 using System.Diagnostics;
-using Lamar;
 using PartituraMagica.Domain;
 
 #endregion
@@ -10,32 +9,25 @@ namespace PartituraMagica.PartituraCommands
 {
 	public class ShowPageCommand : ShowPageCommandBase, ICommand
 	{
-		private readonly int _index;
+		public int Index { get; set; }
 
-		[DefaultConstructor]
-		public ShowPageCommand(ICommandParameters p)
-			: base(p)
+		public ShowPageCommand(ICommandParameters p, IMainWindow mainWindow)
+			: base(p, mainWindow)
 		{
-		}
-
-		public ShowPageCommand(int index, ICommandParameters p)
-			: base(p)
-		{
-			_index = index;
 		}
 
 		public void Execute()
 		{
 			Debug.Assert(CanExecute());
-			P.Active.CurrentPageIndex = _index;
+			P.Active.CurrentPageIndex = Index;
 			ExecuteBase();
 		}
 
 		public bool CanExecute()
 		{
 			return CanExecuteBase() &&
-			       (_index >= 0 ||
-			        _index < P.Active.GetPageCount());
+			       (Index >= 0 ||
+			        Index < P.Active.GetPageCount());
 		}
 	}
 }

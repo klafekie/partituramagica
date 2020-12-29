@@ -15,20 +15,24 @@ namespace PartituraMagica.PageEditing
      */
 	public class SplitBoxCommand : PartituraCommandBase, ICommand
 	{
-		public SplitBoxCommand(ICommandParameters p)
+		private readonly IMainWindow _mainWindow;
+
+		public SplitBoxCommand(ICommandParameters p, IMainWindow mainWindow)
 			: base(p)
 		{
+			_mainWindow = mainWindow;
 		}
 
 		public bool CanExecute()
 		{
-			return P.Active.CurrentPage != null && P.Active.CurrentPage.IsBoxSelected();
+			return P.Active.CurrentPage != null && P.Active.CurrentPage.IsBoxSelected()
+			                                    && _mainWindow.CurrentMousePosition != null;
 		}
 
 		public void Execute()
 		{
 			Debug.Assert(CanExecute());
-			P.Active.CurrentPage.SplitSelectedBox(P.MainWindow.CurrentMousePosition, P.Panel);
+			P.Active.CurrentPage.SplitSelectedBox(_mainWindow.CurrentMousePosition.Value, P.Panel);
 		}
 	}
 }

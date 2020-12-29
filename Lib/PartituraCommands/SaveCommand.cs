@@ -9,9 +9,12 @@ namespace PartituraMagica.PartituraCommands
 {
 	public class SaveCommand : PartituraCommandBase, ICommand
 	{
-		public SaveCommand(ICommandParameters p)
+		private readonly IMainWindow _mainWindow;
+
+		public SaveCommand(ICommandParameters p, IMainWindow mainWindow)
 			: base(p)
 		{
+			_mainWindow = mainWindow;
 		}
 
 		public void Execute()
@@ -20,7 +23,7 @@ namespace PartituraMagica.PartituraCommands
 			string path = P.Active.Path;
 
 			if (path != null) P.Active.Save(path);
-			P.MainWindow.ShowPartituraInfo(P.Active);
+			_mainWindow.ShowPartituraInfo(P.Active);
 		}
 
 		public bool CanExecute()

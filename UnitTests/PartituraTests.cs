@@ -23,7 +23,7 @@ namespace PartituraMagica
 		[TearDown]
 		public virtual void TearDown()
 		{
-			//TODO verify moc?
+			//TODO p2 mocks
 		}
 
 		public override IActivePartitura Active => TestedPartitura;
@@ -58,35 +58,30 @@ namespace PartituraMagica
 			fileSystem.Setup(fs => fs.ShowOpenImagesDialog())
 				.Returns(new List<string> {"d:\\image1.jpg", "d:\\image2.jpg"});
 
-			//fileSystem.Setup(fs => fs.GetMatchingFileNames(It.IsAny<string>(), It.IsAny<string>()))
-			//	.Returns(new List<string>());
-
-			new NewPartituraCommand(this).Execute();
+			Factory.Create<NewPartituraCommand>().Execute();
 			Assert.AreEqual(panel.ImagePath, "c:\\partituraFile-000.jpg",
 				"first added file is immediately displayed");
 			Assert.NotNull(TestedPartitura.Partitura);
 
-			//fileSystem.Setup(fs => fs.GetMatchingFileNames(It.IsAny<string>(), It.IsAny<string>()))
-			//	.Returns(new List<string> {"c:\\partituraFile-000.jpg", "c:\\partituraFile-001.jpg"});
 			Assert.AreEqual(TestedPartitura.GetPageCount(), 2);
 			Assert.AreEqual(TestedPartitura.Path, "c:\\partituraFile.partitura");
 
 			//manually add two more pages
 			fileSystem.Setup(fs => fs.ShowOpenImagesDialog())
 				.Returns(new List<string> {"d:\\image3.jpg", "d:\\image4.jpg"});
-			new AddPagesCommand(this).Execute();
+			Factory.Create<AddPagesCommand>().Execute();
 			Assert.AreEqual(panel.ImagePath, "c:\\partituraFile-002.jpg",
 				"last added page is immediately displayed");
 			Assert.AreEqual(TestedPartitura.GetPageCount(), 4);
 
 			//switch between the pages to see that they have the correcct indices
-			new ShowFirstPageCommand(this).Execute();
+			Factory.Create<ShowFirstPageCommand>().Execute();
 			Assert.AreEqual(panel.ImagePath, "c:\\partituraFile-000.jpg");
-			new ShowNextPageCommand(this).Execute();
+			Factory.Create<ShowNextPageCommand>().Execute();
 			Assert.AreEqual(panel.ImagePath, "c:\\partituraFile-001.jpg");
-			new ShowNextPageCommand(this).Execute();
+			Factory.Create<ShowNextPageCommand>().Execute();
 			Assert.AreEqual(panel.ImagePath, "c:\\partituraFile-002.jpg");
-			new ShowNextPageCommand(this).Execute();
+			Factory.Create<ShowNextPageCommand>().Execute();
 			Assert.AreEqual(panel.ImagePath, "c:\\partituraFile-003.jpg");
 
 			//now safe to another location and reopen to see that there are still the same pages
@@ -98,10 +93,10 @@ namespace PartituraMagica
 			fileSystem.Setup(fs => fs.OpenWrite("c:\\otherDir\\partituraFile.partitura"))
 				.Returns(s1);
 
-			new SaveAsCommand(this).Execute();
+			Factory.Create<SaveAsCommand>().Execute();
 			Assert.False(TestedPartitura.Partitura.Dirty);
-			new ClosePartituraCommand(this).Execute();
-			new CloseApplicationCommand(this).Execute();
+			Factory.Create<ClosePartituraCommand>().Execute();
+			Factory.Create<CloseApplicationCommand>().Execute();
 
 			//OpenCommand
 			fileSystem.Setup(fs => fs.ShowOpenPartituraDialog())
@@ -111,30 +106,26 @@ namespace PartituraMagica
 			fileSystem.Setup(fs => fs.OpenRead("c:\\otherDir\\partituraFile.partitura"))
 				.Returns(s2);
 
-			new OpenCommand(this).Execute();
-			new ShowFirstPageCommand(this).Execute();
+			Factory.Create<OpenCommand>().Execute();
+			Factory.Create<ShowFirstPageCommand>().Execute();
 			Assert.AreEqual(panel.ImagePath, "c:\\otherDir\\partituraFile-000.jpg");
-			new ShowNextPageCommand(this).Execute();
+			Factory.Create<ShowNextPageCommand>().Execute();
 			Assert.AreEqual(panel.ImagePath, "c:\\otherDir\\partituraFile-001.jpg");
-			new ShowNextPageCommand(this).Execute();
+			Factory.Create<ShowNextPageCommand>().Execute();
 			Assert.AreEqual(panel.ImagePath, "c:\\otherDir\\partituraFile-002.jpg");
-			new ShowNextPageCommand(this).Execute();
+			Factory.Create<ShowNextPageCommand>().Execute();
 			Assert.AreEqual(panel.ImagePath, "c:\\otherDir\\partituraFile-003.jpg");
 		}
 
 		[Test]
 		public void TestNewPartituraCancelled()
 		{
-			//fileSystem.Setup(fs => fs.ShowSavePartituraDialog())
-			//    .Returns(null);
-
-
 			//user presses cancel in fileSystem for the partitura file
-			new NewPartituraCommand(this).Execute();
+			Factory.Create<NewPartituraCommand>().Execute();
 			Assert.AreEqual(panel.Rectangles.Count, 0, "panel is cleared");
 			Assert.Null(TestedPartitura.Partitura);
 			Assert.Null(TestedPartitura.Path);
-			Assert.False(new SaveAsCommand(this).CanExecute());
+			Assert.False(Factory.Create<SaveAsCommand>().CanExecute());
 		}
 
 		[Test]
@@ -153,7 +144,7 @@ namespace PartituraMagica
 
 			try
 			{
-				new NewPartituraCommand(this).Execute();
+				Factory.Create<NewPartituraCommand>().Execute();
 				Assert.Fail("expected exception");
 			}
 			catch (PartituraException pe)

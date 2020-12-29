@@ -19,8 +19,10 @@ namespace PartituraMagica
    */
 	public partial class MainWindow : Window, IMainWindow
 	{
+		private readonly ICommandFactory _commandFactory;
 		private readonly IContainer _container;
 		private readonly ICommandParameters _controller;
+		private bool _waiting;
 
 		public static RoutedUICommand AddPage { get; } = new
 			RoutedUICommand("Add ...", "AddPages", typeof(MainWindow));
@@ -80,17 +82,21 @@ namespace PartituraMagica
 				});
 
 
-		public MainWindow(IContainer container, ICommandParameters controller)
+		public MainWindow(IContainer container, ICommandParameters controller, ICommandFactory commandFactory)
 		{
 			_container = container;
 			_controller = controller;
+
+			_commandFactory = commandFactory;
 			Trace.WriteLine("hallo listener");
 
 			InitializeComponent();
+
+			_controller.Panel = new DrawingPanel(PageCanvas);
 		}
 
-		public bool IsLeftMouseButtonPressed { get; set; }
-
+		public Point? PreviousMousePosition { get; set; }
+		public Point? CurrentMousePosition { get; set; }
 
 		public string PartPattern
 		{
@@ -121,7 +127,7 @@ namespace PartituraMagica
 
 		public void CloseAndExit()
 		{
-			//TODO disppose controller?
+			//TODO p1 disppose controller
 			//_controller.Dispose();
 			Application.Current.Shutdown();
 		}
@@ -129,6 +135,7 @@ namespace PartituraMagica
 
 		public void SignalWait(bool doWait)
 		{
+			_waiting = doWait;
 			Cursor = doWait ? Cursors.Wait : Cursors.Arrow;
 		}
 
@@ -145,33 +152,33 @@ namespace PartituraMagica
 			}
 		}
 
-		public Point PreviousMousePosition { get; set; }
-		public Point CurrentMousePosition { get; set; }
-
-		private ICommand CreateCommand(string name)
-		{
-			return _container.GetInstance<ICommand>(name);
-		}
 
 		private void CanExecute(object sender, CanExecuteRoutedEventArgs e)
 		{
 			string name = ((RoutedCommand) e.Command).Name;
-			e.CanExecute = CreateCommand(name).CanExecute();
+			e.CanExecute = _commandFactory.Create(name).CanExecute();
 		}
 
 		private void Execute(object sender, ExecutedRoutedEventArgs e)
 		{
 			string name = ((RoutedCommand) e.Command).Name;
-			CreateCommand(name).Execute();
+			_commandFactory.Create(name).Execute();
 		}
 
 		private void PageCanvas_MouseMove(object sender, MouseEventArgs e)
 		{
+			UpdateMousePosition(e);
+			if (!_waiting) SetMouseCursor(CurrentMousePosition.Value);
+			if (e.LeftButton == MouseButtonState.Pressed && PreviousMousePosition != null)
+				_commandFactory.Create("UpdateBox").TryExecute();
+		}
+
+		private void UpdateMousePosition(MouseEventArgs e)
+		{
 			Point currentPos = e.GetPosition(PageCanvas);
-			SetMouseCursor(currentPos);
-			PreviousMousePosition = CurrentMousePosition;
+			if (CurrentMousePosition != null && CurrentMousePosition != currentPos)
+				PreviousMousePosition = CurrentMousePosition;
 			CurrentMousePosition = currentPos;
-			if (e.LeftButton == MouseButtonState.Pressed) CreateCommand("UpdateBox").TryExecute();
 		}
 
 		private void SetMouseCursor(Point currentPos)
@@ -212,23 +219,22 @@ namespace PartituraMagica
 
 		private void PageCanvas_MouseDown(object sender, MouseButtonEventArgs e)
 		{
-			PreviousMousePosition = CurrentMousePosition;
-			CurrentMousePosition = e.GetPosition(PageCanvas);
+			UpdateMousePosition(e);
 
 			ICommand cmd;
 			if (e.ClickCount == 1)
 			{
-				cmd = CreateCommand("SelectBox");
+				cmd = _commandFactory.Create("SelectBox");
 				if (!cmd.CanExecute())
 				{
-					cmd = CreateCommand("AddBox");
+					cmd = _commandFactory.Create("AddBox");
 					if (!cmd.CanExecute())
 						return;
 				}
 			}
 			else
 			{
-				cmd = CreateCommand("SplitBox");
+				cmd = _commandFactory.Create("SplitBox");
 				if (!cmd.CanExecute()) return;
 			}
 
@@ -241,7 +247,7 @@ namespace PartituraMagica
 			//first when window is closed by user,
 			//this leads to a call to MainWindow.CloseAndExit() which fires
 			//this event again.
-			ICommand cmd = CreateCommand("CloseApplication");
+			ICommand cmd = _commandFactory.Create("CloseApplication");
 
 			//Cancel closing if the piece is still open
 			e.Cancel = cmd.TryExecute();
@@ -249,20 +255,20 @@ namespace PartituraMagica
 
 		private void patternBox_LostFocus(object sender, RoutedEventArgs e)
 		{
-			//this.controller.CreateCommand("UpdatePartPattern").TryExecute();
+			//this.controller.Create("UpdatePartPattern").TryExecute();
 		}
 
 		private void patternBox_PreviewLostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
 		{
-			CreateCommand("UpdatePartPattern").TryExecute();
+			_commandFactory.Create("UpdatePartPattern").TryExecute();
 		}
 
 		private void patternBox_PreviewKeyDown(object sender, KeyEventArgs e)
 		{
 			if (e.Key == Key.Space)
 			{
-				if (CreateCommand("UpdatePartPattern").TryExecute())
-					CreateCommand("StartPlayer").TryExecute();
+				if (_commandFactory.Create("UpdatePartPattern").TryExecute())
+					_commandFactory.Create("StartPlayer").TryExecute();
 				e.Handled = true;
 			}
 		}

@@ -9,16 +9,21 @@ namespace PartituraMagica.PartituraCommands
 {
 	public class ClosePartituraCommand : PartituraCommandBase, ICommand
 	{
-		public ClosePartituraCommand(ICommandParameters p)
+		private readonly ICommandFactory _commandFactory;
+		private readonly IMainWindow _mainWindow;
+
+		public ClosePartituraCommand(ICommandParameters p, IMainWindow mainWindow, ICommandFactory commandFactory)
 			: base(p)
 		{
+			_mainWindow = mainWindow;
+			_commandFactory = commandFactory;
 		}
 
 		public void Execute()
 		{
 			Debug.Assert(CanExecute());
 			DialogResult c = DialogResult.No;
-			ICommand cmd = new SaveCommand(P);
+			ICommand cmd = _commandFactory.Create<SaveCommand>();
 			if (cmd.CanExecute())
 			{
 				c = P.FileSystem.AskToSave();
@@ -32,8 +37,8 @@ namespace PartituraMagica.PartituraCommands
 				P.Panel.Clear();
 				P.Active.Close();
 				P.DisposePlayerView();
-				P.MainWindow.ClearPartituraInfo();
-				P.MainWindow.PartPattern = string.Empty;
+				_mainWindow.ClearPartituraInfo();
+				_mainWindow.PartPattern = string.Empty;
 			}
 		}
 

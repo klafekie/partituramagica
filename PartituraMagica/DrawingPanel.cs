@@ -37,9 +37,9 @@ namespace PartituraMagica
 		private string _currentImagePath;
 		private Dictionary<int, Clipping> _id2Clipping;
 
-		public DrawingPanel(MainWindow mainWindow)
+		public DrawingPanel(Canvas canvas)
 		{
-			_pageCanvas = mainWindow.PageCanvas;
+			_pageCanvas = canvas;
 			Clear();
 		}
 

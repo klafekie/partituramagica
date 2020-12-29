@@ -9,8 +9,11 @@ namespace PartituraMagica.PartituraCommands
 {
 	public class ShowPageCommandBase : PartituraCommandBase
 	{
-		protected ShowPageCommandBase(ICommandParameters p) : base(p)
+		private readonly IMainWindow _mainWindow;
+
+		protected ShowPageCommandBase(ICommandParameters p, IMainWindow mainWindow) : base(p)
 		{
+			_mainWindow = mainWindow;
 		}
 
 		protected void ExecuteBase()
@@ -19,7 +22,7 @@ namespace PartituraMagica.PartituraCommands
 			Point dimensions = P.Panel.DrawImage(P.Active.CurrentImagePath);
 
 			P.Active.Partitura.Paint(P.Active.CurrentPageIndex, P.Panel, dimensions);
-			P.MainWindow.ShowPartituraInfo(P.Active);
+			_mainWindow.ShowPartituraInfo(P.Active);
 		}
 
 		protected bool CanExecuteBase()

@@ -1,11 +1,14 @@
 ﻿#region usings
 
+using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
 using Lamar;
+using PartituraMagica.Domain;
+using PartituraMagica.PartituraCommands;
 
 #endregion
 
@@ -16,6 +19,8 @@ namespace PartituraMagica
 	/// </summary>
 	public partial class App : Application
 	{
+		private Container _container;
+
 		private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
 		{
 			Trace.TraceError("Unhandled exception in application:");
@@ -24,6 +29,13 @@ namespace PartituraMagica
 			                e.Exception.Message +
 			                "\n\nPlease see ReleaseNotes.doc for troubleshooting hints and restart the application.");
 		}
+
+		protected override void OnExit(ExitEventArgs e)
+		{
+			base.OnExit(e);
+			_container?.Dispose();
+		}
+
 
 		private void Application_Startup(object sender, StartupEventArgs e)
 		{
@@ -37,15 +49,22 @@ namespace PartituraMagica
 			Thread.CurrentThread.CurrentUICulture =
 				CultureInfo.GetCultureInfo("en-GB");
 
-			var container = new Container(new BasicRegistry());
+			_container = new Container(new BasicRegistry());
 
-			container.Inject(typeof(IContainer), container, false);
+			_container.Inject(typeof(IContainer), _container, false);
 
-			//var scanned = container.WhatDidIScan();
-			//var have = container.WhatDoIHave();
-			container.AssertConfigurationIsValid();
+			var scanned = _container.WhatDidIScan();
+			var have = _container.WhatDoIHave();
+			_container.AssertConfigurationIsValid();
 
-			var wnd = container.GetInstance<MainWindow>();
+			var wnd = _container.GetInstance<MainWindow>();
+			var wnd2 = _container.GetInstance<IMainWindow>();
+
+			string[] args = Environment.GetCommandLineArgs();
+			if (args.Length == 2)
+				//first arg is the exe name
+				_container.GetInstance<ICommandFactory>()
+					.Create<OpenCommand>(c => c.Path = args[1]).Execute();
 
 			wnd.Show();
 		}

@@ -10,9 +10,12 @@ namespace PartituraMagica.PageEditing
 {
 	public class UpdatePartPatternCommand : PartituraCommandBase, ICommand
 	{
-		public UpdatePartPatternCommand(ICommandParameters p)
+		private readonly IMainWindow _mainWindow;
+
+		public UpdatePartPatternCommand(ICommandParameters p, IMainWindow mainWindow)
 			: base(p)
 		{
+			_mainWindow = mainWindow;
 		}
 
 		public bool CanExecute()
@@ -23,21 +26,16 @@ namespace PartituraMagica.PageEditing
 		public void Execute()
 		{
 			Debug.Assert(CanExecute());
-			string partPattern = P.MainWindow.PartPattern;
-			if (partPattern == null || partPattern.Length == 0) partPattern = "A";
+			string partPattern = _mainWindow.PartPattern;
+			if (string.IsNullOrEmpty(partPattern)) partPattern = "A";
 			partPattern = partPattern.ToUpper();
 			int max = partPattern.ToCharArray().Max() - 'A';
-			//foreach (Char i in partPattern) {
-			//    max = Math.Max((int)(i - 'A'), max);
-			//}
 
 			Partitura pActivePartitura = P.Active.Partitura;
 			if (max >= pActivePartitura.GetAllParts(P.Active.GetPageCount()).Count)
 			{
-				P.MainWindow.MessageBox("You have specified a part that does not exist.");
-				//@todo p2 set focus to the TextBox. Problem box.Focus() doesn't do it...
-				//can be done in the Validating event?
-				P.MainWindow.PartPattern = pActivePartitura.PartPattern;
+				_mainWindow.MessageBox("You have specified a part that does not exist.");
+				_mainWindow.PartPattern = pActivePartitura.PartPattern;
 			}
 			else
 			{

@@ -15,13 +15,7 @@ namespace PartituraMagica.Domain
 		 * gets the part of the mainwindow where the user can draw boxes
 		 */
 
-		IDrawingPanel Panel { get; }
-
-		/**
-		 * gets the main window of the application
-		 */
-
-		IMainWindow MainWindow { get; }
+		IDrawingPanel Panel { get; set; }
 
 		/**
 		 * gets the one and only currently active partitura

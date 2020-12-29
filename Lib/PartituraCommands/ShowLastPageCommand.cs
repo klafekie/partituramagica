@@ -9,8 +9,8 @@ namespace PartituraMagica.PartituraCommands
 {
 	public class ShowLastPageCommand : ShowPageCommandBase, ICommand
 	{
-		public ShowLastPageCommand(ICommandParameters p)
-			: base(p)
+		public ShowLastPageCommand(ICommandParameters p, IMainWindow mainWindow)
+			: base(p, mainWindow)
 		{
 		}
 
