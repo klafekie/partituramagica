@@ -21,9 +21,9 @@ namespace PartituraMagica.Player
 		private readonly Direct3D _d3D;
 		private readonly IImageLoader _imageLoader;
 		private readonly IPartNavigator _navigator;
-		private readonly IPageFiles _pageFiles;
 
 		private readonly IntPtr _panelHandle;
+		private readonly IPlayedPartitura _playedPartitura;
 		private readonly PlayerPositionHolder _positionHolder;
 		private readonly SpeedManager _speedManager;
 		private readonly ZoomManager _zoomManager;
@@ -33,11 +33,11 @@ namespace PartituraMagica.Player
 		private bool _isRendering;
 		private float _lastZoomX;
 
-		public ScrollingPanel(IPageFiles pageFiles, IImageLoader imageLoader, IntPtr owner, IntPtr panelHandle,
+		public ScrollingPanel(IPlayedPartitura playedPartitura, IImageLoader imageLoader, IntPtr owner, IntPtr panelHandle,
 			PlayerPositionHolder positionHolder, IPartNavigator navigator, SpeedManager speedManager,
 			ZoomManager zoomManager)
 		{
-			_pageFiles = pageFiles;
+			_playedPartitura = playedPartitura;
 			_imageLoader = imageLoader;
 			_panelHandle = panelHandle;
 			_positionHolder = positionHolder;
@@ -61,9 +61,10 @@ namespace PartituraMagica.Player
 		public void Init(string partPattern, IEnumerable<Clipping> clips, double lineDistance)
 		{
 			_clippingD3Ds.Clear();
+			var paths = _playedPartitura.ImagePaths;
 			foreach (Clipping c in clips)
 			{
-				string path = _pageFiles.GetImagePath(c.PageIndex);
+				string path = paths[c.PageIndex];
 				IGreyImage image = _imageLoader.GetImage(path);
 				ClippingD3D line = new ClippingD3D(image, c.Coords, _configuration.InvertColors, _configuration.Color);
 				_clippingD3Ds.Add(line);

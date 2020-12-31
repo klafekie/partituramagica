@@ -2,7 +2,6 @@
 
 using Lamar;
 using PartituraMagica.Domain;
-using PartituraMagica.Playing;
 
 #endregion
 
@@ -12,7 +11,6 @@ namespace PartituraMagica
 	{
 		public LibServiceRegistry()
 		{
-			For<IPlayerViewFactory>().Use<PlayerViewFactory>().Singleton();
 			For<ICommandFactory>().Use<CommandFactory>().Singleton();
 		}
 	}

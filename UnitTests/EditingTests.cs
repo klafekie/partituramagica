@@ -17,7 +17,7 @@ namespace PartituraMagica
 		{
 			base.Setup();
 			CurrentPageIndex = 0;
-			activePartitura = new Mock<IActivePartitura>();
+			activePartitura = new Mock<IEditedPartitura>();
 
 			activePartitura.Setup(p => p.Partitura).Returns(Partitura);
 			activePartitura.Setup(p => p.IsOpen).Returns(true);

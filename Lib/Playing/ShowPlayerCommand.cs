@@ -1,7 +1,6 @@
 ﻿#region usings
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using PartituraMagica.Domain;
 
@@ -27,19 +26,10 @@ namespace PartituraMagica.Playing
 			{
 				Debug.Assert(CanExecute());
 
-				IList<Part> allParts = P.Active.Partitura.GetAllParts(P.Active.GetPageCount());
-
-				PlayerPositionHolder positionHolder = new PlayerPositionHolder();
-				PartNavigator navigator = new PartNavigator(P.Active.Partitura.PartPattern, allParts, positionHolder);
-				IPlayerView view = _factory.CreateView(positionHolder, navigator);
-
-
 				_mainWindow.IsEnabled = false;
-				navigator.PlayerOpened(view);
+				_factory.CreateAndShowView(P.CreatePlayedPartitura());
 				_mainWindow.IsEnabled = true;
-
-				bool test = _mainWindow.Activate();
-				//Debug.WriteLine("Activate Success = " + test);
+				_mainWindow.Activate();
 			}
 			catch (Exception e)
 			{
@@ -53,7 +43,7 @@ namespace PartituraMagica.Playing
 
 		public bool CanExecute()
 		{
-			return P.Active != null && P.Active.Partitura != null &&
+			return P.Active?.Partitura != null &&
 			       P.Active.Partitura.GetAllParts(P.Active.GetPageCount()).Count > 0;
 		}
 	}

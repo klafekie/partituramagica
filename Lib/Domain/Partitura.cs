@@ -50,7 +50,7 @@ namespace PartituraMagica
      * boxes are grouped into Parts (according to the repetition structure
      * of the piece.
      */
-    public class Partitura : IPlayablePartitura
+    public class Partitura
     {
         private List<Page> pages;
         private bool dirty;

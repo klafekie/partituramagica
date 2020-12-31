@@ -30,7 +30,8 @@ namespace PartituraMagica.Player
 			public IntPtr Handle { get; }
 		}
 
-		private const int PartAButtonIndex = 2;
+		private const int PART_A_BUTTON_INDEX = 2;
+
 		private readonly KeyboardMap _keyboardMap;
 
 		private readonly IPartNavigator _navigator;
@@ -40,7 +41,8 @@ namespace PartituraMagica.Player
 		private readonly SpeedManager _speedManager;
 		private readonly ZoomManager _zoomManager;
 
-		public PlayerViewD3D(IPageFiles pageFiles, IImageLoader imageLoader, IntPtr ownerHandle, PlayerMemento memento,
+		public PlayerViewD3D(IPlayedPartitura playedPartitura, IImageLoader imageLoader, IntPtr ownerHandle,
+			PlayerMemento memento,
 			PlayerPositionHolder positionHolder, IPartNavigator partNavigator)
 		{
 			Trace.WriteLine("ctor of PlayerViewD3D");
@@ -51,7 +53,7 @@ namespace PartituraMagica.Player
 			_ownerHandle = ownerHandle;
 			_speedManager = new SpeedManager(memento.Speed);
 			_zoomManager = new ZoomManager(memento.XZoom, memento.YZoom);
-			_scrollPanel = new ScrollingPanel(pageFiles, imageLoader, ownerHandle, panel1.Handle, positionHolder,
+			_scrollPanel = new ScrollingPanel(playedPartitura, imageLoader, ownerHandle, panel1.Handle, positionHolder,
 				partNavigator, _speedManager, _zoomManager);
 			_keyboardMap = new KeyboardMap(_speedManager, _zoomManager, _navigator, this);
 
@@ -59,7 +61,7 @@ namespace PartituraMagica.Player
 			{
 				for (int i = 0; i < _navigator.PartCount; i++)
 				{
-					var button = (ToolStripButton) toolStrip1.Items[i + PartAButtonIndex];
+					var button = (ToolStripButton) toolStrip1.Items[i + PART_A_BUTTON_INDEX];
 					button.Checked = i == _navigator.CurrentPartIndex;
 				}
 			};
@@ -129,7 +131,7 @@ namespace PartituraMagica.Player
 					Size = new Size(52, 60),
 					TextAlign = ContentAlignment.TopCenter
 				};
-				toolStrip1.Items.Insert(PartAButtonIndex, button);
+				toolStrip1.Items.Insert(PART_A_BUTTON_INDEX, button);
 
 				int index = partIndex;
 				button.Click += (sender, args) => { _navigator.PartClicked(index); };

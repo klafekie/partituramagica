@@ -17,7 +17,7 @@ namespace PartituraMagica
 		public override void Setup()
 		{
 			base.Setup();
-			TestedPartitura = new ActivePartitura(FileSystem);
+			TestedPartitura = new EditedPartitura(FileSystem);
 		}
 
 		[TearDown]
@@ -26,10 +26,10 @@ namespace PartituraMagica
 			//TODO p2 mocks
 		}
 
-		public override IActivePartitura Active => TestedPartitura;
+		public override IEditedPartitura Active => TestedPartitura;
 
 
-		private IActivePartitura TestedPartitura;
+		private IEditedPartitura TestedPartitura;
 
 
 		public void RunAll()

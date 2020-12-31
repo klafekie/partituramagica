@@ -36,7 +36,7 @@ namespace PartituraMagica.PartituraCommands
 				//file was really safed or user doesn't care
 				P.Panel.Clear();
 				P.Active.Close();
-				P.DisposePlayerView();
+				
 				_mainWindow.ClearPartituraInfo();
 				_mainWindow.PartPattern = string.Empty;
 			}

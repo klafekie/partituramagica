@@ -145,6 +145,7 @@
     <Compile Include="EditingController.cs" />
     <Compile Include="GreyImage.cs" />
     <Compile Include="ClippingD3D.cs" />
+    <Compile Include="Player\PlayerViewFactory.cs" />
     <Compile Include="Player\ScrollingPanel.cs" />
     <Compile Include="Player\KeyboardMap.cs" />
     <Compile Include="Player\PlayerViewD3D.cs">
@@ -166,7 +167,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="SimpleTracer.cs" />
     <EmbeddedResource Include="Player\PlayerViewD3D.resx">
       <DependentUpon>PlayerViewD3D.cs</DependentUpon>
       <SubType>Designer</SubType>

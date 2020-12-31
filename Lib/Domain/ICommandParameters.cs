@@ -21,7 +21,7 @@ namespace PartituraMagica.Domain
 		 * gets the one and only currently active partitura
 		 */
 
-		IActivePartitura Active { get; }
+		IEditedPartitura Active { get; }
 
 		/**
 		 * offers access to standard filesystem operations and dialogs
@@ -29,9 +29,8 @@ namespace PartituraMagica.Domain
 
 		IFileSystem FileSystem { get; }
 
-		//@todo p2 this seems not a good place for this method, maybe move playerView instance
-		//elsewhere?
-		void DisposePlayerView();
 		Shape GetShapeAt(Point currentPos);
+
+		IPlayedPartitura CreatePlayedPartitura();
 	}
 }

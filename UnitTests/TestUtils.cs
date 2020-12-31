@@ -19,7 +19,7 @@ namespace PartituraMagica
 		protected ICommandFactory Factory;
 		protected Partitura Partitura;
 		public FakeDrawingPanel panel;
-		public Mock<IActivePartitura> activePartitura;
+		public Mock<IEditedPartitura> activePartitura;
 		public Mock<FakeFileSystem> fileSystem;
 		public Mock<IMainWindow> mainWindow;
 
@@ -129,7 +129,7 @@ namespace PartituraMagica
 			set => throw new NotImplementedException();
 		}
 
-		public virtual IActivePartitura Active => activePartitura.Object;
+		public virtual IEditedPartitura Active => activePartitura.Object;
 
 		public IFileSystem FileSystem => fileSystem.Object;
 
@@ -137,12 +137,12 @@ namespace PartituraMagica
 		public IMainWindow MainWindow => mainWindow.Object;
 
 
-		public void DisposePlayerView()
+		public Shape GetShapeAt(Point currentPos)
 		{
-			//do nothing
+			throw new NotImplementedException();
 		}
 
-		public Shape GetShapeAt(Point currentPos)
+		public IPlayedPartitura CreatePlayedPartitura()
 		{
 			throw new NotImplementedException();
 		}

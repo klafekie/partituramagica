@@ -127,7 +127,7 @@ namespace PartituraMagica
 
 			XPos = offset;
 
-			// Replace _mesh by a clone of itself (why?) [jed]
+			// Replace _mesh by a clone of itself to set format
 			Mesh tempBox = _mesh.Clone(dev, _mesh.CreationOptions, PositionedColoredTextured.Format);
 			_mesh.Dispose();
 			_mesh = tempBox;

@@ -38,7 +38,7 @@ namespace PartituraMagica
 			RoutedUICommand("New Partitura", "NewPartitura", typeof(MainWindow),
 				new InputGestureCollection
 				{
-					new KeyGesture(Key.Space)
+					new KeyGesture(Key.N, ModifierKeys.Control)
 				});
 
 
@@ -104,7 +104,7 @@ namespace PartituraMagica
 			set => patternBox.Text = value;
 		}
 
-		public void ShowPartituraInfo(IActivePartitura active)
+		public void ShowPartituraInfo(IEditedPartitura active)
 		{
 			int pageCount = active.GetPageCount();
 			if (pageCount == 0)
@@ -127,8 +127,6 @@ namespace PartituraMagica
 
 		public void CloseAndExit()
 		{
-			//TODO p1 disppose controller
-			//_controller.Dispose();
 			Application.Current.Shutdown();
 		}
 

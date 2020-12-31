@@ -20,7 +20,7 @@ namespace PartituraMagica.Domain
 		Point? CurrentMousePosition { get; set; }
 		Point? PreviousMousePosition { get; set; }
 
-		void ShowPartituraInfo(IActivePartitura active);
+		void ShowPartituraInfo(IEditedPartitura active);
 		void ClearPartituraInfo();
 
 		void MessageBox(string text);

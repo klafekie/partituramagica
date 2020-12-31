@@ -72,23 +72,23 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Domain\ActivePartitura.cs" />
+    <Compile Include="Domain\EditedPartitura.cs" />
     <Compile Include="Domain\Box.cs" />
     <Compile Include="Domain\Clipping.cs" />
     <Compile Include="Domain\CommandBase.cs" />
     <Compile Include="Domain\CommandFactory.cs" />
-    <Compile Include="Domain\IActivePartitura.cs" />
+    <Compile Include="Domain\IEditedPartitura.cs" />
     <Compile Include="Domain\ICommandFactory.cs" />
     <Compile Include="Domain\ICommand.cs" />
     <Compile Include="Domain\ICommandParameters.cs" />
     <Compile Include="Domain\IDrawingPanel.cs" />
     <Compile Include="Domain\IFileSystem.cs" />
     <Compile Include="Domain\IGreyImage.cs" />
+    <Compile Include="Domain\IImageLoader.cs" />
     <Compile Include="Domain\ILabelProvider.cs" />
     <Compile Include="Domain\IMainWindow.cs" />
-    <Compile Include="Domain\IPlayablePartitura.cs" />
     <Compile Include="Domain\IPlayerView.cs" />
-    <Compile Include="Domain\IPageFiles.cs" />
+    <Compile Include="Domain\IPlayedPartitura.cs" />
     <Compile Include="Domain\Page.cs" />
     <Compile Include="Domain\Part.cs" />
     <Compile Include="Domain\Partitura.cs" />
@@ -125,7 +125,6 @@
     <Compile Include="Playing\IPlayerViewFactory.cs" />
     <Compile Include="Playing\PartNavigator.cs" />
     <Compile Include="Playing\PartPositionProvider.cs" />
-    <Compile Include="Playing\PlayerViewFactory.cs" />
     <Compile Include="Playing\ShowPlayerCommand.cs" />
     <Compile Include="Playing\SpeedManager.cs" />
     <Compile Include="Playing\ZoomManager.cs" />

@@ -14,41 +14,62 @@ namespace PartituraMagica.Playing
      */
 	public class PartPositionProvider
 	{
-		internal const float LineDistance = 0F;
+		private class LinePartInfo
+		{
+			public readonly int ClippingIndex; //index of the clipping relative to the corresponding part
+			public readonly int PartIndex; //index of the parts, 0 corresponds to part "A"
+			public readonly int PatternIndex; //the position inside the part pattern, 
+			public readonly double XPos; //the absolute xPosition of the line on the view
+
+			public LinePartInfo(int partIndex, int clippingIndex, int patternIndex, int lineIndex, double xPos)
+			{
+				PartIndex = partIndex;
+				ClippingIndex = clippingIndex;
+				PatternIndex = patternIndex;
+				XPos = xPos;
+			}
+		}
+
+		internal const float LINE_DISTANCE = 0F;
 
 		//Expanded parts. For each letter in the pattern and for each line in a part this list contains an entry.
 		private readonly List<LinePartInfo> _lines;
+		private readonly string _partPattern;
 
 		//the original parts as configured by the user
 		private readonly IList<Part> _parts;
 
-		public PartPositionProvider(string partPattern, IList<Part> parts)
+		public PartPositionProvider(IPlayedPartitura partitura)
 		{
-			//note that we allow that not all labelled parts occur in the pattern.
-			if (string.IsNullOrEmpty(partPattern)) partPattern = "A";
-			partPattern.Trim();
-			PartPattern = partPattern;
-			_parts = parts;
+			if (partitura == null)
+			{
+				//this can happen during container.AssertConfigurationIsValid
+				_parts = new List<Part>();
+				_lines = new List<LinePartInfo>();
+				_partPattern = "A";
+				return;
+			}
+
+			_partPattern = partitura.PartPattern;
+			_parts = partitura.AllParts;
 
 			_lines = new List<LinePartInfo>();
 			double currentX = 0D;
 			int lineIndex = 0;
-			for (int patternIndex = 0; patternIndex < PartPattern.Length; patternIndex++)
+			for (int patternIndex = 0; patternIndex < partitura.PartPattern.Length; patternIndex++)
 			{
-				int partIndex = PartPattern[patternIndex] - 'A';
+				int partIndex = partitura.PartPattern[patternIndex] - 'A';
 				Part p = _parts[partIndex];
 				for (int clippingIndex = 0; clippingIndex < p.Count; clippingIndex++)
 				{
 					_lines.Add(
 						new LinePartInfo(partIndex,
 							clippingIndex, patternIndex, lineIndex, currentX));
-					currentX += p[clippingIndex].Coords.Width + LineDistance;
+					currentX += p[clippingIndex].Coords.Width + LINE_DISTANCE;
 					lineIndex++;
 				}
 			}
 		}
-
-		public string PartPattern { get; }
 
 		public double GetLineXPosition(int lineIndex)
 		{
@@ -95,34 +116,18 @@ namespace PartituraMagica.Playing
 
 		public bool PatternHasPartsAfter(int currentPatternIndex)
 		{
-			return PartPattern.Length - 1 > currentPatternIndex;
+			return _partPattern.Length - 1 > currentPatternIndex;
 		}
 
 		public int GetLastPatternIndex()
 		{
-			return PartPattern.Length - 1;
+			return _partPattern.Length - 1;
 		}
 
 		public double GetPatternEndXPos()
 		{
 			var last = _lines.Last();
 			return last.XPos + _parts[last.PartIndex].Last().Coords.Width;
-		}
-
-		private class LinePartInfo
-		{
-			public readonly int ClippingIndex; //index of the clipping relative to the corresponding part
-			public readonly int PartIndex; //index of the parts, 0 corresponds to part "A"
-			public readonly int PatternIndex; //the position inside the part pattern, 
-			public readonly double XPos; //the absolute xPosition of the line on the view
-
-			public LinePartInfo(int partIndex, int clippingIndex, int patternIndex, int lineIndex, double xPos)
-			{
-				PartIndex = partIndex;
-				ClippingIndex = clippingIndex;
-				PatternIndex = patternIndex;
-				XPos = xPos;
-			}
 		}
 	}
 }

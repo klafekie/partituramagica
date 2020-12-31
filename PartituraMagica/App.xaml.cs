@@ -33,7 +33,7 @@ namespace PartituraMagica
 		protected override void OnExit(ExitEventArgs e)
 		{
 			base.OnExit(e);
-			_container?.Dispose();
+			_container?.Dispose(); //this will dispose all disposable objects created by container
 		}
 
 

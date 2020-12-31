@@ -1,19 +1,15 @@
 ﻿#region usings
 
-using System;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
 using PartituraMagica.Domain;
-using PartituraMagica.Player;
 
 #endregion
 
 namespace PartituraMagica
 {
-	public class EditingController : ICommandParameters, IDisposable
+	public class EditingController : ICommandParameters
 	{
-		private PlayerViewD3D _playerView;
+		private readonly EditedPartitura _active;
 
 		public Page CurrentPage
 		{
@@ -34,51 +30,24 @@ namespace PartituraMagica
 		public EditingController()
 		{
 			FileSystem = new FileSystem();
-			Active = new ActivePartitura(FileSystem);
+			_active = new EditedPartitura(FileSystem);
 		}
 
-		public IActivePartitura Active { get; }
+		public IEditedPartitura Active => _active;
 
 		public IDrawingPanel Panel { get; set; }
 
 		public IFileSystem FileSystem { get; }
-
-		public void DisposePlayerView()
-		{
-			if (_playerView != null)
-			{
-				_playerView.Dispose();
-				_playerView = null;
-			}
-		}
 
 		public Shape GetShapeAt(Point currentPos)
 		{
 			return Active.IsOpen ? CurrentPage.GetShapeTypeAt(currentPos) : Shape.NothingSpecial;
 		}
 
-		public void Dispose()
+		public IPlayedPartitura CreatePlayedPartitura()
 		{
-			//DisposePlayerView();
-		}
-
-		private PlayerMemento LoadPlayer()
-		{
-			if (!FileSystem.FileExists(PlayerRuntimePath)) return new PlayerMemento();
-			using (Stream str = FileSystem.OpenRead(PlayerRuntimePath))
-			{
-				BinaryFormatter sf = new BinaryFormatter();
-				return (PlayerMemento) sf.Deserialize(str);
-			}
-		}
-
-		private void SavePlayer(IPlayerView view)
-		{
-			using (Stream str = FileSystem.OpenWrite(PlayerRuntimePath))
-			{
-				BinaryFormatter sf = new BinaryFormatter();
-				sf.Serialize(str, view.ToMemento());
-			}
+			if (_active == null || !_active.IsOpen) return null;
+			return _active.CreatePlayedPartitura();
 		}
 	}
 }

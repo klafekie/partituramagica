@@ -6,11 +6,6 @@ using System.Windows;
 
 namespace PartituraMagica.Domain
 {
-	public interface IImageLoader
-	{
-		IGreyImage GetImage(string path);
-	}
-
 	/**
 	 * represents a user interface control where the user can see the 
 	 * current page and draw boxes on it
