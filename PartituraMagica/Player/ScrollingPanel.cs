@@ -23,7 +23,6 @@ namespace PartituraMagica.Player
 		private readonly IPartNavigator _navigator;
 
 		private readonly IntPtr _panelHandle;
-		private readonly IPlayedPartitura _playedPartitura;
 		private readonly PlayerPositionHolder _positionHolder;
 		private readonly SpeedManager _speedManager;
 		private readonly ZoomManager _zoomManager;
@@ -33,11 +32,10 @@ namespace PartituraMagica.Player
 		private bool _isRendering;
 		private float _lastZoomX;
 
-		public ScrollingPanel(IPlayedPartitura playedPartitura, IImageLoader imageLoader, IntPtr owner, IntPtr panelHandle,
+		public ScrollingPanel(IImageLoader imageLoader, IntPtr owner, IntPtr panelHandle,
 			PlayerPositionHolder positionHolder, IPartNavigator navigator, SpeedManager speedManager,
 			ZoomManager zoomManager)
 		{
-			_playedPartitura = playedPartitura;
 			_imageLoader = imageLoader;
 			_panelHandle = panelHandle;
 			_positionHolder = positionHolder;
@@ -45,57 +43,8 @@ namespace PartituraMagica.Player
 			_speedManager = speedManager;
 			_zoomManager = zoomManager;
 
+
 			_d3D = new Direct3D();
-			CreateDevice();
-		}
-
-		public void Dispose()
-		{
-			_isRendering = false;
-			_device?.Dispose();
-			foreach (ClippingD3D l in _clippingD3Ds) l.Dispose();
-			ClippingD3D.Cleanup();
-			_d3D?.Dispose();
-		}
-
-		public void Init(string partPattern, IEnumerable<Clipping> clips, double lineDistance)
-		{
-			_clippingD3Ds.Clear();
-			var paths = _playedPartitura.ImagePaths;
-			foreach (Clipping c in clips)
-			{
-				string path = paths[c.PageIndex];
-				IGreyImage image = _imageLoader.GetImage(path);
-				ClippingD3D line = new ClippingD3D(image, c.Coords, _configuration.InvertColors, _configuration.Color);
-				_clippingD3Ds.Add(line);
-			}
-
-			float offset = 0F;
-			foreach (ClippingD3D l in _clippingD3Ds)
-			{
-				l.Init(_device, offset);
-				offset += l.Width + (float) lineDistance;
-			}
-
-			string[] parts = new string[partPattern.Length];
-			for (int i = 0; i < partPattern.Length; i++) parts[i] = partPattern[i].ToString();
-
-			_positionHolder.XPos = 0;
-		}
-
-		public void StartScrolling()
-		{
-			_isRendering = true;
-
-			do
-			{
-				Application.DoEvents();
-				Render();
-			} while (_isRendering);
-		}
-
-		private void CreateDevice()
-		{
 			/* Experiment jed 20141227, setting BackBuffer size explicitly. Without that, seen that device.ViewPort size was 640 * 480 pixels.
 			 * Setting the size to the monitor resolution improved quality a lot. But maybe it should be the exact #pixels in the player panel?
 			 * Values: Laptop jed: 1600*900. Monitor jed: 1680*1050.
@@ -126,26 +75,69 @@ namespace PartituraMagica.Player
 			_device.SetRenderState(RenderState.MultisampleAntialias, false);
 		}
 
+		public void Dispose()
+		{
+			_isRendering = false;
+			_device?.Dispose();
+			_device = null;
+			foreach (ClippingD3D l in _clippingD3Ds) l.Dispose();
+			_clippingD3Ds.Clear();
+			ClippingD3D.Cleanup();
+			_d3D?.Dispose();
+		}
+
+		public void StartScrolling(IPlayedPartitura partitura)
+		{
+			_clippingD3Ds.Clear();
+			var paths = partitura.ImagePaths;
+			foreach (Clipping c in _navigator.GetClippings())
+			{
+				string path = paths[c.PageIndex];
+				IGreyImage image = _imageLoader.GetImage(path);
+				ClippingD3D line = new ClippingD3D(image, c.Coords, _configuration.InvertColors, _configuration.Color);
+				_clippingD3Ds.Add(line);
+			}
+
+			float offset = 0F;
+			foreach (ClippingD3D l in _clippingD3Ds)
+			{
+				l.Init(_device, offset);
+				offset += l.Width;
+			}
+
+			string[] parts = new string[partitura.PartPattern.Length];
+			for (int i = 0; i < partitura.PartPattern.Length; i++) parts[i] = partitura.PartPattern[i].ToString();
+
+			_positionHolder.XPos = 0;
+
+			_isRendering = true;
+
+			do
+			{
+				Application.DoEvents();
+				Render();
+			} while (_isRendering);
+		}
+
 		private void Render()
 		{
-			//using (TraceEntry e = SimpleTracer.Start("Render()")) {
-			//	int tick = Environment.TickCount;
 			if (_device == null) return;
 
 			if (!_isRendering)
-				//Debug.Write(".");
 				return;
 
 			_device.Clear(ClearFlags.Target, _configuration.InvertColors ? Color.Black : _configuration.Color, 1.0f, 0);
 			try
 			{
 				_device.BeginScene();
-				float zoomY;
-				_zoomManager.GetNextZoom(out _lastZoomX, out zoomY);
+				_zoomManager.GetNextZoom(out _lastZoomX, out float zoomY);
+
 				_device.SetTransform(TransformState.World,
 					Matrix.Scaling(_lastZoomX, zoomY, 1F) *
 					Matrix.Translation((float) -_positionHolder.XPos * _lastZoomX, 0, 0));
-				for (int i = 0; i < _clippingD3Ds.Count; i++) _clippingD3Ds[i].Render(_device);
+
+				foreach (ClippingD3D clipping in _clippingD3Ds)
+					clipping.Render(_device);
 			}
 			finally
 			{
@@ -154,10 +146,10 @@ namespace PartituraMagica.Player
 
 			_device.Present();
 
-			if (!_speedManager.IsPaused)
-				if (!_navigator.IsPartituraFinished())
-					_positionHolder.ScrollForwardBy(_speedManager.Speed);
-			//}
+			if (_speedManager.IsPaused) return;
+
+			if (!_navigator.IsPartituraFinished())
+				_positionHolder.ScrollForwardBy(_speedManager.Speed);
 		}
 	}
 }

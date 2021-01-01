@@ -29,6 +29,7 @@ namespace PartituraMagica.Player
 		public void Dispose()
 		{
 			_playerView?.Dispose();
+			_playerView = null;
 		}
 
 		public void CreateAndShowView(IPlayedPartitura partitura)
@@ -36,13 +37,13 @@ namespace PartituraMagica.Player
 			WindowInteropHelper h = new WindowInteropHelper(_mainWindow);
 
 			var positionHolder = new PlayerPositionHolder();
-			var navigator = new PartNavigator(partitura, positionHolder);
+			var navigator = new PartNavigator(partitura, positionHolder, new PartPositionCalculator(partitura));
 
-			_playerView = new PlayerViewD3D(partitura, _imageLoader, h.Handle, LoadPlayer(partitura),
+			_playerView = new PlayerViewD3D(_imageLoader, h.Handle, LoadPlayer(partitura),
 				positionHolder, navigator);
 			_playerView.Closed += (o, args) => { SavePlayer(_playerView, partitura.RuntimePath); };
 
-			navigator.PlayerOpened(_playerView);
+			_playerView.StartScrolling(partitura);
 		}
 
 		private PlayerMemento LoadPlayer(IPlayedPartitura partitura)

@@ -1,6 +1,7 @@
 ﻿#region usings
 
 using System;
+using System.Collections.Generic;
 using PartituraMagica.Domain;
 
 #endregion
@@ -13,17 +14,16 @@ namespace PartituraMagica.Playing
 	public class PartNavigator : IPartNavigator
 	{
 		private static readonly double MinPartScroll = 150D;
-		private readonly PartPositionProvider _calculator;
-		private readonly IPlayedPartitura _partitura;
+		private readonly PartPositionCalculator _calculator;
 		private readonly PlayerPositionHolder _playerPosition;
 		private int _currentPartIndex;
 
-		public PartNavigator(IPlayedPartitura partitura, PlayerPositionHolder playerPosition)
+		public PartNavigator(IPlayedPartitura partitura, PlayerPositionHolder playerPosition,
+			PartPositionCalculator calculator)
 		{
-			_partitura = partitura;
 			_playerPosition = playerPosition;
 			_playerPosition.ViewHasScrolled += OnViewHasScrolled;
-			_calculator = new PartPositionProvider(partitura);
+			_calculator = calculator;
 		}
 
 
@@ -100,10 +100,9 @@ namespace PartituraMagica.Playing
 			_playerPosition.XPos = viewXPos;
 		}
 
-		public void PlayerOpened(IPlayerView view)
+		public IList<Clipping> GetClippings()
 		{
-			view.Init(_partitura.PartPattern, _calculator.GetClippings(), PartPositionProvider.LINE_DISTANCE);
-			view.StartScrolling();
+			return _calculator.GetClippings();
 		}
 
 		private void OnViewHasScrolled()

@@ -124,7 +124,7 @@
     <Compile Include="Playing\IPartNavigator.cs" />
     <Compile Include="Playing\IPlayerViewFactory.cs" />
     <Compile Include="Playing\PartNavigator.cs" />
-    <Compile Include="Playing\PartPositionProvider.cs" />
+    <Compile Include="Playing\PartPositionCalculator.cs" />
     <Compile Include="Playing\ShowPlayerCommand.cs" />
     <Compile Include="Playing\SpeedManager.cs" />
     <Compile Include="Playing\ZoomManager.cs" />

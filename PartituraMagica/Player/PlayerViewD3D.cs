@@ -1,7 +1,6 @@
 ﻿#region usings
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
@@ -41,7 +40,7 @@ namespace PartituraMagica.Player
 		private readonly SpeedManager _speedManager;
 		private readonly ZoomManager _zoomManager;
 
-		public PlayerViewD3D(IPlayedPartitura playedPartitura, IImageLoader imageLoader, IntPtr ownerHandle,
+		public PlayerViewD3D(IImageLoader imageLoader, IntPtr ownerHandle,
 			PlayerMemento memento,
 			PlayerPositionHolder positionHolder, IPartNavigator partNavigator)
 		{
@@ -53,7 +52,7 @@ namespace PartituraMagica.Player
 			_ownerHandle = ownerHandle;
 			_speedManager = new SpeedManager(memento.Speed);
 			_zoomManager = new ZoomManager(memento.XZoom, memento.YZoom);
-			_scrollPanel = new ScrollingPanel(playedPartitura, imageLoader, ownerHandle, panel1.Handle, positionHolder,
+			_scrollPanel = new ScrollingPanel(imageLoader, ownerHandle, panel1.Handle, positionHolder,
 				partNavigator, _speedManager, _zoomManager);
 			_keyboardMap = new KeyboardMap(_speedManager, _zoomManager, _navigator, this);
 
@@ -74,28 +73,6 @@ namespace PartituraMagica.Player
 			};
 		}
 
-		public void Init(string partPattern, IEnumerable<Clipping> clips, double lineDistance)
-		{
-			_scrollPanel.Init(partPattern, clips, lineDistance);
-
-			CreatePartButtons(partPattern);
-		}
-
-		public void StartScrolling()
-		{
-			IWin32Window w = new Win32Window(_ownerHandle);
-
-			_speedManager.IsPaused = false;
-
-			Enabled = true;
-			Show(w);
-
-			_scrollPanel.StartScrolling();
-
-			//we return here only if window is closed
-			Enabled = false;
-		}
-
 		public PlayerMemento ToMemento()
 		{
 			return new PlayerMemento
@@ -104,6 +81,23 @@ namespace PartituraMagica.Player
 				XZoom = _zoomManager.XZoom,
 				YZoom = _zoomManager.YZoom
 			};
+		}
+
+		public void StartScrolling(IPlayedPartitura partitura)
+		{
+			CreatePartButtons(partitura.PartPattern);
+
+			IWin32Window w = new Win32Window(_ownerHandle);
+
+			_speedManager.IsPaused = false;
+
+			Enabled = true;
+			Show(w);
+
+			_scrollPanel.StartScrolling(partitura);
+
+			//we return here only if window is closed
+			Enabled = false;
 		}
 
 		private void CreatePartButtons(string partPattern)

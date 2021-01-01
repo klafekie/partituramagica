@@ -1,6 +1,7 @@
 ﻿#region usings
 
 using System;
+using System.Collections.Generic;
 using PartituraMagica.Domain;
 
 #endregion
@@ -35,6 +36,6 @@ namespace PartituraMagica.Playing
 		void JumpForwardClicked();
 		void JumpBackwardClicked();
 		bool IsPartituraFinished();
-		void PlayerOpened(IPlayerView view);
+		IList<Clipping> GetClippings();
 	}
 }
