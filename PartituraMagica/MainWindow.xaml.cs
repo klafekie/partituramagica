@@ -31,7 +31,7 @@ namespace PartituraMagica
 			RoutedUICommand("Start Player", "ShowPlayer", typeof(MainWindow),
 				new InputGestureCollection
 				{
-					new KeyGesture(Key.N, ModifierKeys.Control)
+					new KeyGesture(Key.Space)
 				});
 
 		public static RoutedUICommand NewPartitura { get; } = new

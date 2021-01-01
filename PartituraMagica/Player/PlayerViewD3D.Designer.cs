@@ -20,25 +20,36 @@
 			this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
 			this.toolStrip1 = new System.Windows.Forms.ToolStrip();
 			this.btnFirstPart = new FontAwesome.Sharp.IconToolStripButton();
+			this.btnPreviousPart = new FontAwesome.Sharp.IconToolStripButton();
 			this.btnNextPart = new FontAwesome.Sharp.IconToolStripButton();
 			this.btnLastPart = new FontAwesome.Sharp.IconToolStripButton();
-			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+			this.toolStrip2 = new System.Windows.Forms.ToolStrip();
 			this.btnJumpBackward = new FontAwesome.Sharp.IconToolStripButton();
 			this.btnPauseResume = new FontAwesome.Sharp.IconToolStripButton();
 			this.btnJumpForward = new FontAwesome.Sharp.IconToolStripButton();
-			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+			this.toolStrip3 = new System.Windows.Forms.ToolStrip();
 			this.btnSlower = new FontAwesome.Sharp.IconToolStripButton();
 			this.btnFaster = new FontAwesome.Sharp.IconToolStripButton();
-			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+			this.toolStrip4 = new System.Windows.Forms.ToolStrip();
 			this.btnZoomIn = new FontAwesome.Sharp.IconToolStripButton();
 			this.btnWider = new FontAwesome.Sharp.IconToolStripButton();
 			this.btnZoomOut = new FontAwesome.Sharp.IconToolStripButton();
 			this.btnSmaller = new FontAwesome.Sharp.IconToolStripButton();
-			this.btnPreviousPart = new FontAwesome.Sharp.IconToolStripButton();
+			this.toolStrip5 = new System.Windows.Forms.ToolStrip();
+			this.btnRecordSnipped = new FontAwesome.Sharp.IconToolStripButton();
+			this.splitBtnRepeatAll = new FontAwesome.Sharp.IconSplitButton();
+			this.btnRepeatSnippet1 = new FontAwesome.Sharp.IconMenuItem();
+			this.comboDeleteSnippets = new FontAwesome.Sharp.IconDropDownButton();
+			this.btnRemoveSnippet1 = new FontAwesome.Sharp.IconMenuItem();
+			this.btnRemoveAllSnippets = new FontAwesome.Sharp.IconMenuItem();
 			this.toolStripContainer1.ContentPanel.SuspendLayout();
 			this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
 			this.toolStripContainer1.SuspendLayout();
 			this.toolStrip1.SuspendLayout();
+			this.toolStrip2.SuspendLayout();
+			this.toolStrip3.SuspendLayout();
+			this.toolStrip4.SuspendLayout();
+			this.toolStrip5.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// panel1
@@ -65,7 +76,11 @@
 			// 
 			// toolStripContainer1.TopToolStripPanel
 			// 
+			this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip5);
+			this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip2);
+			this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip4);
 			this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip1);
+			this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip3);
 			this.toolStripContainer1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.PlayerViewD3D_KeyDown);
 			this.toolStripContainer1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.PlayerViewD3D_KeyUp);
 			// 
@@ -76,22 +91,10 @@
             this.btnFirstPart,
             this.btnPreviousPart,
             this.btnNextPart,
-            this.btnLastPart,
-            this.toolStripSeparator1,
-            this.btnJumpBackward,
-            this.btnPauseResume,
-            this.btnJumpForward,
-            this.toolStripSeparator3,
-            this.btnSlower,
-            this.btnFaster,
-            this.toolStripSeparator2,
-            this.btnZoomIn,
-            this.btnWider,
-            this.btnZoomOut,
-            this.btnSmaller});
-			this.toolStrip1.Location = new System.Drawing.Point(3, 0);
+            this.btnLastPart});
+			this.toolStrip1.Location = new System.Drawing.Point(119, 0);
 			this.toolStrip1.Name = "toolStrip1";
-			this.toolStrip1.Size = new System.Drawing.Size(787, 55);
+			this.toolStrip1.Size = new System.Drawing.Size(220, 55);
 			this.toolStrip1.TabIndex = 0;
 			// 
 			// btnFirstPart
@@ -107,6 +110,22 @@
 			this.btnFirstPart.Size = new System.Drawing.Size(52, 52);
 			this.btnFirstPart.Text = "Show First Part";
 			this.btnFirstPart.Click += new System.EventHandler(this.btnFirstPart_Click);
+			// 
+			// btnPreviousPart
+			// 
+			this.btnPreviousPart.AutoSize = false;
+			this.btnPreviousPart.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.btnPreviousPart.IconChar = FontAwesome.Sharp.IconChar.StepBackward;
+			this.btnPreviousPart.IconColor = System.Drawing.Color.Black;
+			this.btnPreviousPart.IconFont = FontAwesome.Sharp.IconFont.Auto;
+			this.btnPreviousPart.IconSize = 40;
+			this.btnPreviousPart.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+			this.btnPreviousPart.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.btnPreviousPart.Margin = new System.Windows.Forms.Padding(0, 1, 0, 1);
+			this.btnPreviousPart.Name = "btnPreviousPart";
+			this.btnPreviousPart.Size = new System.Drawing.Size(52, 52);
+			this.btnPreviousPart.Text = "Show Next Part";
+			this.btnPreviousPart.Click += new System.EventHandler(this.btnPreviousPart_Click);
 			// 
 			// btnNextPart
 			// 
@@ -139,11 +158,17 @@
 			this.btnLastPart.Text = "Show Last Part";
 			this.btnLastPart.Click += new System.EventHandler(this.btnLastPart_Click);
 			// 
-			// toolStripSeparator1
+			// toolStrip2
 			// 
-			this.toolStripSeparator1.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
-			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 55);
+			this.toolStrip2.Dock = System.Windows.Forms.DockStyle.None;
+			this.toolStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.btnJumpBackward,
+            this.btnPauseResume,
+            this.btnJumpForward});
+			this.toolStrip2.Location = new System.Drawing.Point(777, 0);
+			this.toolStrip2.Name = "toolStrip2";
+			this.toolStrip2.Size = new System.Drawing.Size(178, 55);
+			this.toolStrip2.TabIndex = 1;
 			// 
 			// btnJumpBackward
 			// 
@@ -191,11 +216,16 @@
 			this.btnJumpForward.Text = "Jump Forward";
 			this.btnJumpForward.Click += new System.EventHandler(this.btnJumpForward_Click);
 			// 
-			// toolStripSeparator3
+			// toolStrip3
 			// 
-			this.toolStripSeparator3.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
-			this.toolStripSeparator3.Name = "toolStripSeparator3";
-			this.toolStripSeparator3.Size = new System.Drawing.Size(6, 55);
+			this.toolStrip3.Dock = System.Windows.Forms.DockStyle.None;
+			this.toolStrip3.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.btnSlower,
+            this.btnFaster});
+			this.toolStrip3.Location = new System.Drawing.Point(3, 0);
+			this.toolStrip3.Name = "toolStrip3";
+			this.toolStrip3.Size = new System.Drawing.Size(116, 55);
+			this.toolStrip3.TabIndex = 2;
 			// 
 			// btnSlower
 			// 
@@ -227,11 +257,18 @@
 			this.btnFaster.Text = "Faster";
 			this.btnFaster.Click += new System.EventHandler(this.btnFaster_Click);
 			// 
-			// toolStripSeparator2
+			// toolStrip4
 			// 
-			this.toolStripSeparator2.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
-			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(6, 55);
+			this.toolStrip4.Dock = System.Windows.Forms.DockStyle.None;
+			this.toolStrip4.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.btnZoomIn,
+            this.btnWider,
+            this.btnZoomOut,
+            this.btnSmaller});
+			this.toolStrip4.Location = new System.Drawing.Point(339, 0);
+			this.toolStrip4.Name = "toolStrip4";
+			this.toolStrip4.Size = new System.Drawing.Size(230, 55);
+			this.toolStrip4.TabIndex = 3;
 			// 
 			// btnZoomIn
 			// 
@@ -259,6 +296,7 @@
 			this.btnWider.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
 			this.btnWider.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.btnWider.Name = "btnWider";
+			this.btnWider.Rotation = 45D;
 			this.btnWider.Size = new System.Drawing.Size(52, 52);
 			this.btnWider.Text = "Widen";
 			this.btnWider.Click += new System.EventHandler(this.btnWider_Click);
@@ -290,24 +328,112 @@
 			this.btnSmaller.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
 			this.btnSmaller.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.btnSmaller.Name = "btnSmaller";
+			this.btnSmaller.Rotation = 45D;
 			this.btnSmaller.Size = new System.Drawing.Size(52, 52);
 			this.btnSmaller.Text = "Narrow";
 			this.btnSmaller.Click += new System.EventHandler(this.btnSmaller_Click);
 			// 
-			// btnPreviousPart
+			// toolStrip5
 			// 
-			this.btnPreviousPart.AutoSize = false;
-			this.btnPreviousPart.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.btnPreviousPart.IconChar = FontAwesome.Sharp.IconChar.StepBackward;
-			this.btnPreviousPart.IconColor = System.Drawing.Color.Black;
-			this.btnPreviousPart.IconFont = FontAwesome.Sharp.IconFont.Auto;
-			this.btnPreviousPart.IconSize = 40;
-			this.btnPreviousPart.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-			this.btnPreviousPart.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.btnPreviousPart.Margin = new System.Windows.Forms.Padding(0, 1, 0, 1);
-			this.btnPreviousPart.Name = "btnPreviousPart";
-			this.btnPreviousPart.Size = new System.Drawing.Size(52, 52);
-			this.btnPreviousPart.Text = "Show Next Part";
+			this.toolStrip5.Dock = System.Windows.Forms.DockStyle.None;
+			this.toolStrip5.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.btnRecordSnipped,
+            this.splitBtnRepeatAll,
+            this.comboDeleteSnippets});
+			this.toolStrip5.Location = new System.Drawing.Point(569, 0);
+			this.toolStrip5.Name = "toolStrip5";
+			this.toolStrip5.Size = new System.Drawing.Size(208, 55);
+			this.toolStrip5.TabIndex = 4;
+			// 
+			// btnRecordSnipped
+			// 
+			this.btnRecordSnipped.AutoSize = false;
+			this.btnRecordSnipped.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.btnRecordSnipped.IconChar = FontAwesome.Sharp.IconChar.Thumbtack;
+			this.btnRecordSnipped.IconColor = System.Drawing.Color.Black;
+			this.btnRecordSnipped.IconFont = FontAwesome.Sharp.IconFont.Auto;
+			this.btnRecordSnipped.IconSize = 40;
+			this.btnRecordSnipped.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+			this.btnRecordSnipped.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.btnRecordSnipped.Name = "btnRecordSnipped";
+			this.btnRecordSnipped.Rotation = 45D;
+			this.btnRecordSnipped.Size = new System.Drawing.Size(52, 52);
+			this.btnRecordSnipped.Text = "Record Snippet";
+			// 
+			// splitBtnRepeatAll
+			// 
+			this.splitBtnRepeatAll.AutoSize = false;
+			this.splitBtnRepeatAll.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.splitBtnRepeatAll.DropDownButtonWidth = 20;
+			this.splitBtnRepeatAll.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.btnRepeatSnippet1});
+			this.splitBtnRepeatAll.Flip = FontAwesome.Sharp.FlipOrientation.Normal;
+			this.splitBtnRepeatAll.Font = new System.Drawing.Font("Segoe UI", 26F);
+			this.splitBtnRepeatAll.IconChar = FontAwesome.Sharp.IconChar.SyncAlt;
+			this.splitBtnRepeatAll.IconColor = System.Drawing.Color.Black;
+			this.splitBtnRepeatAll.IconFont = FontAwesome.Sharp.IconFont.Auto;
+			this.splitBtnRepeatAll.IconSize = 40;
+			this.splitBtnRepeatAll.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+			this.splitBtnRepeatAll.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.splitBtnRepeatAll.Name = "splitBtnRepeatAll";
+			this.splitBtnRepeatAll.Rotation = 0D;
+			this.splitBtnRepeatAll.Size = new System.Drawing.Size(72, 52);
+			this.splitBtnRepeatAll.Text = "Repeat All Snippets";
+			this.splitBtnRepeatAll.ToolTipText = "Repeat All Snippets";
+			// 
+			// btnRepeatSnippet1
+			// 
+			this.btnRepeatSnippet1.AutoSize = false;
+			this.btnRepeatSnippet1.IconChar = FontAwesome.Sharp.IconChar.DiceFive;
+			this.btnRepeatSnippet1.IconColor = System.Drawing.Color.Black;
+			this.btnRepeatSnippet1.IconFont = FontAwesome.Sharp.IconFont.Auto;
+			this.btnRepeatSnippet1.IconSize = 40;
+			this.btnRepeatSnippet1.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+			this.btnRepeatSnippet1.Name = "btnRepeatSnippet1";
+			this.btnRepeatSnippet1.Size = new System.Drawing.Size(446, 52);
+			this.btnRepeatSnippet1.Text = "Repeat 1 only";
+			this.btnRepeatSnippet1.ToolTipText = "Repeat Snippet 1";
+			this.btnRepeatSnippet1.Click += new System.EventHandler(this.trainingToolStripMenuItem_Click);
+			// 
+			// comboDeleteSnippets
+			// 
+			this.comboDeleteSnippets.AutoSize = false;
+			this.comboDeleteSnippets.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.comboDeleteSnippets.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.btnRemoveSnippet1,
+            this.btnRemoveAllSnippets});
+			this.comboDeleteSnippets.Font = new System.Drawing.Font("Segoe UI", 26F);
+			this.comboDeleteSnippets.IconChar = FontAwesome.Sharp.IconChar.TrashAlt;
+			this.comboDeleteSnippets.IconColor = System.Drawing.Color.Black;
+			this.comboDeleteSnippets.IconFont = FontAwesome.Sharp.IconFont.Auto;
+			this.comboDeleteSnippets.IconSize = 40;
+			this.comboDeleteSnippets.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+			this.comboDeleteSnippets.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.comboDeleteSnippets.Name = "comboDeleteSnippets";
+			this.comboDeleteSnippets.Size = new System.Drawing.Size(72, 52);
+			this.comboDeleteSnippets.Text = "Delete Snippets";
+			// 
+			// btnRemoveSnippet1
+			// 
+			this.btnRemoveSnippet1.IconChar = FontAwesome.Sharp.IconChar.DiceFour;
+			this.btnRemoveSnippet1.IconColor = System.Drawing.Color.Black;
+			this.btnRemoveSnippet1.IconFont = FontAwesome.Sharp.IconFont.Auto;
+			this.btnRemoveSnippet1.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+			this.btnRemoveSnippet1.Name = "btnRemoveSnippet1";
+			this.btnRemoveSnippet1.Size = new System.Drawing.Size(449, 54);
+			this.btnRemoveSnippet1.Text = "Remove Snippet 1";
+			this.btnRemoveSnippet1.ToolTipText = "Remove Snippet 1";
+			// 
+			// btnRemoveAllSnippets
+			// 
+			this.btnRemoveAllSnippets.IconChar = FontAwesome.Sharp.IconChar.Dice;
+			this.btnRemoveAllSnippets.IconColor = System.Drawing.Color.Black;
+			this.btnRemoveAllSnippets.IconFont = FontAwesome.Sharp.IconFont.Auto;
+			this.btnRemoveAllSnippets.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+			this.btnRemoveAllSnippets.Name = "btnRemoveAllSnippets";
+			this.btnRemoveAllSnippets.Size = new System.Drawing.Size(449, 54);
+			this.btnRemoveAllSnippets.Text = "Remove All Snippets";
+			this.btnRemoveAllSnippets.ToolTipText = "Remove All Snippets";
 			// 
 			// PlayerViewD3D
 			// 
@@ -327,6 +453,14 @@
 			this.toolStripContainer1.PerformLayout();
 			this.toolStrip1.ResumeLayout(false);
 			this.toolStrip1.PerformLayout();
+			this.toolStrip2.ResumeLayout(false);
+			this.toolStrip2.PerformLayout();
+			this.toolStrip3.ResumeLayout(false);
+			this.toolStrip3.PerformLayout();
+			this.toolStrip4.ResumeLayout(false);
+			this.toolStrip4.PerformLayout();
+			this.toolStrip5.ResumeLayout(false);
+			this.toolStrip5.PerformLayout();
 			this.ResumeLayout(false);
 
         }
@@ -336,21 +470,28 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.ToolStripContainer toolStripContainer1;
         private System.Windows.Forms.ToolStrip toolStrip1;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
 		private FontAwesome.Sharp.IconToolStripButton btnFirstPart;
 		private FontAwesome.Sharp.IconToolStripButton btnNextPart;
 		private FontAwesome.Sharp.IconToolStripButton btnLastPart;
+		private FontAwesome.Sharp.IconToolStripButton btnPreviousPart;
+		private System.Windows.Forms.ToolStrip toolStrip2;
 		private FontAwesome.Sharp.IconToolStripButton btnJumpBackward;
 		private FontAwesome.Sharp.IconToolStripButton btnPauseResume;
 		private FontAwesome.Sharp.IconToolStripButton btnJumpForward;
+		private System.Windows.Forms.ToolStrip toolStrip3;
 		private FontAwesome.Sharp.IconToolStripButton btnSlower;
 		private FontAwesome.Sharp.IconToolStripButton btnFaster;
+		private System.Windows.Forms.ToolStrip toolStrip4;
 		private FontAwesome.Sharp.IconToolStripButton btnZoomIn;
 		private FontAwesome.Sharp.IconToolStripButton btnWider;
 		private FontAwesome.Sharp.IconToolStripButton btnZoomOut;
 		private FontAwesome.Sharp.IconToolStripButton btnSmaller;
-		private FontAwesome.Sharp.IconToolStripButton btnPreviousPart;
+		private System.Windows.Forms.ToolStrip toolStrip5;
+		private FontAwesome.Sharp.IconSplitButton splitBtnRepeatAll;
+		private FontAwesome.Sharp.IconMenuItem btnRepeatSnippet1;
+		private FontAwesome.Sharp.IconToolStripButton btnRecordSnipped;
+		private FontAwesome.Sharp.IconDropDownButton comboDeleteSnippets;
+		private FontAwesome.Sharp.IconMenuItem btnRemoveSnippet1;
+		private FontAwesome.Sharp.IconMenuItem btnRemoveAllSnippets;
 	}
 }
