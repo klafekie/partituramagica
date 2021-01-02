@@ -39,6 +39,7 @@ namespace PartituraMagica.Player
 
 		private readonly IntPtr _ownerHandle;
 		private readonly ScrollingPanel _scrollPanel;
+		private readonly SnippetManager _snippets;
 		private readonly SpeedManager _speedManager;
 		private readonly ZoomManager _zoomManager;
 
@@ -53,6 +54,7 @@ namespace PartituraMagica.Player
 			_ownerHandle = new WindowInteropHelper(mainWindow).Handle;
 			_speedManager = new SpeedManager();
 			_zoomManager = new ZoomManager();
+			_snippets = new SnippetManager(positionHolder, _speedManager);
 			_scrollPanel = new ScrollingPanel(imageLoader, panel1.Handle, positionHolder,
 				partNavigator, _speedManager, _zoomManager);
 			_keyboardMap = new KeyboardMap(_speedManager, _zoomManager, _navigator, this);
@@ -81,6 +83,7 @@ namespace PartituraMagica.Player
 			CreatePartButtons(partitura.PartPattern);
 
 			_navigator.LoadPartitura(partitura);
+			CheckCurrentPartButton(partitura);
 			_navigator.CurrentPartIndexChanged += () => CheckCurrentPartButton(partitura);
 
 			_zoomManager.XZoom = memento.XZoom;
@@ -96,12 +99,19 @@ namespace PartituraMagica.Player
 
 			_scrollPanel.StartScrolling(partitura);
 
+			_snippets.StopRecording(); //make sure that currently recording snippet is stored before leave
+			_snippets.CancelPlaying();
+
 			//we return here only if window is closed
 			Enabled = false;
 		}
 
 		private void CheckCurrentPartButton(IPlayedPartitura partitura)
 		{
+			if (toolStrip1.Items.Count < partitura.PartPattern.Length + PART_A_BUTTON_INDEX)
+				//this check is required. When you play to second part, then close and reopen player the Items list is empty sometimes.
+				return;
+
 			for (int i = 0; i < partitura.PartPattern.Length; i++)
 			{
 				var button = (ToolStripButton) toolStrip1.Items[i + PART_A_BUTTON_INDEX];
@@ -137,7 +147,13 @@ namespace PartituraMagica.Player
 				toolStrip1.Items.Insert(PART_A_BUTTON_INDEX, button);
 
 				int index = partIndex;
-				button.Click += (sender, args) => { _navigator.PartClicked(index); };
+				button.Click += (sender, args) =>
+				{
+					//TODO this needs to be done also in keyboard map!
+					//Also stopRecording
+					_snippets.CancelPlaying();
+					_navigator.PartClicked(index);
+				};
 				partIndex--;
 			}
 		}
@@ -163,21 +179,25 @@ namespace PartituraMagica.Player
 		private void btnFirstPart_Click(object sender, EventArgs e)
 		{
 			_navigator.FirstPartClicked();
+			_snippets.CancelPlaying();
 		}
 
 		private void btnPreviousPart_Click(object sender, EventArgs e)
 		{
 			_navigator.PreviousPartClicked();
+			_snippets.CancelPlaying();
 		}
 
 		private void btnNextPart_Click(object sender, EventArgs e)
 		{
 			_navigator.NextPartClicked();
+			_snippets.CancelPlaying();
 		}
 
 		private void btnLastPart_Click(object sender, EventArgs e)
 		{
 			_navigator.LastPartClicked();
+			_snippets.CancelPlaying();
 		}
 
 		private void btnJumpBackward_Click(object sender, EventArgs e)
@@ -223,6 +243,25 @@ namespace PartituraMagica.Player
 		private void btnSmaller_Click(object sender, EventArgs e)
 		{
 			_zoomManager.ZoomOut(true);
+		}
+
+		private void btnRemoveCurrentSnippet_Click(object sender, EventArgs e)
+		{
+		}
+
+		private void btnRecordSnippet_MouseDown(object sender, MouseEventArgs e)
+		{
+			_snippets.StartRecording();
+		}
+
+		private void btnRecordSnippet_MouseUp(object sender, MouseEventArgs e)
+		{
+			_snippets.StopRecording();
+		}
+
+		private void splitBtnRepeatAll_Click(object sender, EventArgs e)
+		{
+			_snippets.RepeatAllSnippets();
 		}
 	}
 }

@@ -154,6 +154,7 @@
     <Compile Include="Player\PlayerViewD3D.Designer.cs">
       <DependentUpon>PlayerViewD3D.cs</DependentUpon>
     </Compile>
+    <Compile Include="Player\SnippetManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

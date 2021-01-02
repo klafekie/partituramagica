@@ -21,12 +21,12 @@ namespace PartituraMagica.Playing
 		public PartNavigator(PlayerPositionHolder playerPosition)
 		{
 			_playerPosition = playerPosition;
-			_playerPosition.ViewHasScrolled += OnViewHasScrolled;
 		}
 
 
 		public void LoadPartitura(IPlayedPartitura partitura)
 		{
+			_playerPosition.ViewHasScrolled += OnViewHasScrolled;
 			_calculator = new PartPositionCalculator(partitura);
 		}
 

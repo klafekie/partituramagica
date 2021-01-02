@@ -266,7 +266,7 @@ namespace PartituraMagica
 			if (e.Key == Key.Space)
 			{
 				if (_commandFactory.Create("UpdatePartPattern").TryExecute())
-					_commandFactory.Create("StartPlayer").TryExecute();
+					_commandFactory.Create("ShowPlayer").TryExecute();
 				e.Handled = true;
 			}
 		}

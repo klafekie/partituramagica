@@ -9,19 +9,28 @@ namespace PartituraMagica.Playing
 	public class SpeedManager
 	{
 		private bool _isPaused = true;
+		private DateTime? _resumePlayingTime;
 
 		public bool IsPaused
 		{
-			get => _isPaused;
-			set
+			get
 			{
-				bool isChanged = _isPaused != value;
-				_isPaused = value;
-				if (isChanged) IsPausedChanged?.Invoke();
+				if (_resumePlayingTime != null && _resumePlayingTime <= DateTime.Now) SetIsPausedAndTriggerEvent(false);
+
+				return _isPaused;
 			}
+			set => SetIsPausedAndTriggerEvent(value);
 		}
 
 		public float Speed { get; set; }
+
+		private void SetIsPausedAndTriggerEvent(bool value)
+		{
+			bool isChanged = _isPaused != value;
+			_resumePlayingTime = null; //abort any timed pause.
+			_isPaused = value;
+			if (isChanged) IsPausedChanged?.Invoke();
+		}
 
 		public event Action IsPausedChanged;
 
@@ -38,6 +47,12 @@ namespace PartituraMagica.Playing
 		public void DecreaseSpeed()
 		{
 			Speed *= 0.8F;
+		}
+
+		public void PauseFor(int seconds)
+		{
+			IsPaused = true;
+			_resumePlayingTime = DateTime.Now.AddSeconds(seconds);
 		}
 	}
 }
