@@ -5,9 +5,11 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using System.Windows.Interop;
 using FontAwesome.Sharp;
 using PartituraMagica.Domain;
 using PartituraMagica.Playing;
+using IWin32Window = System.Windows.Forms.IWin32Window;
 
 #endregion
 
@@ -40,8 +42,7 @@ namespace PartituraMagica.Player
 		private readonly SpeedManager _speedManager;
 		private readonly ZoomManager _zoomManager;
 
-		public PlayerViewD3D(IImageLoader imageLoader, IntPtr ownerHandle,
-			PlayerMemento memento,
+		public PlayerViewD3D(IImageLoader imageLoader, MainWindow mainWindow,
 			PlayerPositionHolder positionHolder, IPartNavigator partNavigator)
 		{
 			Trace.WriteLine("ctor of PlayerViewD3D");
@@ -49,21 +50,13 @@ namespace PartituraMagica.Player
 			WindowState = FormWindowState.Maximized;
 
 			_navigator = partNavigator;
-			_ownerHandle = ownerHandle;
-			_speedManager = new SpeedManager(memento.Speed);
-			_zoomManager = new ZoomManager(memento.XZoom, memento.YZoom);
-			_scrollPanel = new ScrollingPanel(imageLoader, ownerHandle, panel1.Handle, positionHolder,
+			_ownerHandle = new WindowInteropHelper(mainWindow).Handle;
+			_speedManager = new SpeedManager();
+			_zoomManager = new ZoomManager();
+			_scrollPanel = new ScrollingPanel(imageLoader, panel1.Handle, positionHolder,
 				partNavigator, _speedManager, _zoomManager);
 			_keyboardMap = new KeyboardMap(_speedManager, _zoomManager, _navigator, this);
 
-			_navigator.CurrentPartIndexChanged += () =>
-			{
-				for (int i = 0; i < _navigator.PartCount; i++)
-				{
-					var button = (ToolStripButton) toolStrip1.Items[i + PART_A_BUTTON_INDEX];
-					button.Checked = i == _navigator.CurrentPartIndex;
-				}
-			};
 			_speedManager.IsPausedChanged += () =>
 			{
 				btnPauseResume.Checked = _speedManager.IsPaused;
@@ -83,9 +76,16 @@ namespace PartituraMagica.Player
 			};
 		}
 
-		public void StartScrolling(IPlayedPartitura partitura)
+		public void StartScrolling(IPlayedPartitura partitura, PlayerMemento memento)
 		{
 			CreatePartButtons(partitura.PartPattern);
+
+			_navigator.LoadPartitura(partitura);
+			_navigator.CurrentPartIndexChanged += () => CheckCurrentPartButton(partitura);
+
+			_zoomManager.XZoom = memento.XZoom;
+			_zoomManager.YZoom = memento.YZoom;
+			_speedManager.Speed = memento.Speed;
 
 			IWin32Window w = new Win32Window(_ownerHandle);
 
@@ -98,6 +98,15 @@ namespace PartituraMagica.Player
 
 			//we return here only if window is closed
 			Enabled = false;
+		}
+
+		private void CheckCurrentPartButton(IPlayedPartitura partitura)
+		{
+			for (int i = 0; i < partitura.PartPattern.Length; i++)
+			{
+				var button = (ToolStripButton) toolStrip1.Items[i + PART_A_BUTTON_INDEX];
+				button.Checked = i == _navigator.CurrentPartIndex;
+			}
 		}
 
 		private void CreatePartButtons(string partPattern)

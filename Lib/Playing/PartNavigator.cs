@@ -14,18 +14,21 @@ namespace PartituraMagica.Playing
 	public class PartNavigator : IPartNavigator
 	{
 		private static readonly double MinPartScroll = 150D;
-		private readonly PartPositionCalculator _calculator;
 		private readonly PlayerPositionHolder _playerPosition;
+		private PartPositionCalculator _calculator;
 		private int _currentPartIndex;
 
-		public PartNavigator(IPlayedPartitura partitura, PlayerPositionHolder playerPosition,
-			PartPositionCalculator calculator)
+		public PartNavigator(PlayerPositionHolder playerPosition)
 		{
 			_playerPosition = playerPosition;
 			_playerPosition.ViewHasScrolled += OnViewHasScrolled;
-			_calculator = calculator;
 		}
 
+
+		public void LoadPartitura(IPlayedPartitura partitura)
+		{
+			_calculator = new PartPositionCalculator(partitura);
+		}
 
 		public int CurrentPartIndex
 		{
@@ -37,8 +40,6 @@ namespace PartituraMagica.Playing
 				if (changed) CurrentPartIndexChanged?.Invoke();
 			}
 		}
-
-		public int PartCount => _calculator.GetLastPatternIndex() + 1;
 
 		public event Action CurrentPartIndexChanged;
 

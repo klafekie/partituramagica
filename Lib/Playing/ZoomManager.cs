@@ -10,12 +10,6 @@
 		private float _yZoom;
 		private int _yZoomDelta;
 
-		public ZoomManager(float xZoom, float yZoom)
-		{
-			XZoom = xZoom;
-			YZoom = yZoom;
-		}
-
 		public float XZoom
 		{
 			get => _xZoom;

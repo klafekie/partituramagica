@@ -10,11 +10,6 @@ namespace PartituraMagica.Playing
 	{
 		private bool _isPaused = true;
 
-		public SpeedManager(float initialSpped)
-		{
-			Speed = initialSpped;
-		}
-
 		public bool IsPaused
 		{
 			get => _isPaused;
@@ -26,7 +21,7 @@ namespace PartituraMagica.Playing
 			}
 		}
 
-		public float Speed { get; private set; }
+		public float Speed { get; set; }
 
 		public event Action IsPausedChanged;
 

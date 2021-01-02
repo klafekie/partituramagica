@@ -3,7 +3,6 @@
 using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Windows.Interop;
 using PartituraMagica.Domain;
 using PartituraMagica.Playing;
 
@@ -14,16 +13,15 @@ namespace PartituraMagica.Player
 	internal class PlayerViewFactory : IPlayerViewFactory, IDisposable
 	{
 		private readonly IFileSystem _fileSystem;
-		private readonly IImageLoader _imageLoader;
-		private readonly MainWindow _mainWindow;
-		private PlayerViewD3D _playerView;
+		private readonly Func<IPlayerView> _getInstance;
+		private IPlayerView _playerView;
 
 		public PlayerViewFactory(MainWindow mainWindow, IImageLoader imageLoader,
-			IFileSystem fileSystem)
+			IFileSystem fileSystem, Func<IPlayerView> getInstance)
 		{
-			_mainWindow = mainWindow;
-			_imageLoader = imageLoader;
 			_fileSystem = fileSystem;
+			_getInstance = getInstance;
+			_getInstance = getInstance;
 		}
 
 		public void Dispose()
@@ -34,16 +32,10 @@ namespace PartituraMagica.Player
 
 		public void CreateAndShowView(IPlayedPartitura partitura)
 		{
-			WindowInteropHelper h = new WindowInteropHelper(_mainWindow);
-
-			var positionHolder = new PlayerPositionHolder();
-			var navigator = new PartNavigator(partitura, positionHolder, new PartPositionCalculator(partitura));
-
-			_playerView = new PlayerViewD3D(_imageLoader, h.Handle, LoadPlayer(partitura),
-				positionHolder, navigator);
+			_playerView = _getInstance();
 			_playerView.Closed += (o, args) => { SavePlayer(_playerView, partitura.RuntimePath); };
 
-			_playerView.StartScrolling(partitura);
+			_playerView.StartScrolling(partitura, LoadPlayer(partitura));
 		}
 
 		private PlayerMemento LoadPlayer(IPlayedPartitura partitura)

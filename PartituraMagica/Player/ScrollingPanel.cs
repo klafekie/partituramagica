@@ -22,7 +22,6 @@ namespace PartituraMagica.Player
 		private readonly IImageLoader _imageLoader;
 		private readonly IPartNavigator _navigator;
 
-		private readonly IntPtr _panelHandle;
 		private readonly PlayerPositionHolder _positionHolder;
 		private readonly SpeedManager _speedManager;
 		private readonly ZoomManager _zoomManager;
@@ -32,12 +31,11 @@ namespace PartituraMagica.Player
 		private bool _isRendering;
 		private float _lastZoomX;
 
-		public ScrollingPanel(IImageLoader imageLoader, IntPtr owner, IntPtr panelHandle,
+		public ScrollingPanel(IImageLoader imageLoader, IntPtr panelHandle,
 			PlayerPositionHolder positionHolder, IPartNavigator navigator, SpeedManager speedManager,
 			ZoomManager zoomManager)
 		{
 			_imageLoader = imageLoader;
-			_panelHandle = panelHandle;
 			_positionHolder = positionHolder;
 			_navigator = navigator;
 			_speedManager = speedManager;
@@ -53,7 +51,7 @@ namespace PartituraMagica.Player
 			const int bbHeight = 900;
 
 			_device = new Device(_d3D, _d3D.Adapters.DefaultAdapter.Adapter,
-				DeviceType.Hardware, _panelHandle, CreateFlags.HardwareVertexProcessing,
+				DeviceType.Hardware, panelHandle, CreateFlags.HardwareVertexProcessing,
 				new PresentParameters
 				{
 					// Added BackBufferWidth and BackBufferHeight as experiment for improving vision quality [jed])

@@ -15,5 +15,7 @@ namespace PartituraMagica.Domain
 		PlayerMemento ToMemento();
 
 		void Close();
+		event EventHandler Closed;
+		void StartScrolling(IPlayedPartitura partitura, PlayerMemento playerMemento);
 	}
 }

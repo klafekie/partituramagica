@@ -8,8 +8,6 @@ using PartituraMagica.Domain;
 
 namespace PartituraMagica.Playing
 {
-	public delegate void CancellableEvent(ref bool cancel);
-
 	/**
      * A user interface element that allows the user to choose from
      * a (small) set of available parts.
@@ -19,7 +17,8 @@ namespace PartituraMagica.Playing
 	public interface IPartNavigator
 	{
 		int CurrentPartIndex { get; }
-		int PartCount { get; }
+		void LoadPartitura(IPlayedPartitura partitura);
+
 		event Action CurrentPartIndexChanged;
 
 		void PartClicked(int index);

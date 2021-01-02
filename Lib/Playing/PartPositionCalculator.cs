@@ -39,15 +39,6 @@ namespace PartituraMagica.Playing
 
 		public PartPositionCalculator(IPlayedPartitura partitura)
 		{
-			if (partitura == null)
-			{
-				//this can happen during container.AssertConfigurationIsValid
-				_parts = new List<Part>();
-				_lines = new List<LinePartInfo>();
-				_partPattern = "A";
-				return;
-			}
-
 			_partPattern = partitura.PartPattern;
 			_parts = partitura.AllParts;
 
@@ -67,21 +58,6 @@ namespace PartituraMagica.Playing
 					lineIndex++;
 				}
 			}
-		}
-
-		public double GetLineXPosition(int lineIndex)
-		{
-			return _lines[lineIndex].XPos;
-		}
-
-		public bool HasLinesAfter(int lineIndex)
-		{
-			return _lines.Count > lineIndex;
-		}
-
-		public int GetPatternIndex(int lineIndex)
-		{
-			return _lines[lineIndex].PatternIndex;
 		}
 
 		public IList<Clipping> GetClippings()

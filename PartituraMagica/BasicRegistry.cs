@@ -17,9 +17,12 @@ namespace PartituraMagica
 			For<MainWindow>().Use<MainWindow>().Singleton();
 			For<IMainWindow>().Use(s => s.GetInstance<MainWindow>());
 			For<ICommandParameters>().Use<EditingController>().Singleton();
-			For<IPlayerViewFactory>().Use<PlayerViewFactory>();
+			For<IPlayerViewFactory>().Use<PlayerViewFactory>().Singleton();
+			For<IPlayerView>().Use<PlayerViewD3D>();
 			For<IImageLoader>().Use(s => s.GetInstance<ICommandParameters>().Panel);
-			For<IFileSystem>().Use<FileSystem>();
+			For<IFileSystem>().Use<FileSystem>().Singleton();
+			For<IPartNavigator>().Use<PartNavigator>().Singleton();
+			For<PlayerPositionHolder>().Use<PlayerPositionHolder>().Singleton();
 
 			Scan(_ =>
 			{
