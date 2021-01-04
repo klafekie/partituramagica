@@ -4,11 +4,11 @@
 
 #region usings
 
-using PartituraMagica.Domain;
+using PartituraMagica.Lib.Domain;
 
 #endregion
 
-namespace PartituraMagica.Playing
+namespace PartituraMagica.Lib.Playing
 {
 	public interface IPlayerViewFactory
 	{

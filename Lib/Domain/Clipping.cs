@@ -1,4 +1,4 @@
-namespace PartituraMagica.Domain
+namespace PartituraMagica.Lib.Domain
 {
 	/// <summary>
 	///   Represents a rectangular area on a certain input page.
@@ -6,6 +6,16 @@ namespace PartituraMagica.Domain
 	/// </summary>
 	public class Clipping
 	{
+		public int PageIndex { get; set; }
+
+		public Rect Coords { get; private set; }
+
+		/// <summary>
+		///   ID of this object, used for the connection with the ClippingD3D
+		///   and the editing objects on the drawing panel (Boxes?).
+		/// </summary>
+		public int Id { get; }
+
 		public Clipping(int pageIndex, Rect coords, int id)
 		{
 			PageIndex = pageIndex;
@@ -27,16 +37,6 @@ namespace PartituraMagica.Domain
 			Coords = new Rect(x, y, width, height);
 			Id = -1;
 		}
-
-		public int PageIndex { get; set; }
-
-		public Rect Coords { get; private set; }
-
-		/// <summary>
-		///   ID of this object, used for the connection with the ClippingD3D
-		///   and the editing objects on the drawing panel (Boxes?).
-		/// </summary>
-		public int Id { get; }
 
 		public void AddAboveAndBelow(double deltaY)
 		{

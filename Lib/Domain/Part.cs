@@ -7,7 +7,7 @@ using System.Linq;
 
 #endregion
 
-namespace PartituraMagica.Domain
+namespace PartituraMagica.Lib.Domain
 {
 	/** 
      * represents a part of a partitura. A part is a sequence of Boxes/Splitters
@@ -18,18 +18,6 @@ namespace PartituraMagica.Domain
 	public class Part : IEnumerable<Clipping>
 	{
 		private readonly IList<Clipping> _clippings;
-
-		public Part()
-		{
-			_clippings = new List<Clipping>();
-			//this.islabelled = isLabelled;
-		}
-
-		public Part(Part rhs)
-		{
-			_clippings = new List<Clipping>();
-			foreach (Clipping c in rhs._clippings) _clippings.Add(new Clipping(c));
-		}
 
 		internal Clipping this[int index] => _clippings[index];
 
@@ -45,6 +33,18 @@ namespace PartituraMagica.Domain
 				foreach (Clipping c in _clippings) result += c.Coords.Width;
 				return result;
 			}
+		}
+
+		public Part()
+		{
+			_clippings = new List<Clipping>();
+			//this.islabelled = isLabelled;
+		}
+
+		public Part(Part rhs)
+		{
+			_clippings = new List<Clipping>();
+			foreach (Clipping c in rhs._clippings) _clippings.Add(new Clipping(c));
 		}
 
 		public IEnumerator<Clipping> GetEnumerator()

@@ -8,11 +8,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using LearnWPF.Effects;
-using PartituraMagica.Domain;
+using PartituraMagica.Lib.Domain;
 
 #endregion
 
-namespace PartituraMagica
+namespace PartituraMagica.App
 {
 	internal class DrawingPanel : IDrawingPanel
 	{

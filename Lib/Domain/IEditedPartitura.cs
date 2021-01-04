@@ -1,4 +1,4 @@
-﻿namespace PartituraMagica.Domain
+﻿namespace PartituraMagica.Lib.Domain
 {
 	/** 
      * Represents a partitura currently open in the application for editing.

@@ -5,13 +5,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
-using PartituraMagica.Domain;
+using PartituraMagica.Lib.Domain;
 using SlimDX;
 using SlimDX.Direct3D9;
 
 #endregion
 
-namespace PartituraMagica
+namespace PartituraMagica.App
 {
 	/** 
      * The Direct3D visual representation of a Clipping for use in the 

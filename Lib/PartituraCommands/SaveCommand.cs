@@ -1,11 +1,11 @@
 ﻿#region usings
 
 using System.Diagnostics;
-using PartituraMagica.Domain;
+using PartituraMagica.Lib.Domain;
 
 #endregion
 
-namespace PartituraMagica.PartituraCommands
+namespace PartituraMagica.Lib.PartituraCommands
 {
 	public class SaveCommand : PartituraCommandBase, ICommand
 	{

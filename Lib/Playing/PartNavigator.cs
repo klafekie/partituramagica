@@ -2,16 +2,16 @@
 
 using System;
 using System.Collections.Generic;
-using PartituraMagica.Domain;
+using PartituraMagica.Lib.Domain;
 
 #endregion
 
-namespace PartituraMagica.Playing
+namespace PartituraMagica.Lib.Playing
 {
 	/** 
      * Decides when to change to a new part / lineIndex depending on the users commands.
      */
-	public class PartNavigator : IPartNavigator
+	internal class PartNavigator : IPartNavigator
 	{
 		private static readonly double MinPartScroll = 150D;
 		private readonly PlayerPositionHolder _playerPosition;

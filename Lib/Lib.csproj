@@ -8,7 +8,7 @@
     <ProjectGuid>{60124B27-CC5F-469A-872D-9FF665C0DEB7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PartituraMagica</RootNamespace>
+    <RootNamespace>PartituraMagica.Lib</RootNamespace>
     <AssemblyName>ClassLibrary1</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -122,10 +122,17 @@
     <Compile Include="PartituraCommands\ShowPageCommandBase.cs" />
     <Compile Include="PartituraCommands\ShowPreviousPageCommand.cs" />
     <Compile Include="Playing\IPartNavigator.cs" />
+    <Compile Include="Playing\IPlayerController.cs" />
     <Compile Include="Playing\IPlayerViewFactory.cs" />
+    <Compile Include="Playing\IScrollingPanel.cs" />
+    <Compile Include="Playing\ISnippetManager.cs" />
+    <Compile Include="Playing\ISpeedManager.cs" />
+    <Compile Include="Playing\IZoomManager.cs" />
     <Compile Include="Playing\PartNavigator.cs" />
     <Compile Include="Playing\PartPositionCalculator.cs" />
+    <Compile Include="Playing\PlayerController.cs" />
     <Compile Include="Playing\ShowPlayerCommand.cs" />
+    <Compile Include="Playing\SnippetManager.cs" />
     <Compile Include="Playing\SpeedManager.cs" />
     <Compile Include="Playing\ZoomManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

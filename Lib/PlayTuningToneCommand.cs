@@ -1,11 +1,11 @@
 ﻿#region usings
 
 using System.Media;
-using PartituraMagica.Domain;
+using PartituraMagica.Lib.Domain;
 
 #endregion
 
-namespace PartituraMagica
+namespace PartituraMagica.Lib
 {
 	public class PlayTuningToneCommand : ICommand
 	{

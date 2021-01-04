@@ -3,13 +3,13 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
-using PartituraMagica.Domain;
+using PartituraMagica.Lib.Domain;
 
 #endregion
 
 //using System.Windows;
 
-namespace PartituraMagica
+namespace PartituraMagica.Test
 {
 	internal class FakeDrawingPanel : IDrawingPanel
 	{
@@ -19,12 +19,12 @@ namespace PartituraMagica
 		public IDictionary<int, Rect> Rectangles;
 		public IDictionary<int, bool> Selection;
 
+		public Rect LastRect => Rectangles[LastId];
+
 		public FakeDrawingPanel()
 		{
 			Clear();
 		}
-
-		public Rect LastRect => Rectangles[LastId];
 
 		public void AddRectangle(int id, Rect coordinates)
 		{

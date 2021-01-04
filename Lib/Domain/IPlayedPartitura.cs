@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 #endregion
 
-namespace PartituraMagica.Domain
+namespace PartituraMagica.Lib.Domain
 {
 	/**
 	 * the partitura currently selected for playing

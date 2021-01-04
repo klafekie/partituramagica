@@ -6,11 +6,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using Microsoft.Win32;
-using PartituraMagica.Domain;
+using PartituraMagica.Lib.Domain;
 
 #endregion
 
-namespace PartituraMagica
+namespace PartituraMagica.App
 {
 	internal class FileSystem : IFileSystem
 	{

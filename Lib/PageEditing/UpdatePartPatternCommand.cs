@@ -2,11 +2,11 @@
 
 using System.Diagnostics;
 using System.Linq;
-using PartituraMagica.Domain;
+using PartituraMagica.Lib.Domain;
 
 #endregion
 
-namespace PartituraMagica.PageEditing
+namespace PartituraMagica.Lib.PageEditing
 {
 	public class UpdatePartPatternCommand : PartituraCommandBase, ICommand
 	{

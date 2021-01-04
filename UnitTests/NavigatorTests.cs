@@ -4,13 +4,13 @@ using System;
 using System.Collections.Generic;
 using Moq;
 using NUnit.Framework;
-using PartituraMagica.Domain;
+using PartituraMagica.Lib.Domain;
 
 #endregion
 
 #pragma warning disable 414
 
-namespace PartituraMagica
+namespace PartituraMagica.Test
 {
 	[TestFixture]
 	internal class NavigatorTests

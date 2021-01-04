@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Windows;
-using PartituraMagica.Domain;
+using PartituraMagica.Lib.Domain;
 
 namespace PartituraMagica
 {

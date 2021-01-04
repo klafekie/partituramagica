@@ -5,7 +5,7 @@ using Lamar;
 
 #endregion
 
-namespace PartituraMagica.Domain
+namespace PartituraMagica.Lib.Domain
 {
 	internal class CommandFactory : ICommandFactory
 	{

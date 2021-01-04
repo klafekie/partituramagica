@@ -1,11 +1,11 @@
 ﻿#region usings
 
 using System.Diagnostics;
-using PartituraMagica.Domain;
+using PartituraMagica.Lib.Domain;
 
 #endregion
 
-namespace PartituraMagica.PageEditing
+namespace PartituraMagica.Lib.PageEditing
 {
 	public class UpdateBoxCommand : PartituraCommandBase, ICommand
 	{

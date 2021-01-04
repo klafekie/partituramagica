@@ -4,7 +4,7 @@ using System;
 
 #endregion
 
-namespace PartituraMagica.Domain
+namespace PartituraMagica.Lib.Domain
 {
 	public interface ICommandFactory
 	{

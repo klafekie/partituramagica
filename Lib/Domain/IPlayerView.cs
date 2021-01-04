@@ -1,10 +1,11 @@
 ﻿#region usings
 
 using System;
+using PartituraMagica.Lib.Playing;
 
 #endregion
 
-namespace PartituraMagica.Domain
+namespace PartituraMagica.Lib.Domain
 {
 	/** 
      * represents a view that can display (and scroll) a continuous
@@ -12,10 +13,11 @@ namespace PartituraMagica.Domain
      */
 	public interface IPlayerView : IDisposable
 	{
-		PlayerMemento ToMemento();
-
 		void Close();
 		event EventHandler Closed;
-		void StartScrolling(IPlayedPartitura partitura, PlayerMemento playerMemento);
+		void StartScrolling(IPlayedPartitura partitura, IPlayerController playerMemento);
+
+		void MarkActivePart(int index);
+		void MarkPaused(bool isPaused);
 	}
 }

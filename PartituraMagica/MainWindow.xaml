@@ -1,53 +1,53 @@
-﻿<Window x:Class="PartituraMagica.MainWindow"
+﻿<Window x:Class="PartituraMagica.App.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:src="clr-namespace:PartituraMagica"
+    xmlns:app="clr-namespace:PartituraMagica.App"
     Title="Partitura Magica - Let the Music Flow..."     
     WindowState="Maximized" Height="173" Width="478" Closing="WindowClosing" >
 	<Window.CommandBindings>
-		<CommandBinding Command="{x:Static src:MainWindow.NewPartitura}" CanExecute="CanExecute" Executed="Execute"/>
+		<CommandBinding Command="{x:Static app:MainWindow.NewPartitura}" CanExecute="CanExecute" Executed="Execute"/>
 		<CommandBinding Command="Open" CanExecute="CanExecute" Executed="Execute"/>
 		<CommandBinding Command="Save" CanExecute="CanExecute" Executed="Execute"/>
 		<CommandBinding Command="SaveAs" CanExecute="CanExecute" Executed="Execute"/>
-		<CommandBinding Command="{x:Static src:MainWindow.RemoveBox}" CanExecute="CanExecute" Executed="Execute"/>
-		<CommandBinding Command="{x:Static src:MainWindow.AddPage}" CanExecute="CanExecute" Executed="Execute"/>
-		<CommandBinding Command="{x:Static src:MainWindow.TuningTone}" CanExecute="CanExecute" Executed="Execute"/>
-		<CommandBinding Command="{x:Static src:MainWindow.ShowNextPage}" CanExecute="CanExecute" Executed="Execute"/>
-		<CommandBinding Command="{x:Static src:MainWindow.ShowPreviousPage}" CanExecute="CanExecute" Executed="Execute"/>
-		<CommandBinding Command="{x:Static src:MainWindow.StartPlayer}" CanExecute="CanExecute" Executed="Execute"/>
-		<CommandBinding Command="{x:Static src:MainWindow.Label}" CanExecute="CanExecute" Executed="Execute"/>
-		<CommandBinding Command="{x:Static src:MainWindow.UnLabel}" CanExecute="CanExecute" Executed="Execute"/>
-		<CommandBinding Command="{x:Static src:MainWindow.AutoFill}" CanExecute="CanExecute" Executed="Execute"/>
-		<CommandBinding Command="{x:Static src:MainWindow.ClosePartitura}" CanExecute="CanExecute" Executed="Execute"/>
-		<CommandBinding Command="{x:Static src:MainWindow.Exit}" CanExecute="CanExecute" Executed="Execute"/>
+		<CommandBinding Command="{x:Static app:MainWindow.RemoveBox}" CanExecute="CanExecute" Executed="Execute"/>
+		<CommandBinding Command="{x:Static app:MainWindow.AddPage}" CanExecute="CanExecute" Executed="Execute"/>
+		<CommandBinding Command="{x:Static app:MainWindow.TuningTone}" CanExecute="CanExecute" Executed="Execute"/>
+		<CommandBinding Command="{x:Static app:MainWindow.ShowNextPage}" CanExecute="CanExecute" Executed="Execute"/>
+		<CommandBinding Command="{x:Static app:MainWindow.ShowPreviousPage}" CanExecute="CanExecute" Executed="Execute"/>
+		<CommandBinding Command="{x:Static app:MainWindow.StartPlayer}" CanExecute="CanExecute" Executed="Execute"/>
+		<CommandBinding Command="{x:Static app:MainWindow.Label}" CanExecute="CanExecute" Executed="Execute"/>
+		<CommandBinding Command="{x:Static app:MainWindow.UnLabel}" CanExecute="CanExecute" Executed="Execute"/>
+		<CommandBinding Command="{x:Static app:MainWindow.AutoFill}" CanExecute="CanExecute" Executed="Execute"/>
+		<CommandBinding Command="{x:Static app:MainWindow.ClosePartitura}" CanExecute="CanExecute" Executed="Execute"/>
+		<CommandBinding Command="{x:Static app:MainWindow.Exit}" CanExecute="CanExecute" Executed="Execute"/>
 	</Window.CommandBindings>
 	<DockPanel>
 		<Menu DockPanel.Dock="Top">
 			<MenuItem Name="fileMenu" TabIndex="0" Header="_File">
-				<MenuItem Command="{x:Static src:MainWindow.NewPartitura}"/>
+				<MenuItem Command="{x:Static app:MainWindow.NewPartitura}"/>
 				<MenuItem Command="Open"/>
 				<MenuItem Command="Save"/>
 				<MenuItem Command="SaveAs"/>
-				<MenuItem Command="{x:Static src:MainWindow.ClosePartitura}"/>
+				<MenuItem Command="{x:Static app:MainWindow.ClosePartitura}"/>
 				<Separator/>
-				<MenuItem Command="{x:Static src:MainWindow.StartPlayer}"/>
+				<MenuItem Command="{x:Static app:MainWindow.StartPlayer}"/>
 				<Separator/>
-				<MenuItem Command="{x:Static src:MainWindow.Exit}"/>
+				<MenuItem Command="{x:Static app:MainWindow.Exit}"/>
 			</MenuItem>
 			<MenuItem Header="_Edit">
-				<MenuItem Command="{x:Static src:MainWindow.RemoveBox}"/>
+				<MenuItem Command="{x:Static app:MainWindow.RemoveBox}"/>
 				<Separator/>
-				<MenuItem Command="{x:Static src:MainWindow.Label}" />
-				<MenuItem Command="{x:Static src:MainWindow.UnLabel}" />
-				<MenuItem Command="{x:Static src:MainWindow.AutoFill}" />
+				<MenuItem Command="{x:Static app:MainWindow.Label}" />
+				<MenuItem Command="{x:Static app:MainWindow.UnLabel}" />
+				<MenuItem Command="{x:Static app:MainWindow.AutoFill}" />
 			</MenuItem>
 			<MenuItem Header="Pages">
-				<MenuItem Command="{x:Static src:MainWindow.AddPage}"/>
-				<MenuItem Command="{x:Static src:MainWindow.ShowNextPage}"/>
-				<MenuItem Command="{x:Static src:MainWindow.ShowPreviousPage}"/>
+				<MenuItem Command="{x:Static app:MainWindow.AddPage}"/>
+				<MenuItem Command="{x:Static app:MainWindow.ShowNextPage}"/>
+				<MenuItem Command="{x:Static app:MainWindow.ShowPreviousPage}"/>
 			</MenuItem>
 			<MenuItem Header="Tools">
-				<MenuItem Command="{x:Static src:MainWindow.TuningTone}"/>
+				<MenuItem Command="{x:Static app:MainWindow.TuningTone}"/>
 			</MenuItem>
 			<TextBox Name="patternBox" Width="150"                      
                      PreviewTextInput="patternBox_LostFocus"

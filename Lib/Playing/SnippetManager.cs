@@ -2,14 +2,13 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using PartituraMagica.Domain;
-using PartituraMagica.Playing;
+using PartituraMagica.Lib.Domain;
 
 #endregion
 
-namespace PartituraMagica.Player
+namespace PartituraMagica.Lib.Playing
 {
-	internal class SnippetManager
+	internal class SnippetManager : ISnippetManager
 	{
 		private readonly PlayerPositionHolder _positionHolder;
 		private readonly SortedList<double, double> _snippets = new SortedList<double, double>();
@@ -27,6 +26,13 @@ namespace PartituraMagica.Player
 			_positionHolder.ViewHasScrolled += ViewHasScrolled;
 		}
 
+		public void Finish()
+		{
+			_playingSnippets = null;
+			_playingSnippetIndex = null;
+			StopRecording();
+		}
+
 		public void StartRecording()
 		{
 			if (_recordingStartPos == null && _playingSnippetIndex == null)
@@ -40,12 +46,6 @@ namespace PartituraMagica.Player
 				_snippets.Add(_recordingStartPos.Value, _positionHolder.XPos);
 				_recordingStartPos = null;
 			}
-		}
-
-		public void CancelPlaying()
-		{
-			_playingSnippets = null;
-			_playingSnippetIndex = null;
 		}
 
 		public void RepeatAllSnippets()
@@ -84,7 +84,7 @@ namespace PartituraMagica.Player
 					else
 					{
 						_speedManager.IsPaused = true;
-						CancelPlaying();
+						Finish();
 					}
 				}
 			}

@@ -2,11 +2,11 @@
 
 using System;
 using System.Diagnostics;
-using PartituraMagica.Domain;
+using PartituraMagica.Lib.Domain;
 
 #endregion
 
-namespace PartituraMagica.Playing
+namespace PartituraMagica.Lib.Playing
 {
 	public class ShowPlayerCommand : PartituraCommandBase, ICommand
 	{

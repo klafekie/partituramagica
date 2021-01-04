@@ -1,4 +1,4 @@
-﻿namespace PartituraMagica.Domain
+﻿namespace PartituraMagica.Lib.Domain
 {
 	/**
      * Implementors can decide about a certain labelling strategy for 

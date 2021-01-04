@@ -7,12 +7,12 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
 using Lamar;
-using PartituraMagica.Domain;
-using PartituraMagica.PartituraCommands;
+using PartituraMagica.Lib.Domain;
+using PartituraMagica.Lib.PartituraCommands;
 
 #endregion
 
-namespace PartituraMagica
+namespace PartituraMagica.App
 {
 	/// <summary>
 	///   Interaction logic for App.xaml

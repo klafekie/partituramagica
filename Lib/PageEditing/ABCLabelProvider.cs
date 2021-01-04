@@ -2,11 +2,11 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
-using PartituraMagica.Domain;
+using PartituraMagica.Lib.Domain;
 
 #endregion
 
-namespace PartituraMagica.PageEditing
+namespace PartituraMagica.Lib.PageEditing
 {
 	/**
 	 * first part is labelled "A", second part "B" etc

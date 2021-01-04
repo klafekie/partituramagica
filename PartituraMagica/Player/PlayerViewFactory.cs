@@ -1,27 +1,26 @@
 ﻿#region usings
 
 using System;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
-using PartituraMagica.Domain;
-using PartituraMagica.Playing;
+using PartituraMagica.Lib.Domain;
+using PartituraMagica.Lib.Playing;
 
 #endregion
 
-namespace PartituraMagica.Player
+namespace PartituraMagica.App.Player
 {
 	internal class PlayerViewFactory : IPlayerViewFactory, IDisposable
 	{
 		private readonly IFileSystem _fileSystem;
-		private readonly Func<IPlayerView> _getInstance;
+		private readonly Func<IPlayerView> _getViewInstance;
+		private readonly IPlayerController _playerController;
 		private IPlayerView _playerView;
 
 		public PlayerViewFactory(MainWindow mainWindow, IImageLoader imageLoader,
-			IFileSystem fileSystem, Func<IPlayerView> getInstance)
+			IFileSystem fileSystem, Func<IPlayerView> getViewInstance, IPlayerController playerController)
 		{
 			_fileSystem = fileSystem;
-			_getInstance = getInstance;
-			_getInstance = getInstance;
+			_getViewInstance = getViewInstance;
+			_playerController = playerController;
 		}
 
 		public void Dispose()
@@ -32,29 +31,10 @@ namespace PartituraMagica.Player
 
 		public void CreateAndShowView(IPlayedPartitura partitura)
 		{
-			_playerView = _getInstance();
-			_playerView.Closed += (o, args) => { SavePlayer(_playerView, partitura.RuntimePath); };
+			_playerView = _getViewInstance();
+			_playerController.Init(partitura, _playerView);
 
-			_playerView.StartScrolling(partitura, LoadPlayer(partitura));
-		}
-
-		private PlayerMemento LoadPlayer(IPlayedPartitura partitura)
-		{
-			if (!_fileSystem.FileExists(partitura.RuntimePath)) return new PlayerMemento();
-			using (Stream str = _fileSystem.OpenRead(partitura.RuntimePath))
-			{
-				BinaryFormatter sf = new BinaryFormatter();
-				return (PlayerMemento) sf.Deserialize(str);
-			}
-		}
-
-		private void SavePlayer(IPlayerView view, string runtimePath)
-		{
-			using (Stream str = _fileSystem.OpenWrite(runtimePath))
-			{
-				BinaryFormatter sf = new BinaryFormatter();
-				sf.Serialize(str, view.ToMemento());
-			}
+			_playerView.StartScrolling(partitura, _playerController);
 		}
 	}
 }

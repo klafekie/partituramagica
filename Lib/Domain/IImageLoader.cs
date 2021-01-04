@@ -1,4 +1,4 @@
-﻿namespace PartituraMagica.Domain
+﻿namespace PartituraMagica.Lib.Domain
 {
 	public interface IImageLoader
 	{

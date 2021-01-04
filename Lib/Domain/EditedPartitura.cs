@@ -7,7 +7,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 #endregion
 
-namespace PartituraMagica.Domain
+namespace PartituraMagica.Lib.Domain
 {
 	/**
 	 * <see cref="IEditedPartitura" />

@@ -1,6 +1,6 @@
-﻿namespace PartituraMagica.Playing
+﻿namespace PartituraMagica.Lib.Playing
 {
-	public class ZoomManager
+	internal class ZoomManager : IZoomManager
 	{
 		private float _xZoom;
 

@@ -4,7 +4,7 @@ using System.Windows;
 
 #endregion
 
-namespace PartituraMagica.Domain
+namespace PartituraMagica.Lib.Domain
 {
 	/**
 	 * This itfs contains functionality from the main window that

@@ -3,11 +3,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using PartituraMagica.Domain;
+using PartituraMagica.Lib.Domain;
 
 #endregion
 
-namespace PartituraMagica
+namespace PartituraMagica.Test
 {
 	public class FakeFileSystem : IFileSystem
 	{

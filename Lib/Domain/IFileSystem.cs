@@ -5,7 +5,7 @@ using System.IO;
 
 #endregion
 
-namespace PartituraMagica.Domain
+namespace PartituraMagica.Lib.Domain
 {
 	public enum DialogResult
 	{

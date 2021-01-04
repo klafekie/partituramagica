@@ -4,9 +4,9 @@ using System;
 
 #endregion
 
-namespace PartituraMagica.Playing
+namespace PartituraMagica.Lib.Playing
 {
-	public class SpeedManager
+	internal class SpeedManager : ISpeedManager
 	{
 		private bool _isPaused = true;
 		private DateTime? _resumePlayingTime;
@@ -23,14 +23,6 @@ namespace PartituraMagica.Playing
 		}
 
 		public float Speed { get; set; }
-
-		private void SetIsPausedAndTriggerEvent(bool value)
-		{
-			bool isChanged = _isPaused != value;
-			_resumePlayingTime = null; //abort any timed pause.
-			_isPaused = value;
-			if (isChanged) IsPausedChanged?.Invoke();
-		}
 
 		public event Action IsPausedChanged;
 
@@ -53,6 +45,14 @@ namespace PartituraMagica.Playing
 		{
 			IsPaused = true;
 			_resumePlayingTime = DateTime.Now.AddSeconds(seconds);
+		}
+
+		private void SetIsPausedAndTriggerEvent(bool value)
+		{
+			bool isChanged = _isPaused != value;
+			_resumePlayingTime = null; //abort any timed pause.
+			_isPaused = value;
+			if (isChanged) IsPausedChanged?.Invoke();
 		}
 	}
 }

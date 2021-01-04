@@ -1,4 +1,4 @@
-﻿namespace PartituraMagica.Domain
+﻿namespace PartituraMagica.Lib.Domain
 {
 	/** 
      * Everything that can be done by the user within the 

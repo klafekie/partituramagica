@@ -4,44 +4,46 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using PartituraMagica.Domain;
-using PartituraMagica.Playing;
+using PartituraMagica.Lib.Domain;
+using PartituraMagica.Lib.Playing;
 using SlimDX;
 using SlimDX.Direct3D9;
 
 #endregion
 
-namespace PartituraMagica.Player
+namespace PartituraMagica.App.Player
 {
-	internal class ScrollingPanel : IDisposable
+	internal class ScrollingPanel : IScrollingPanel
 	{
 		private readonly List<ClippingD3D> _clippingD3Ds = new List<ClippingD3D>();
 		private readonly ApplicationConfiguration _configuration = new ApplicationConfiguration();
-
-		private readonly Direct3D _d3D;
 		private readonly IImageLoader _imageLoader;
-		private readonly IPartNavigator _navigator;
+		private readonly IPlayerController _playerController;
 
-		private readonly PlayerPositionHolder _positionHolder;
-		private readonly SpeedManager _speedManager;
-		private readonly ZoomManager _zoomManager;
+		private Direct3D _d3D;
 
 		private Device _device;
 
 		private bool _isRendering;
-		private float _lastZoomX;
 
-		public ScrollingPanel(IImageLoader imageLoader, IntPtr panelHandle,
-			PlayerPositionHolder positionHolder, IPartNavigator navigator, SpeedManager speedManager,
-			ZoomManager zoomManager)
+		public ScrollingPanel(IImageLoader imageLoader, IPlayerController playerController)
 		{
 			_imageLoader = imageLoader;
-			_positionHolder = positionHolder;
-			_navigator = navigator;
-			_speedManager = speedManager;
-			_zoomManager = zoomManager;
+			_playerController = playerController;
+		}
 
+		public void Dispose()
+		{
+			_isRendering = false;
+			_device?.Dispose();
+			foreach (ClippingD3D l in _clippingD3Ds) l.Dispose();
+			_clippingD3Ds.Clear();
+			ClippingD3D.Cleanup();
+			_d3D?.Dispose();
+		}
 
+		public void Init(IntPtr handle)
+		{
 			_d3D = new Direct3D();
 			/* Experiment jed 20141227, setting BackBuffer size explicitly. Without that, seen that device.ViewPort size was 640 * 480 pixels.
 			 * Setting the size to the monitor resolution improved quality a lot. But maybe it should be the exact #pixels in the player panel?
@@ -51,7 +53,7 @@ namespace PartituraMagica.Player
 			const int bbHeight = 900;
 
 			_device = new Device(_d3D, _d3D.Adapters.DefaultAdapter.Adapter,
-				DeviceType.Hardware, panelHandle, CreateFlags.HardwareVertexProcessing,
+				DeviceType.Hardware, handle, CreateFlags.HardwareVertexProcessing,
 				new PresentParameters
 				{
 					// Added BackBufferWidth and BackBufferHeight as experiment for improving vision quality [jed])
@@ -73,22 +75,11 @@ namespace PartituraMagica.Player
 			_device.SetRenderState(RenderState.MultisampleAntialias, false);
 		}
 
-		public void Dispose()
-		{
-			_isRendering = false;
-			_device?.Dispose();
-			_device = null;
-			foreach (ClippingD3D l in _clippingD3Ds) l.Dispose();
-			_clippingD3Ds.Clear();
-			ClippingD3D.Cleanup();
-			_d3D?.Dispose();
-		}
-
 		public void StartScrolling(IPlayedPartitura partitura)
 		{
 			_clippingD3Ds.Clear();
 			var paths = partitura.ImagePaths;
-			foreach (Clipping c in _navigator.GetClippings())
+			foreach (Clipping c in _playerController.GetClippings())
 			{
 				string path = paths[c.PageIndex];
 				IGreyImage image = _imageLoader.GetImage(path);
@@ -105,8 +96,6 @@ namespace PartituraMagica.Player
 
 			string[] parts = new string[partitura.PartPattern.Length];
 			for (int i = 0; i < partitura.PartPattern.Length; i++) parts[i] = partitura.PartPattern[i].ToString();
-
-			_positionHolder.XPos = 0;
 
 			_isRendering = true;
 
@@ -128,11 +117,12 @@ namespace PartituraMagica.Player
 			try
 			{
 				_device.BeginScene();
-				_zoomManager.GetNextZoom(out _lastZoomX, out float zoomY);
+
+				_playerController.GetNextZoom(out float zoomX, out float zoomY);
 
 				_device.SetTransform(TransformState.World,
-					Matrix.Scaling(_lastZoomX, zoomY, 1F) *
-					Matrix.Translation((float) -_positionHolder.XPos * _lastZoomX, 0, 0));
+					Matrix.Scaling(zoomX, zoomY, 1F) *
+					Matrix.Translation((float) -_playerController.XPos * zoomX, 0, 0));
 
 				foreach (ClippingD3D clipping in _clippingD3Ds)
 					clipping.Render(_device);
@@ -144,10 +134,7 @@ namespace PartituraMagica.Player
 
 			_device.Present();
 
-			if (_speedManager.IsPaused) return;
-
-			if (!_navigator.IsPartituraFinished())
-				_positionHolder.ScrollForwardBy(_speedManager.Speed);
+			_playerController.ScrollForward();
 		}
 	}
 }

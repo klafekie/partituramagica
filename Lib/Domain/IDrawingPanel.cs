@@ -4,7 +4,7 @@ using System.Windows;
 
 #endregion
 
-namespace PartituraMagica.Domain
+namespace PartituraMagica.Lib.Domain
 {
 	/**
 	 * represents a user interface control where the user can see the 

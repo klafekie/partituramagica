@@ -3,11 +3,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using PartituraMagica.Domain;
+using PartituraMagica.Lib.Domain;
 
 #endregion
 
-namespace PartituraMagica.PageEditing
+namespace PartituraMagica.Lib.PageEditing
 {
 	/**
 	 * Implements an image recognition algorithm

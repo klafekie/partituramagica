@@ -6,13 +6,13 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
-using PartituraMagica.Domain;
-using ICommand = PartituraMagica.Domain.ICommand;
+using PartituraMagica.Lib.Domain;
+using ICommand = PartituraMagica.Lib.Domain.ICommand;
 using IContainer = Lamar.IContainer;
 
 #endregion
 
-namespace PartituraMagica
+namespace PartituraMagica.App
 {
 	/** 
    * The application main window

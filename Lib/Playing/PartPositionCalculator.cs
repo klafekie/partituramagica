@@ -3,16 +3,16 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using PartituraMagica.Domain;
+using PartituraMagica.Lib.Domain;
 
 #endregion
 
-namespace PartituraMagica.Playing
+namespace PartituraMagica.Lib.Playing
 {
 	/** 
      * Knows about the position of each line and the relation of each line to its containing part.
      */
-	public class PartPositionCalculator
+	internal class PartPositionCalculator
 	{
 		private class LinePartInfo
 		{

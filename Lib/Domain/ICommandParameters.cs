@@ -4,7 +4,7 @@ using System.Windows;
 
 #endregion
 
-namespace PartituraMagica.Domain
+namespace PartituraMagica.Lib.Domain
 {
 	/**
      * A collection of parameters needed for all editing and partitura commands

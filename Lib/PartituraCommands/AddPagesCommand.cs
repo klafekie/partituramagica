@@ -3,11 +3,11 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using PartituraMagica.Domain;
+using PartituraMagica.Lib.Domain;
 
 #endregion
 
-namespace PartituraMagica.PartituraCommands
+namespace PartituraMagica.Lib.PartituraCommands
 {
 	public class AddPagesCommand : PartituraCommandBase, ICommand
 	{

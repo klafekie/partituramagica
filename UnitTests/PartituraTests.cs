@@ -3,12 +3,12 @@
 using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
-using PartituraMagica.Domain;
-using PartituraMagica.PartituraCommands;
+using PartituraMagica.Lib.Domain;
+using PartituraMagica.Lib.PartituraCommands;
 
 #endregion
 
-namespace PartituraMagica
+namespace PartituraMagica.Test
 {
 	[TestFixture]
 	internal class PartituraTests : TestUtils

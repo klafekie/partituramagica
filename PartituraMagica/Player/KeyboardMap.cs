@@ -1,26 +1,21 @@
 ﻿#region usings
 
 using System.Windows.Forms;
-using PartituraMagica.Domain;
-using PartituraMagica.Playing;
+using PartituraMagica.Lib.Domain;
+using PartituraMagica.Lib.Playing;
 
 #endregion
 
-namespace PartituraMagica.Player
+namespace PartituraMagica.App.Player
 {
 	public class KeyboardMap
 	{
-		private readonly IPartNavigator _navigator;
+		private readonly IPlayerController _playerController;
 		private readonly IPlayerView _playerView;
-		private readonly SpeedManager _speedManager;
-		private readonly ZoomManager _zoomManager;
 
-		public KeyboardMap(SpeedManager speedManager, ZoomManager zoomManager, IPartNavigator navigator,
-			IPlayerView playerView)
+		public KeyboardMap(IPlayerController playerController, IPlayerView playerView)
 		{
-			_speedManager = speedManager;
-			_zoomManager = zoomManager;
-			_navigator = navigator;
+			_playerController = playerController;
 			_playerView = playerView;
 		}
 
@@ -36,14 +31,14 @@ namespace PartituraMagica.Player
 					break;
 				case Keys.Oemplus:
 				case Keys.Add:
-					if (e.Modifiers == Keys.None) _speedManager.IncreaseSpeed();
+					if (e.Modifiers == Keys.None) _playerController.IncreaseSpeed();
 					break;
 				case Keys.OemMinus:
 				case Keys.Subtract:
-					if (e.Modifiers == Keys.None) _speedManager.DecreaseSpeed();
+					if (e.Modifiers == Keys.None) _playerController.DecreaseSpeed();
 					break;
 				case Keys.Space:
-					_speedManager.IsPaused = true;
+					_playerController.Pause();
 					break;
 			}
 
@@ -52,23 +47,23 @@ namespace PartituraMagica.Player
 				{
 					case Keys.OemMinus:
 					case Keys.Subtract:
-						_zoomManager.ZoomOut(e.Shift);
+						_playerController.ZoomOut(e.Shift);
 						break;
 					case Keys.Oemplus:
 					case Keys.Add:
-						_zoomManager.ZoomIn(e.Shift);
+						_playerController.ZoomIn(e.Shift);
 						break;
 					case Keys.Left:
-						_navigator.PreviousPartClicked();
+						_playerController.GoToPreviousPart();
 						break;
 					case Keys.Right:
-						_navigator.NextPartClicked();
+						_playerController.GoToNextPart();
 						break;
 					case Keys.Home:
-						_navigator.FirstPartClicked();
+						_playerController.GoToFirstPart();
 						break;
 					case Keys.End:
-						_navigator.LastPartClicked();
+						_playerController.GoToLastPart();
 						break;
 				}
 		}
@@ -78,14 +73,14 @@ namespace PartituraMagica.Player
 			switch (e.KeyCode)
 			{
 				case Keys.Space:
-					if (_navigator.IsPartituraFinished()) _navigator.FirstPartClicked();
-					_speedManager.IsPaused = false; //use property setter
+					if (_playerController.IsPartituraFinished()) _playerController.GoToFirstPart();
+					_playerController.Resume();
 					break;
 				case Keys.Left:
-					if (e.Modifiers == Keys.None) _navigator.JumpBackwardClicked();
+					if (e.Modifiers == Keys.None) _playerController.JumpBackward();
 					break;
 				case Keys.Right:
-					if (e.Modifiers == Keys.None) _navigator.JumpForwardClicked();
+					if (e.Modifiers == Keys.None) _playerController.JumpForward();
 					break;
 			}
 		}

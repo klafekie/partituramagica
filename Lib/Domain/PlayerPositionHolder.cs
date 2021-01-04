@@ -4,7 +4,7 @@ using System;
 
 #endregion
 
-namespace PartituraMagica.Domain
+namespace PartituraMagica.Lib.Domain
 {
 	/**
 	 * helper class to avoid the circular dependency between IPlayerView and PartNavigator

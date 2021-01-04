@@ -2,13 +2,13 @@
 
 using Lamar;
 using Microsoft.Extensions.DependencyInjection;
-using PartituraMagica.Domain;
-using PartituraMagica.Player;
-using PartituraMagica.Playing;
+using PartituraMagica.App.Player;
+using PartituraMagica.Lib.Domain;
+using PartituraMagica.Lib.Playing;
 
 #endregion
 
-namespace PartituraMagica
+namespace PartituraMagica.App
 {
 	public class BasicRegistry : ServiceRegistry
 	{
@@ -21,7 +21,6 @@ namespace PartituraMagica
 			For<IPlayerView>().Use<PlayerViewD3D>();
 			For<IImageLoader>().Use(s => s.GetInstance<ICommandParameters>().Panel);
 			For<IFileSystem>().Use<FileSystem>().Singleton();
-			For<IPartNavigator>().Use<PartNavigator>().Singleton();
 			For<PlayerPositionHolder>().Use<PlayerPositionHolder>().Singleton();
 
 			Scan(_ =>

@@ -1,4 +1,4 @@
-namespace PartituraMagica.Domain
+namespace PartituraMagica.Lib.Domain
 {
 	public delegate double BrightnessGetter(int x, int y);
 

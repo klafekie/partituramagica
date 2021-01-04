@@ -6,12 +6,12 @@ using System.Windows;
 using Lamar;
 using Moq;
 using NUnit.Framework;
-using PartituraMagica.Domain;
-using PartituraMagica.PageEditing;
+using PartituraMagica.Lib.Domain;
+using PartituraMagica.Lib.PageEditing;
 
 #endregion
 
-namespace PartituraMagica
+namespace PartituraMagica.Test
 {
 	[TestFixture]
 	internal class TestUtils : ICommandParameters

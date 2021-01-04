@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Moq;
 using NUnit.Framework;
-using PartituraMagica.Domain;
-using PartituraMagica.PageEditing;
+using PartituraMagica.Lib.Domain;
+using PartituraMagica.Lib.PageEditing;
 
 #endregion
 
-namespace PartituraMagica
+namespace PartituraMagica.Test
 {
 	internal class FakeImage : IGreyImage
 	{

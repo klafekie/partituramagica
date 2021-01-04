@@ -1,4 +1,4 @@
-﻿namespace PartituraMagica.Player
+﻿namespace PartituraMagica.App.Player
 {
     partial class PlayerViewD3D
     {

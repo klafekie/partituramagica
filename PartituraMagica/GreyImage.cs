@@ -1,11 +1,11 @@
 #region usings
 
 using System.Windows.Media.Imaging;
-using PartituraMagica.Domain;
+using PartituraMagica.Lib.Domain;
 
 #endregion
 
-namespace PartituraMagica
+namespace PartituraMagica.App
 {
 	internal class GreyImage : IGreyImage
 	{

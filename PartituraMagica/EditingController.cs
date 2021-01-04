@@ -1,11 +1,11 @@
 ﻿#region usings
 
 using System.Windows;
-using PartituraMagica.Domain;
+using PartituraMagica.Lib.Domain;
 
 #endregion
 
-namespace PartituraMagica
+namespace PartituraMagica.App
 {
 	public class EditingController : ICommandParameters
 	{

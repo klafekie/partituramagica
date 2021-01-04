@@ -2,11 +2,11 @@
 
 using System;
 using System.Collections.Generic;
-using PartituraMagica.Domain;
+using PartituraMagica.Lib.Domain;
 
 #endregion
 
-namespace PartituraMagica.Playing
+namespace PartituraMagica.Lib.Playing
 {
 	/**
      * A user interface element that allows the user to choose from
@@ -14,7 +14,7 @@ namespace PartituraMagica.Playing
      * Parts are represented by strings and the current value
      * is an index
      */
-	public interface IPartNavigator
+	internal interface IPartNavigator
 	{
 		int CurrentPartIndex { get; }
 		void LoadPartitura(IPlayedPartitura partitura);

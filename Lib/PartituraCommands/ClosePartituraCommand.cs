@@ -1,11 +1,11 @@
 ﻿#region usings
 
 using System.Diagnostics;
-using PartituraMagica.Domain;
+using PartituraMagica.Lib.Domain;
 
 #endregion
 
-namespace PartituraMagica.PartituraCommands
+namespace PartituraMagica.Lib.PartituraCommands
 {
 	public class ClosePartituraCommand : PartituraCommandBase, ICommand
 	{
@@ -36,7 +36,7 @@ namespace PartituraMagica.PartituraCommands
 				//file was really safed or user doesn't care
 				P.Panel.Clear();
 				P.Active.Close();
-				
+
 				_mainWindow.ClearPartituraInfo();
 				_mainWindow.PartPattern = string.Empty;
 			}
