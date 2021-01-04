@@ -14,6 +14,10 @@ namespace PartituraMagica.Lib
 		{
 			For<ICommandFactory>().Use<CommandFactory>().Singleton();
 			For<IPartNavigator>().Use<PartNavigator>().Singleton();
+			For<ISnippetManager>().Use<SnippetManager>().Singleton();
+			For<ISpeedManager>().Use<SpeedManager>().Singleton();
+			For<IZoomManager>().Use<ZoomManager>().Singleton();
+			For<IPlayerController>().Use<PlayerController>().Singleton();
 		}
 	}
 }

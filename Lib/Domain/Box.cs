@@ -3,8 +3,9 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using PartituraMagica.Lib.Domain;
 
-namespace PartituraMagica.Lib.Domain
+namespace PartituraMagica
 {
     /// <summary>
     /// Boxes are for the 'vertical' splitting of an input page: a 'Box' is a horizontal rectangle on an input page. 

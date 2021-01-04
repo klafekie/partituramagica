@@ -22,6 +22,7 @@ namespace PartituraMagica.App
 			For<IImageLoader>().Use(s => s.GetInstance<ICommandParameters>().Panel);
 			For<IFileSystem>().Use<FileSystem>().Singleton();
 			For<PlayerPositionHolder>().Use<PlayerPositionHolder>().Singleton();
+			For<IScrollingPanel>().Use<ScrollingPanel>().Singleton();
 
 			Scan(_ =>
 			{

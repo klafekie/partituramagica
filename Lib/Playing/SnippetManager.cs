@@ -12,14 +12,14 @@ namespace PartituraMagica.Lib.Playing
 	{
 		private readonly PlayerPositionHolder _positionHolder;
 		private readonly SortedList<double, double> _snippets = new SortedList<double, double>();
-		private readonly SpeedManager _speedManager;
+		private readonly ISpeedManager _speedManager;
 		private int? _playingSnippetIndex;
 		private List<(double Start, double End)> _playingSnippets;
 
 		private double? _recordingStartPos;
 		private bool _snippedChangeInProgress;
 
-		public SnippetManager(PlayerPositionHolder positionHolder, SpeedManager speedManager)
+		public SnippetManager(PlayerPositionHolder positionHolder, ISpeedManager speedManager)
 		{
 			_positionHolder = positionHolder;
 			_speedManager = speedManager;

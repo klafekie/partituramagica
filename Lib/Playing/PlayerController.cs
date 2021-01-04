@@ -23,14 +23,6 @@ namespace PartituraMagica.Lib.Playing
 		private readonly IZoomManager _zoomManager;
 		private IPlayerView _playerView;
 
-		public int CurrentPartIndex => _navigator.CurrentPartIndex;
-
-		public bool IsPaused
-		{
-			get => _speedManager.IsPaused;
-			set => _speedManager.IsPaused = value;
-		}
-
 		public PlayerController(IPartNavigator navigator, ISnippetManager snippetManager, ISpeedManager speedManager,
 			IZoomManager zoomManager, PlayerPositionHolder positionHolder, IFileSystem fileSystem)
 		{
@@ -157,7 +149,7 @@ namespace PartituraMagica.Lib.Playing
 
 		public void ScrollForward()
 		{
-			if (IsPaused) return;
+			if (_speedManager.IsPaused) return;
 
 			if (!_navigator.IsPartituraFinished())
 				_positionHolder.ScrollForwardBy(_speedManager.Speed);
@@ -178,6 +170,7 @@ namespace PartituraMagica.Lib.Playing
 			_zoomManager.XZoom = memento.XZoom;
 			_zoomManager.YZoom = memento.YZoom;
 			_speedManager.Speed = memento.Speed;
+
 			_playerView.Closed += (o, args) => { SavePlayer(_playerView, partitura.RuntimePath); };
 
 			_playerView.MarkActivePart(0);

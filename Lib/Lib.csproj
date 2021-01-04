@@ -90,12 +90,14 @@
     <Compile Include="Domain\IPlayerView.cs" />
     <Compile Include="Domain\IPlayedPartitura.cs" />
     <Compile Include="Domain\Page.cs" />
+    <Compile Include="Domain\PageMemento.cs" />
     <Compile Include="Domain\Part.cs" />
     <Compile Include="Domain\Partitura.cs" />
     <Compile Include="Domain\PartituraException.cs" />
     <Compile Include="Domain\PlayerMemento.cs" />
     <Compile Include="Domain\PlayerPositionHolder.cs" />
     <Compile Include="Domain\Rect.cs" />
+    <Compile Include="Domain\Shape.cs" />
     <Compile Include="LibServiceRegistry.cs" />
     <Compile Include="PageEditing\ABCLabelProvider.cs" />
     <Compile Include="PageEditing\AddBoxCommand.cs" />
