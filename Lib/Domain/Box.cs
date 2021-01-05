@@ -229,9 +229,22 @@ namespace PartituraMagica
 		{
 			this.id = box.Id;
 			this.coords = new Rect(box.Coords);
-			this.splitters = new SplitterList(box.Splitters);
+			if (box.Splitters != null)
+				this.splitters = new SplitterList(box.Splitters);
+			else
+			{
+				this.splitters = new SplitterList();
+			}
 			this.selectedId = -1;
-			this.labelIds = new List<int>(box.LabelIds);
+			if (box.LabelIds != null)
+			{
+				this.labelIds = new List<int>(box.LabelIds);
+			}
+			else
+			{
+				this.labelIds = new List<int>();
+			}
+
 		}
 
 		public int Id
@@ -558,7 +571,13 @@ namespace PartituraMagica
 
 		public BoxJsonMemento ToMemento()
 		{
-			return new BoxJsonMemento() { Id = Id, Coords = Coords.ToMemento() };
+			return new BoxJsonMemento()
+			{
+				Id = Id,
+				Coords = Coords.ToMemento(),
+				LabelIds = LabelIds,
+				Splitters = Splitters
+			};
 		}
 	}
 }

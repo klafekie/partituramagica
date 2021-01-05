@@ -36,7 +36,10 @@ namespace PartituraMagica
 		internal PageJsonMemento ToMemento()
 		{
 			dirty = false;
-			return new PageJsonMemento() { Boxes = boxes.Values.Select(b => b.ToMemento()).ToArray() };
+			return new PageJsonMemento()
+			{
+				Boxes = boxes.Values.Select(b => b.ToMemento()).ToArray()
+			};
 		}
 
 		private void SetDefaults()

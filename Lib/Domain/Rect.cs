@@ -20,7 +20,7 @@ namespace PartituraMagica
 	{
 		private System.Windows.Rect r;
 		private Rect outerRect;
-		
+
 		public Rect OuterRect
 		{
 			get
@@ -262,7 +262,13 @@ namespace PartituraMagica
 
 		public RectJsonMemento ToMemento()
 		{
-			return new RectJsonMemento() { X = X, Y = Y, Width = Width, Height = Height };
+			var result = new RectJsonMemento() { X = X, Y = Y, Width = Width, Height = Height };
+			if (OuterRect != null)
+			{
+				result.OuterRect = OuterRect.ToMemento();
+			}
+
+			return result;
 		}
 	}
 }
