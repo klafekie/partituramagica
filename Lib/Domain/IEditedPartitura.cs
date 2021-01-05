@@ -1,4 +1,6 @@
-﻿namespace PartituraMagica.Lib.Domain
+﻿using PartituraMagica.Lib.Playing;
+
+namespace PartituraMagica.Lib.Domain
 {
 	/** 
      * Represents a partitura currently open in the application for editing.
@@ -18,6 +20,7 @@
 		string CurrentImagePath { get; }
 
 		Page CurrentPage { get; }
+
 		string GetImagePath(int index);
 
 		int GetPageCount();

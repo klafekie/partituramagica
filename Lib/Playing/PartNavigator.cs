@@ -24,7 +24,7 @@ namespace PartituraMagica.Lib.Playing
 		}
 
 
-		public void LoadPartitura(IPlayedPartitura partitura)
+		public void Init(IPlayedPartitura partitura)
 		{
 			_playerPosition.ViewHasScrolled += OnViewHasScrolled;
 			_calculator = new PartPositionCalculator(partitura);

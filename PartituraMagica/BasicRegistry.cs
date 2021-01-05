@@ -17,6 +17,7 @@ namespace PartituraMagica.App
 			For<MainWindow>().Use<MainWindow>().Singleton();
 			For<IMainWindow>().Use(s => s.GetInstance<MainWindow>());
 			For<ICommandParameters>().Use<EditingController>().Singleton();
+			For<IEditedPartitura>().Use(s => s.GetInstance<ICommandParameters>().Active);
 			For<IPlayerViewFactory>().Use<PlayerViewFactory>().Singleton();
 			For<IPlayerView>().Use<PlayerViewD3D>();
 			For<IImageLoader>().Use(s => s.GetInstance<ICommandParameters>().Panel);

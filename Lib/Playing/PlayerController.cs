@@ -14,16 +14,20 @@ namespace PartituraMagica.Lib.Playing
 {
 	internal class PlayerController : IPlayerController
 	{
+		private readonly ICommandFactory _commandFactory;
+		private readonly IEditedPartitura _editedPartitura;
 		private readonly IFileSystem _fileSystem;
 		private readonly IPartNavigator _navigator;
 		private readonly PlayerPositionHolder _positionHolder;
 		private readonly ISnippetManager _snippetManager;
 		private readonly ISpeedManager _speedManager;
 		private readonly IZoomManager _zoomManager;
+		private IPlayedPartitura _partitura;
 		private IPlayerView _playerView;
 
 		public PlayerController(IPartNavigator navigator, ISnippetManager snippetManager, ISpeedManager speedManager,
-			IZoomManager zoomManager, PlayerPositionHolder positionHolder, IFileSystem fileSystem)
+			IZoomManager zoomManager, PlayerPositionHolder positionHolder, IFileSystem fileSystem,
+			ICommandFactory commandFactory, IEditedPartitura editedPartitura)
 		{
 			_navigator = navigator;
 			_snippetManager = snippetManager;
@@ -31,6 +35,8 @@ namespace PartituraMagica.Lib.Playing
 			_zoomManager = zoomManager;
 			_positionHolder = positionHolder;
 			_fileSystem = fileSystem;
+			_commandFactory = commandFactory;
+			_editedPartitura = editedPartitura;
 		}
 
 		public void GoToPart(int i)
@@ -133,6 +139,15 @@ namespace PartituraMagica.Lib.Playing
 		public void PlayerClosed()
 		{
 			_snippetManager.Finish();
+
+			PlayerMemento memento = new PlayerMemento();
+			_speedManager.ToMemento(memento);
+			_zoomManager.ToMemento(memento);
+
+			SavePlayer(memento, _partitura.RuntimePath);
+
+			if (_snippetManager.HasChanges)
+				_editedPartitura.Partitura.Snippets = _snippetManager.ToMemento();
 		}
 
 		public void PlayerShown()
@@ -162,15 +177,15 @@ namespace PartituraMagica.Lib.Playing
 		public void Init(IPlayedPartitura partitura, IPlayerView playerView)
 		{
 			_playerView = playerView;
+			_partitura = partitura;
 
-			_navigator.LoadPartitura(partitura);
+			_navigator.Init(partitura);
 
-			var memento = LoadPlayer(partitura);
-			_zoomManager.XZoom = memento.XZoom;
-			_zoomManager.YZoom = memento.YZoom;
-			_speedManager.Speed = memento.Speed;
+			var memento = LoadPlayer(partitura.RuntimePath);
+			_zoomManager.Init(memento);
+			_speedManager.Init(memento);
 
-			_playerView.Closed += (o, args) => { SavePlayer(_playerView, partitura.RuntimePath); };
+			_snippetManager.Init(_editedPartitura.Partitura.Snippets);
 
 			_playerView.MarkActivePart(0);
 			_navigator.CurrentPartIndexChanged += () => _playerView.MarkActivePart(_navigator.CurrentPartIndex);
@@ -178,27 +193,17 @@ namespace PartituraMagica.Lib.Playing
 			_speedManager.IsPausedChanged += () => { _playerView.MarkPaused(_speedManager.IsPaused); };
 		}
 
-		public PlayerMemento ToMemento()
+		private PlayerMemento LoadPlayer(string partituraRuntimePath)
 		{
-			return new PlayerMemento
-			{
-				Speed = _speedManager.Speed,
-				XZoom = _zoomManager.XZoom,
-				YZoom = _zoomManager.YZoom
-			};
-		}
-
-		private PlayerMemento LoadPlayer(IPlayedPartitura partitura)
-		{
-			if (!_fileSystem.FileExists(partitura.RuntimePath)) return new PlayerMemento();
+			if (!_fileSystem.FileExists(partituraRuntimePath)) return new PlayerMemento();
 
 			return JsonSerializer.Deserialize<PlayerMemento>(
-				_fileSystem.ReadFile(partitura.RuntimePath));
+				_fileSystem.ReadFile(partituraRuntimePath));
 		}
 
-		private void SavePlayer(IPlayerView view, string runtimePath)
+		private void SavePlayer(PlayerMemento memento, string runtimePath)
 		{
-			var aString = JsonSerializer.Serialize(ToMemento());
+			var aString = JsonSerializer.Serialize(memento);
 			_fileSystem.WriteFile(runtimePath, aString);
 		}
 	}

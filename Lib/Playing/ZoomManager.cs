@@ -84,5 +84,17 @@
 			zoomXRes = _xZoom;
 			zoomYRes = _yZoom;
 		}
+
+		public void Init(PlayerMemento memento)
+		{
+			XZoom = memento.XZoom;
+			YZoom = memento.YZoom;
+		}
+
+		public void ToMemento(PlayerMemento memento)
+		{
+			memento.XZoom = XZoom;
+			memento.YZoom = YZoom;
+		}
 	}
 }

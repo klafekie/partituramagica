@@ -15,5 +15,8 @@
         * This results in a nice "animated" zoom in/out behaviour
         */
 		void GetNextZoom(out float zoomXRes, out float zoomYRes);
+
+		void Init(PlayerMemento memento);
+		void ToMemento(PlayerMemento memento);
 	}
 }

@@ -15,5 +15,7 @@ namespace PartituraMagica.Lib.Playing
 		void TogglePaused();
 		void DecreaseSpeed();
 		void PauseFor(int seconds);
+		void Init(PlayerMemento memento);
+		void ToMemento(PlayerMemento memento);
 	}
 }

@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using PartituraMagica.Lib.Playing;
 
 #endregion
 
@@ -38,6 +39,7 @@ namespace PartituraMagica.Lib.Domain
 		}
 
 		private readonly IFileSystem _fileSystem;
+		private SnippetMemento _snippets;
 
 		public EditedPartitura(IFileSystem fileSystem)
 		{
@@ -70,13 +72,7 @@ namespace PartituraMagica.Lib.Domain
 					index++;
 				}
 			}
-
-			//using (Stream str = _fileSystem.OpenWrite(newPath))
-			//{
-			//	BinaryFormatter sf = new BinaryFormatter();
-			//	sf.Serialize(str, Partitura.ToMemento());
-			//}
-
+			
 			var asString = JsonSerializer.Serialize(Partitura.ToMemento());
 			_fileSystem.WriteFile(newPath, asString);
 
@@ -105,6 +101,12 @@ namespace PartituraMagica.Lib.Domain
 		}
 
 		public Page CurrentPage => Partitura?.GetPage(CurrentPageIndex);
+
+		public SnippetMemento Snippets
+		{
+			get => _snippets;
+			set =>   _snippets = value;
+		}
 
 
 		public bool IsOpen => Partitura != null;

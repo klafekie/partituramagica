@@ -17,7 +17,7 @@ namespace PartituraMagica.Lib.Playing
 	internal interface IPartNavigator
 	{
 		int CurrentPartIndex { get; }
-		void LoadPartitura(IPlayedPartitura partitura);
+		void Init(IPlayedPartitura partitura);
 
 		event Action CurrentPartIndexChanged;
 

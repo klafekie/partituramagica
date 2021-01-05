@@ -26,6 +26,8 @@ namespace PartituraMagica.Lib.Playing
 			_positionHolder.ViewHasScrolled += ViewHasScrolled;
 		}
 
+		public bool HasChanges { get; set; }
+
 		public void Finish()
 		{
 			_playingSnippets = null;
@@ -44,6 +46,7 @@ namespace PartituraMagica.Lib.Playing
 			if (_recordingStartPos != null)
 			{
 				_snippets.Add(_recordingStartPos.Value, _positionHolder.XPos);
+				HasChanges = true;
 				_recordingStartPos = null;
 			}
 		}
@@ -60,6 +63,20 @@ namespace PartituraMagica.Lib.Playing
 
 			_positionHolder.XPos = _playingSnippets.First().Start;
 			_speedManager.PauseFor(2);
+		}
+
+		public SnippetMemento ToMemento()
+		{
+			return new SnippetMemento
+			{
+				Snippets = _snippets.ToList()
+			};
+		}
+
+		public void Init(SnippetMemento memento)
+		{
+			if (memento.Snippets == null) return;
+			foreach (var pair in memento.Snippets) _snippets.Add(pair.Key, pair.Value);
 		}
 
 		private void ViewHasScrolled()

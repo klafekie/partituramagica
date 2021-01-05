@@ -159,6 +159,7 @@
     <Compile Include="Playing\PlayerController.cs" />
     <Compile Include="Playing\ShowPlayerCommand.cs" />
     <Compile Include="Playing\SnippetManager.cs" />
+    <Compile Include="Playing\SnippetMemento.cs" />
     <Compile Include="Playing\SpeedManager.cs" />
     <Compile Include="Playing\ZoomManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

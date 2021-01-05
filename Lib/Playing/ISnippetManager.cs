@@ -1,10 +1,14 @@
 ﻿namespace PartituraMagica.Lib.Playing
 {
-	internal interface ISnippetManager
+	public interface ISnippetManager
 	{
+		bool HasChanges { get; }
 		void Finish();
 		void StartRecording();
 		void StopRecording();
 		void RepeatAllSnippets();
+
+		SnippetMemento ToMemento();
+		void Init(SnippetMemento memento);
 	}
 }

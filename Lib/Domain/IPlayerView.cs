@@ -14,7 +14,6 @@ namespace PartituraMagica.Lib.Domain
 	public interface IPlayerView : IDisposable
 	{
 		void Close();
-		event EventHandler Closed;
 		void StartScrolling(IPlayedPartitura partitura, IPlayerController playerMemento);
 
 		void MarkActivePart(int index);

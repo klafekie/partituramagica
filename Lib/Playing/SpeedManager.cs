@@ -47,6 +47,16 @@ namespace PartituraMagica.Lib.Playing
 			_resumePlayingTime = DateTime.Now.AddSeconds(seconds);
 		}
 
+		public void Init(PlayerMemento memento)
+		{
+			Speed = memento.Speed;
+		}
+
+		public void ToMemento(PlayerMemento memento)
+		{
+			memento.Speed = Speed;
+		}
+
 		private void SetIsPausedAndTriggerEvent(bool value)
 		{
 			bool isChanged = _isPaused != value;

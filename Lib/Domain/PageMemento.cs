@@ -10,6 +10,7 @@ using System.Collections.Generic;
 // ReSharper disable once CheckNamespace
 namespace PartituraMagica
 {
+	//TODO p2 cleanup legacy memento, partitura converter project. Also cleanup code in Rect.cs (jsonignore not needed anymore)
 	[Serializable]
 	internal struct PageMemento
 	{
