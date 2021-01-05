@@ -1,6 +1,4 @@
-﻿using PartituraMagica.Lib.Playing;
-
-namespace PartituraMagica.Lib.Domain
+﻿namespace PartituraMagica.Lib.Domain
 {
 	/** 
      * Represents a partitura currently open in the application for editing.

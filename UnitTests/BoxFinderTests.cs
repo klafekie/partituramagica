@@ -138,7 +138,7 @@ namespace PartituraMagica.Test
 		public void BoxesAtTopAndBottom()
 		{
 			BoxFinder f = new BoxFinder(_image);
-			Rect[] systems = new Rect[2]
+			List<Rect> systems = new List<Rect>
 			{
 				new Rect(100, 100, 600, 10),
 				new Rect(100, 2900, 600, 13)
@@ -166,7 +166,7 @@ namespace PartituraMagica.Test
 		public void FourBoxes()
 		{
 			BoxFinder f = new BoxFinder(_image);
-			Rect[] systems = new Rect[4]
+			List<Rect> systems = new List<Rect>
 			{
 				new Rect(100, 300, 600, 10),
 				new Rect(100, 500, 600, 11),
@@ -192,21 +192,30 @@ namespace PartituraMagica.Test
 		public void OneBox()
 		{
 			BoxFinder f = new BoxFinder(_image);
-			Rect[] systems = new Rect[1] {new Rect(100, 300, 600, 10)};
+			List<Rect> systems = new List<Rect>
+			{
+				new Rect(100, 300, 600, 10)
+			};
 			List<Rect> boxes = f.GetBoxes(systems).ToList();
 			Assert.AreEqual(boxes.Count, 1);
 			Assert.AreEqual(boxes[0].Y, 300 - 150);
 			Assert.AreEqual(boxes[0].Bottom, 300 + 10 + 150);
 
 			//one system, but right at the top
-			systems = new Rect[1] {new Rect(100, 100, 600, 10)};
+			systems = new List<Rect>
+			{
+				new Rect(100, 100, 600, 10)
+			};
 			boxes = f.GetBoxes(systems).ToList();
 			Assert.AreEqual(boxes.Count, 1);
 			Assert.AreEqual(boxes[0].Y, 0);
 			Assert.AreEqual(boxes[0].Bottom, 100 + 10 + 150);
 
 			//one system, but right at the bottom of the page
-			systems = new Rect[1] {new Rect(100, 2700, 600, 200)};
+			systems = new List<Rect>
+			{
+				new Rect(100, 2700, 600, 200)
+			};
 			boxes = f.GetBoxes(systems).ToList();
 			Assert.AreEqual(boxes.Count, 1);
 			Assert.AreEqual(boxes[0].Y, 2700 - 150);

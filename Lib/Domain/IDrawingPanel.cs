@@ -14,11 +14,6 @@ namespace PartituraMagica.Lib.Domain
 	{
 		IGreyImage CurrentImage { get; }
 
-		/**
-		 * new rectangles are initially painted as deselected.
-		 */
-		void AddRectangle(int id, Rect coordinates);
-
 		void AddOrUpdateRectangle(int id, Rect coordinates);
 		void SelectRectangle(int id);
 		void DeselectRectangle(int id);

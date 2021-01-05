@@ -8,7 +8,6 @@ using System.Windows;
 using System.Windows.Input;
 using PartituraMagica.Lib.Domain;
 using ICommand = PartituraMagica.Lib.Domain.ICommand;
-using IContainer = Lamar.IContainer;
 
 #endregion
 
@@ -20,7 +19,6 @@ namespace PartituraMagica.App
 	public partial class MainWindow : Window, IMainWindow
 	{
 		private readonly ICommandFactory _commandFactory;
-		private readonly IContainer _container;
 		private readonly ICommandParameters _controller;
 		private bool _waiting;
 
@@ -82,9 +80,8 @@ namespace PartituraMagica.App
 				});
 
 
-		public MainWindow(IContainer container, ICommandParameters controller, ICommandFactory commandFactory)
+		public MainWindow(ICommandParameters controller, ICommandFactory commandFactory)
 		{
-			_container = container;
 			_controller = controller;
 
 			_commandFactory = commandFactory;
@@ -107,11 +104,9 @@ namespace PartituraMagica.App
 		public void ShowPartituraInfo(IEditedPartitura active)
 		{
 			int pageCount = active.GetPageCount();
-			if (pageCount == 0)
-				Title = $"Partitura Magica - {Path.GetFileNameWithoutExtension(active.Path)} (no pages)";
-			else
-				Title =
-					$"Partitura Magica - {Path.GetFileNameWithoutExtension(active.Path)} ({active.CurrentPageIndex + 1} / {pageCount})";
+			Title = pageCount == 0
+				? $"Partitura Magica - {Path.GetFileNameWithoutExtension(active.Path)} (no pages)"
+				: $"Partitura Magica - {Path.GetFileNameWithoutExtension(active.Path)} ({active.CurrentPageIndex + 1} / {pageCount})";
 		}
 
 		public void ClearPartituraInfo()

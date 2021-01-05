@@ -94,20 +94,18 @@ namespace PartituraMagica.Lib.PageEditing
 			return boxes.Select(s => s.Scale(xFactor, yFactor)).ToList();
 		}
 
-		public List<Rect> GetBoxes(IEnumerable<Rect> systems)
+		public List<Rect> GetBoxes(List<Rect> systems)
 		{
 			List<Rect> boxes = new List<Rect>();
-			int systemsCount = systems.Count();
-			if (systemsCount == 0) return boxes;
+			if (systems.Count == 0) return boxes;
 
 			Rect last = null;
-			List<Rect> systemList = systems.ToList();
 
-			for (int i = 0; i < systemList.Count; i++)
+			for (int i = 0; i < systems.Count; i++)
 			{
-				Rect current = systemList[i];
+				Rect current = systems[i];
 				Rect next = null;
-				if (i < systemList.Count - 1) next = systemList[i + 1];
+				if (i < systems.Count - 1) next = systems[i + 1];
 
 				double defaultSpacing = DefaultBoxHeight / 2;
 
@@ -123,11 +121,9 @@ namespace PartituraMagica.Lib.PageEditing
 						(next.Top - current.Bottom) / 2D - 2D * Page.ClickTolerance,
 						MaxBoxHeight / 2);
 
-				//boxes.Add(new Rect(current.X, current.Y - spaceAbove,
-				//    current.Width, current.Height + spaceAbove + spaceBelow));
 				boxes.Add(current.AddAbove(spaceAbove).AddBelow(spaceBelow));
 
-				last = systemList[i];
+				last = systems[i];
 			}
 
 			return boxes;
@@ -166,7 +162,7 @@ namespace PartituraMagica.Lib.PageEditing
 					else
 					{
 						//only take the system with the max number of lines
-						if (groupedLines[i].Count() > groupedLines[i + 1].Count())
+						if (groupedLines[i].Count > groupedLines[i + 1].Count)
 							groupsWithRightDistance.Add(groupedLines[i]);
 						else
 							groupsWithRightDistance.Add(groupedLines[++i]);
@@ -220,7 +216,7 @@ namespace PartituraMagica.Lib.PageEditing
 
 			//it is intended that we don't change rotationCorrection when
 			//meanAbove and meanBelow are lower than mean but equal
-			double darkest = 1D;
+			double darkest;
 			if (meanAbove < mean && meanAbove < meanBelow)
 			{
 				darkest = meanAbove;

@@ -53,12 +53,11 @@ namespace PartituraMagica.App
 
 			_container.Inject(typeof(IContainer), _container, false);
 
-			var scanned = _container.WhatDidIScan();
-			var have = _container.WhatDoIHave();
+			//var scanned = _container.WhatDidIScan();
+			//var have = _container.WhatDoIHave();
 			_container.AssertConfigurationIsValid();
 
 			var wnd = _container.GetInstance<MainWindow>();
-			var wnd2 = _container.GetInstance<IMainWindow>();
 
 			string[] args = Environment.GetCommandLineArgs();
 			if (args.Length == 2)

@@ -25,7 +25,7 @@ namespace PartituraMagica.App
 		{
 			public float X;
 			public readonly float Y;
-			public readonly float Z;
+			private readonly float Z;
 			public int Color;
 			public float Tu;
 			public float Tv;
@@ -43,7 +43,7 @@ namespace PartituraMagica.App
 				Texture = t;
 			}
 
-			public static void Cleanup()
+			internal static void CleanupLoadedPages()
 			{
 				foreach (Cache b in LoadedPages.Values) b.Texture.Dispose();
 				LoadedPages.Clear();
@@ -89,7 +89,7 @@ namespace PartituraMagica.App
 
 		private readonly Rect _coords;
 
-		private readonly Color _foregroundColor;
+		private readonly int _foregroundColor;
 		private readonly IGreyImage _image;
 		private readonly bool _invertColors;
 
@@ -112,7 +112,7 @@ namespace PartituraMagica.App
 		{
 			_image = image;
 			_invertColors = invertColors;
-			_foregroundColor = foregroundColor;
+			_foregroundColor = foregroundColor.ToArgb();
 			_coords = new Rect(coords);
 		}
 
@@ -155,7 +155,7 @@ namespace PartituraMagica.App
 					float right = (float) _coords.Right / width;
 					float bottom = (float) _coords.Bottom / height;
 
-					vertice.Color = _foregroundColor.ToArgb();
+					vertice.Color = _foregroundColor;
 					vertice.Tu = vertice.X >= 0 ? right : left;
 					vertice.Tv = vertice.Y >= 0 ? top : bottom;
 					vertice.X += offset + (float) _coords.Width / 2F;
@@ -201,7 +201,7 @@ namespace PartituraMagica.App
 
 		public static void Cleanup()
 		{
-			Cache.Cleanup();
+			Cache.CleanupLoadedPages();
 		}
 	}
 }

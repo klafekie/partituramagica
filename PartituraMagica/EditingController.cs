@@ -25,8 +25,6 @@ namespace PartituraMagica.App
 			}
 		}
 
-		private string PlayerRuntimePath => Active.Path + ".runtime";
-
 		public EditingController()
 		{
 			FileSystem = new FileSystem();

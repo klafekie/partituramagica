@@ -21,7 +21,7 @@ namespace PartituraMagica.Lib.Playing
 			public readonly int PatternIndex; //the position inside the part pattern, 
 			public readonly double XPos; //the absolute xPosition of the line on the view
 
-			public LinePartInfo(int partIndex, int clippingIndex, int patternIndex, int lineIndex, double xPos)
+			public LinePartInfo(int partIndex, int clippingIndex, int patternIndex, double xPos)
 			{
 				PartIndex = partIndex;
 				ClippingIndex = clippingIndex;
@@ -53,7 +53,7 @@ namespace PartituraMagica.Lib.Playing
 				{
 					_lines.Add(
 						new LinePartInfo(partIndex,
-							clippingIndex, patternIndex, lineIndex, currentX));
+							clippingIndex, patternIndex, currentX));
 					currentX += p[clippingIndex].Coords.Width;
 					lineIndex++;
 				}

@@ -10,15 +10,13 @@ namespace PartituraMagica.App.Player
 {
 	internal class PlayerViewFactory : IPlayerViewFactory, IDisposable
 	{
-		private readonly IFileSystem _fileSystem;
 		private readonly Func<IPlayerView> _getViewInstance;
 		private readonly IPlayerController _playerController;
 		private IPlayerView _playerView;
 
-		public PlayerViewFactory(MainWindow mainWindow, IImageLoader imageLoader,
-			IFileSystem fileSystem, Func<IPlayerView> getViewInstance, IPlayerController playerController)
+		public PlayerViewFactory(Func<IPlayerView> getViewInstance,
+			IPlayerController playerController)
 		{
-			_fileSystem = fileSystem;
 			_getViewInstance = getViewInstance;
 			_playerController = playerController;
 		}

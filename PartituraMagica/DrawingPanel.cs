@@ -24,8 +24,7 @@ namespace PartituraMagica.App
 			public Clipping()
 			{
 				R = new Rectangle();
-				T = new TextBlock();
-				T.FontSize = 24;
+				T = new TextBlock {FontSize = 24};
 			}
 		}
 
@@ -59,8 +58,7 @@ namespace PartituraMagica.App
 
 		public void AddOrUpdateRectangle(int id, Rect coordinates)
 		{
-			Clipping c;
-			if (_id2Clipping.TryGetValue(id, out c))
+			if (_id2Clipping.TryGetValue(id, out Clipping c))
 				SetCoords(c, coordinates);
 			else
 				AddRectangle(id, coordinates);
@@ -108,12 +106,14 @@ namespace PartituraMagica.App
 		{
 			GreyImage bm = LoadImage(path);
 
-			Image image = new Image();
-			image.Stretch = Stretch.None;
-			image.Height = bm.RawImage.Height;
-			image.Width = bm.RawImage.Width;
-			image.Source = bm.RawImage;
-			image.Effect = new NegativeEffect();
+			Image image = new Image
+			{
+				Stretch = Stretch.None,
+				Height = bm.RawImage.Height,
+				Width = bm.RawImage.Width,
+				Source = bm.RawImage,
+				Effect = new NegativeEffect()
+			};
 
 			_pageCanvas.Width = bm.RawImage.Width;
 			_pageCanvas.Height = bm.RawImage.Height;
@@ -125,7 +125,7 @@ namespace PartituraMagica.App
 		public void LabelRectangle(int id, string label)
 		{
 			Clipping i = _id2Clipping[id];
-			if (label == null || label.Length == 0)
+			if (string.IsNullOrEmpty(label))
 			{
 				//hide i.t
 				i.T.Visibility = Visibility.Collapsed;

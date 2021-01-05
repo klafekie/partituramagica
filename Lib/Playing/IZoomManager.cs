@@ -2,8 +2,6 @@
 {
 	internal interface IZoomManager
 	{
-		float XZoom { get; set; }
-		float YZoom { get; set; }
 		void ZoomOut(bool xOnly);
 		void ZoomIn(bool xOnly);
 

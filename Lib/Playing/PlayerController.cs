@@ -14,7 +14,6 @@ namespace PartituraMagica.Lib.Playing
 {
 	internal class PlayerController : IPlayerController
 	{
-		private readonly ICommandFactory _commandFactory;
 		private readonly IEditedPartitura _editedPartitura;
 		private readonly IFileSystem _fileSystem;
 		private readonly IPartNavigator _navigator;
@@ -27,7 +26,7 @@ namespace PartituraMagica.Lib.Playing
 
 		public PlayerController(IPartNavigator navigator, ISnippetManager snippetManager, ISpeedManager speedManager,
 			IZoomManager zoomManager, PlayerPositionHolder positionHolder, IFileSystem fileSystem,
-			ICommandFactory commandFactory, IEditedPartitura editedPartitura)
+			IEditedPartitura editedPartitura)
 		{
 			_navigator = navigator;
 			_snippetManager = snippetManager;
@@ -35,7 +34,6 @@ namespace PartituraMagica.Lib.Playing
 			_zoomManager = zoomManager;
 			_positionHolder = positionHolder;
 			_fileSystem = fileSystem;
-			_commandFactory = commandFactory;
 			_editedPartitura = editedPartitura;
 		}
 

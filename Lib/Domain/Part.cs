@@ -72,8 +72,7 @@ namespace PartituraMagica.Lib.Domain
 
 		public override string ToString()
 		{
-			return string.Format("{0} ... {1}, Count = {2}", _clippings.FirstOrDefault(), _clippings.LastOrDefault(),
-				_clippings.Count);
+			return $"{_clippings.FirstOrDefault()} ... {_clippings.LastOrDefault()}, Count = {_clippings.Count}";
 		}
 	}
 }

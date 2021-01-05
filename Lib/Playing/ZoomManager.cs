@@ -15,10 +15,7 @@
 			get => _xZoom;
 			set
 			{
-				if (value == 0F)
-					_xZoom = 0.000001F;
-				else
-					_xZoom = value;
+				_xZoom = value == 0F ? 0.000001F : value;
 				_xZoomDelta = 0;
 			}
 		}
@@ -28,10 +25,7 @@
 			get => _yZoom;
 			set
 			{
-				if (value == 0F)
-					_yZoom = 0.000001F;
-				else
-					_yZoom = value;
+				_yZoom = value == 0F ? 0.000001F : value;
 				_yZoomDelta = 0;
 			}
 		}
