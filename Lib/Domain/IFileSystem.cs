@@ -1,7 +1,6 @@
 ﻿#region usings
 
 using System.Collections.Generic;
-using System.IO;
 
 #endregion
 
@@ -46,12 +45,12 @@ namespace PartituraMagica.Lib.Domain
      */
 		void Copy(string from, string to);
 
-		Stream OpenRead(string path);
+		string ReadFile(string path);
 
 		/**
 		 * file is created if it doesn't exist
 		 */
-		Stream OpenWrite(string path);
+		void WriteFile(string path, string aString);
 
 		bool FileExists(string path);
 	}

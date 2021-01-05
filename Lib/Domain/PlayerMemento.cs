@@ -15,7 +15,5 @@ namespace PartituraMagica
         public float Speed { get; set; }
         public float XZoom { get; set; }
         public float YZoom { get; set; }
-        
-        public bool Test { get; set; }
     }
 }

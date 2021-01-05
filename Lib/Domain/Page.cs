@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Windows;
 using PartituraMagica.Lib.Domain;
@@ -22,21 +23,20 @@ namespace PartituraMagica
 			boxes = new Dictionary<int, Box>();
 		}
 
-		internal Page(PageMemento p)
+		internal Page(PageJsonMemento memento)
 				: this()
 		{
-			foreach (object o in p.Boxes)
+			foreach (var box in memento.Boxes)
 			{
-				Box b = (Box)o;
-				boxes.Add(b.Id, b);
-				largestBoxIdTillNow = Math.Max(largestBoxIdTillNow, b.Id);
+				this.boxes.Add(box.Id, new Box(box));
+				largestBoxIdTillNow = Math.Max(largestBoxIdTillNow, box.Id);
 			}
 		}
 
-		internal PageMemento ToMemento()
+		internal PageJsonMemento ToMemento()
 		{
 			dirty = false;
-			return new PageMemento(boxes.Values);
+			return new PageJsonMemento() { Boxes = boxes.Values.Select(b => b.ToMemento()).ToArray() };
 		}
 
 		private void SetDefaults()
@@ -241,7 +241,7 @@ namespace PartituraMagica
 				SelectedBox.Select(pos, panel);
 			}
 		}
-		
+
 		/** returns the coords of all Boxes. 
 		 * Boxes that contain splitters are returned as several 
 		 * boxes with identical Y and Height

@@ -5,8 +5,7 @@
 #region usings
 
 using System.Collections.Generic;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Text.Json;
 using PartituraMagica.Lib.Domain;
 
 #endregion
@@ -192,20 +191,15 @@ namespace PartituraMagica.Lib.Playing
 		private PlayerMemento LoadPlayer(IPlayedPartitura partitura)
 		{
 			if (!_fileSystem.FileExists(partitura.RuntimePath)) return new PlayerMemento();
-			using (Stream str = _fileSystem.OpenRead(partitura.RuntimePath))
-			{
-				BinaryFormatter sf = new BinaryFormatter();
-				return (PlayerMemento) sf.Deserialize(str);
-			}
+
+			return JsonSerializer.Deserialize<PlayerMemento>(
+				_fileSystem.ReadFile(partitura.RuntimePath));
 		}
 
 		private void SavePlayer(IPlayerView view, string runtimePath)
 		{
-			using (Stream str = _fileSystem.OpenWrite(runtimePath))
-			{
-				BinaryFormatter sf = new BinaryFormatter();
-				sf.Serialize(str, ToMemento());
-			}
+			var aString = JsonSerializer.Serialize(ToMemento());
+			_fileSystem.WriteFile(runtimePath, aString);
 		}
 	}
 }

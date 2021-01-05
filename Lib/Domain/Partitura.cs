@@ -1,9 +1,6 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Runtime.Serialization.Formatters.Soap;
 using System.Runtime.Serialization;
-
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,37 +11,7 @@ using PartituraMagica.Lib.PageEditing;
 
 namespace PartituraMagica
 {
-    [Serializable]
-    public struct PartituraMemento
-    {
-        public PartituraMemento(ICollection<Page> pages, String partPattern)
-        {
-            this.partPattern = partPattern;
-            this.pages = new ArrayList(pages.Count);
-            foreach (Page p in pages)
-            {
-                this.pages.Add(p.ToMemento());
-            }
-        }
-        private ArrayList pages;
-        private String partPattern;
-        public ICollection Pages
-        {
-            get
-            {
-                return this.pages;
-            }
-        }
-        public String PartPattern
-        {
-            get
-            {
-                return partPattern;
-            }
-        }
-    }
-
-    /** 
+	/** 
      * Represents a musical piece to be displayed. 
      * consists of a list of pages. Several boxes on each page.
      * boxes are grouped into Parts (according to the repetition structure
@@ -66,20 +33,24 @@ namespace PartituraMagica
             this.labelProvider = new AbcLabelProvider(this);
         }
 
-        public Partitura(PartituraMemento p)
+        public Partitura(PartituraJsonMemento p)
             : this()
         {
             this.partPattern = p.PartPattern;
-            foreach (object o in p.Pages)
+            foreach (PageJsonMemento page in p.Pages)
             {
-                this.pages.Add(new Page((PageMemento)o));
+                this.pages.Add(new Page(page));
             }
         }
 
-        public PartituraMemento ToMemento()
+        public PartituraJsonMemento ToMemento()
         {
             this.dirty = false;
-            return new PartituraMemento(this.pages, this.partPattern);
+            return new PartituraJsonMemento()
+            {
+              PartPattern = PartPattern,
+              Pages = this.pages.Select(p => p.ToMemento()).ToArray()
+            };
         }
 
         public bool Dirty

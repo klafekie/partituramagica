@@ -1,9 +1,8 @@
 ﻿#region usings
 
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Text.Json;
 
 #endregion
 
@@ -72,11 +71,14 @@ namespace PartituraMagica.Lib.Domain
 				}
 			}
 
-			using (Stream str = _fileSystem.OpenWrite(newPath))
-			{
-				BinaryFormatter sf = new BinaryFormatter();
-				sf.Serialize(str, Partitura.ToMemento());
-			}
+			//using (Stream str = _fileSystem.OpenWrite(newPath))
+			//{
+			//	BinaryFormatter sf = new BinaryFormatter();
+			//	sf.Serialize(str, Partitura.ToMemento());
+			//}
+
+			var asString = JsonSerializer.Serialize(Partitura.ToMemento());
+			_fileSystem.WriteFile(newPath, asString);
 
 			Path = newPath;
 		}
@@ -138,13 +140,14 @@ namespace PartituraMagica.Lib.Domain
 
 		private static string GetPartituraName(string path)
 		{
-			return System.IO.Path.GetFileNameWithoutExtension(path);
+			string fileName = System.IO.Path.GetFileName(path);
+			return fileName.Substring(0, fileName.Length - ".partitura.json".Length);
 		}
 
 		private string GetImagePath(int index, string path)
 		{
 			string dir = System.IO.Path.GetDirectoryName(path);
-			string partituraName = System.IO.Path.GetFileNameWithoutExtension(path);
+			string partituraName = GetPartituraName(path);
 			string indexString = index.ToString("000");
 
 			return System.IO.Path.Combine(dir, partituraName + "-" + indexString + ".jpg");

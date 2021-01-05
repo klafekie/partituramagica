@@ -1,7 +1,6 @@
 ﻿#region usings
 
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Text.Json;
 using PartituraMagica.Lib.Domain;
 
 #endregion
@@ -29,13 +28,10 @@ namespace PartituraMagica.Lib.PartituraCommands
 				_commandFactory.Create<ClosePartituraCommand>().TryExecute();
 				if (!P.Active.IsOpen)
 				{
-					using (Stream str = P.FileSystem.OpenRead(chosenFile))
-					{
-						BinaryFormatter sf = new BinaryFormatter();
-						PartituraMemento mem = (PartituraMemento) sf.Deserialize(str);
-						Partitura partitura = new Partitura(mem);
-						P.Active.Open(chosenFile, partitura);
-					}
+					string aString = P.FileSystem.ReadFile(chosenFile);
+					PartituraJsonMemento mem = JsonSerializer.Deserialize<PartituraJsonMemento>(aString);
+					Partitura partitura = new Partitura(mem);
+					P.Active.Open(chosenFile, partitura);
 
 					_commandFactory.Create<ShowFirstPageCommand>().TryExecute();
 					_mainWindow.PartPattern = P.Active.Partitura.PartPattern;

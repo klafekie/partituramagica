@@ -3,10 +3,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using PartituraMagica.Lib.Domain;
 
 #endregion
 
+// please do not adjust namespace or type name to preserve backward compatibiltiy with old binary format.
+// ReSharper disable once CheckNamespace
 namespace PartituraMagica
 {
 	[Serializable]

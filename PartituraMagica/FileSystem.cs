@@ -39,7 +39,7 @@ namespace PartituraMagica.App
 			{
 				Multiselect = false,
 				Title = "Open Partitura File",
-				Filter = "Partitura files (*.partitura)|*.partitura",
+				Filter = "Partitura files (*.partitura.json)|*.partitura.json",
 				RestoreDirectory = true
 			};
 
@@ -52,7 +52,7 @@ namespace PartituraMagica.App
 			SaveFileDialog dialog = new SaveFileDialog
 			{
 				Title = "Save Partitura File",
-				Filter = "Partitura files (*.partitura)|*.partitura",
+				Filter = "Partitura files (*.partitura.json)|*.partitura.json",
 				RestoreDirectory = true
 			};
 
@@ -91,19 +91,19 @@ namespace PartituraMagica.App
 			File.Copy(from, to, true);
 		}
 
-		public Stream OpenRead(string path)
+		public string ReadFile(string path)
 		{
-			return File.OpenRead(path);
-		}
-
-		public Stream OpenWrite(string path)
-		{
-			return File.Create(path);
+			return File.ReadAllText(path);
 		}
 
 		public bool FileExists(string path)
 		{
 			return File.Exists(path);
+		}
+
+		public void WriteFile(string path, string aString)
+		{
+			File.WriteAllText(path, aString);
 		}
 	}
 }
