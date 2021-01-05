@@ -10,12 +10,5 @@ namespace PartituraMagica.Lib.Domain
 	{
 		public ICollection<PageJsonMemento> Pages { get; set; }
 		public string PartPattern { get; set; }
-
-		//TODO
-		// ReSharper disable once EmptyConstructor
-		//ctor needed for json deserialization
-		public PartituraJsonMemento()
-		{
-		}
 	}
 }

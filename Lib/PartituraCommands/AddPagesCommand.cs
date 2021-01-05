@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using PartituraMagica.Lib.Domain;
+using PartituraMagica.Lib.PageEditing;
 
 #endregion
 
@@ -41,10 +42,10 @@ namespace PartituraMagica.Lib.PartituraCommands
 						"cause the index of destFile is always higher than the index of all existing image files");
 					P.FileSystem.Copy(sourceFile, destFile);
 					_commandFactory.Create<ShowPageCommand>(c => c.Index = index).TryExecute();
-					//if (P.Active.CurrentPageIndex == index)
-					//show was successfull
-					//TODO fix autofill
-					//_commandFactory.Create<AutoFillCommand>().TryExecute();
+
+					if (P.Active.CurrentPageIndex == index)
+						//show was successfull
+						_commandFactory.Create<AutoFillCommand>().TryExecute();
 				}
 
 				//go back to the first added page

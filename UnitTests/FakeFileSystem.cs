@@ -44,12 +44,7 @@ namespace PartituraMagica.Test
 			GetNames(path).Add(to);
 		}
 
-		public string ReadFile(string path)
-		{
-			throw new NotImplementedException();
-		}
-
-		void IFileSystem.WriteFile(string path, string aString)
+		public virtual string ReadFile(string path)
 		{
 			throw new NotImplementedException();
 		}
@@ -59,19 +54,9 @@ namespace PartituraMagica.Test
 			return false;
 		}
 
-		public string WriteFile(string path, string aString)
+		public virtual void WriteFile(string path, string aString)
 		{
 			throw new NotImplementedException();
-		}
-
-		public virtual Stream OpenRead(string path)
-		{
-			return null;
-		}
-
-		public virtual Stream OpenWrite(string path)
-		{
-			return null;
 		}
 
 		public ICollection<string> GetNames(string path)

@@ -1,7 +1,8 @@
 ﻿#region usings
 
 using System.Collections.Generic;
-using System.IO;
+using System.Text;
+using Moq;
 using NUnit.Framework;
 using PartituraMagica.Lib.Domain;
 using PartituraMagica.Lib.PartituraCommands;
@@ -53,7 +54,7 @@ namespace PartituraMagica.Test
 			//user chooses a partitura file he is queried for the image files
 
 			fileSystem.Setup(fs => fs.ShowSavePartituraDialog())
-				.Returns("c:\\partituraFile.partitura");
+				.Returns("c:\\partituraFile.partitura.json");
 			//NewCommand calls AddPageCommand
 			fileSystem.Setup(fs => fs.ShowOpenImagesDialog())
 				.Returns(new List<string> {"d:\\image1.jpg", "d:\\image2.jpg"});
@@ -64,7 +65,7 @@ namespace PartituraMagica.Test
 			Assert.NotNull(TestedPartitura.Partitura);
 
 			Assert.AreEqual(TestedPartitura.GetPageCount(), 2);
-			Assert.AreEqual(TestedPartitura.Path, "c:\\partituraFile.partitura");
+			Assert.AreEqual(TestedPartitura.Path, "c:\\partituraFile.partitura.json");
 
 			//manually add two more pages
 			fileSystem.Setup(fs => fs.ShowOpenImagesDialog())
@@ -86,12 +87,11 @@ namespace PartituraMagica.Test
 
 			//now safe to another location and reopen to see that there are still the same pages
 			fileSystem.Setup(fs => fs.ShowSavePartituraDialog())
-				.Returns("c:\\otherDir\\partituraFile.partitura");
-			byte[] buffer = new byte[100000]; //uah, only ok cause it is test code...
-			Stream s1 = new MemoryStream(buffer);
+				.Returns("c:\\otherDir\\partituraFile.partitura.json");
 
-			fileSystem.Setup(fs => fs.OpenWrite("c:\\otherDir\\partituraFile.partitura"))
-				.Returns(s1);
+			StringBuilder sb = new StringBuilder();
+			fileSystem.Setup(fs => fs.WriteFile("c:\\otherDir\\partituraFile.partitura.json", It.IsAny<string>()))
+				.Callback((string path, string aString) => sb.Append(aString));
 
 			Factory.Create<SaveAsCommand>().Execute();
 			Assert.False(TestedPartitura.Partitura.Dirty);
@@ -100,11 +100,10 @@ namespace PartituraMagica.Test
 
 			//OpenCommand
 			fileSystem.Setup(fs => fs.ShowOpenPartituraDialog())
-				.Returns("c:\\otherDir\\partituraFile.partitura");
-			//use a new stream just because s1 is already read to the end.
-			Stream s2 = new MemoryStream(buffer);
-			fileSystem.Setup(fs => fs.OpenRead("c:\\otherDir\\partituraFile.partitura"))
-				.Returns(s2);
+				.Returns("c:\\otherDir\\partituraFile.partitura.json");
+
+			fileSystem.Setup(fs => fs.ReadFile("c:\\otherDir\\partituraFile.partitura.json"))
+				.Returns(sb.ToString);
 
 			Factory.Create<OpenCommand>().Execute();
 			Factory.Create<ShowFirstPageCommand>().Execute();
@@ -139,7 +138,7 @@ namespace PartituraMagica.Test
 
 			//NewCommand
 			fileSystem.Setup(fs => fs.ShowSavePartituraDialog())
-				.Returns("c:\\partituraFile.partitura");
+				.Returns("c:\\partituraFile.partitura.json");
 
 
 			try
