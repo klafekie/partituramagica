@@ -13,7 +13,7 @@ namespace PartituraMagica
 		private int selectedBoxId;
 		private double pageWith;
 		private double pageHeight;
-		private bool dirty;
+		private bool _hasChanges;
 		private static int largestBoxIdTillNow = 0;
 		public const double ClickTolerance = 4.5;
 
@@ -35,7 +35,7 @@ namespace PartituraMagica
 
 		internal PageJsonMemento ToMemento()
 		{
-			dirty = false;
+			_hasChanges = false;
 			return new PageJsonMemento()
 			{
 				Boxes = boxes.Values.Select(b => b.ToMemento()).ToArray()
@@ -47,7 +47,7 @@ namespace PartituraMagica
 			selectedBoxId = -1;
 			pageWith = 0;
 			pageHeight = 0;
-			dirty = false;
+			_hasChanges = false;
 		}
 
 		private int GetIdAt(Point pos)
@@ -83,7 +83,7 @@ namespace PartituraMagica
 
 		public void AddBox(Rect coords, IDrawingPanel panel, ILabelProvider labelProvider)
 		{
-			dirty = true;
+			_hasChanges = true;
 			int id = ++largestBoxIdTillNow;
 
 			//this guarantess that the box cannot be moved out of the page area:
@@ -97,7 +97,7 @@ namespace PartituraMagica
 
 		public void RemoveSelectedBox(IDrawingPanel panel, ILabelProvider labelProvider)
 		{
-			dirty = true;
+			_hasChanges = true;
 			double boxY = SelectedBox.Coords.Y;
 			SelectedBox.UnPaint(panel);
 			boxes.Remove(selectedBoxId);
@@ -190,7 +190,7 @@ namespace PartituraMagica
 		 */
 		public void UpdateSelectedBox(Point lastPos, Point newPos, IDrawingPanel panel)
 		{
-			dirty = true;
+			_hasChanges = true;
 			SelectedBox.Update(lastPos, newPos);
 			SelectedBox.Paint(panel);
 		}
@@ -210,23 +210,23 @@ namespace PartituraMagica
 			pageWith = imageSize.X;
 		}
 
-		public bool Dirty
+		public bool HasChanges
 		{
 			get
 			{
-				return dirty;
+				return _hasChanges;
 			}
 		}
 
 		[OnSerialized]
 		public void Saved(StreamingContext context)
 		{
-			dirty = false;
+			_hasChanges = false;
 		}
 
 		public void SplitSelectedBox(Point pos, IDrawingPanel panel)
 		{
-			dirty = true;
+			_hasChanges = true;
 			SelectedBox.TrySplit(pos);
 			SelectedBox.Paint(panel);
 		}
@@ -271,7 +271,7 @@ namespace PartituraMagica
 
 		public void LabelSelection(IDrawingPanel panel, ILabelProvider labelProvider)
 		{
-			dirty = true;
+			_hasChanges = true;
 			SelectedBox.LabelSelection();
 			PaintPage(panel, labelProvider);
 		}
@@ -283,7 +283,7 @@ namespace PartituraMagica
 
 		internal void UnLabelSelection(IDrawingPanel panel, ILabelProvider labelProvider)
 		{
-			dirty = true;
+			_hasChanges = true;
 			SelectedBox.UnLabelSelection();
 			PaintPage(panel, labelProvider);
 		}

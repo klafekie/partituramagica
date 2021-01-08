@@ -94,7 +94,7 @@ namespace PartituraMagica.Test
 				.Callback((string path, string aString) => sb.Append(aString));
 
 			Factory.Create<SaveAsCommand>().Execute();
-			Assert.False(TestedPartitura.Partitura.Dirty);
+			Assert.False(TestedPartitura.Partitura.HasChanges);
 			Factory.Create<ClosePartituraCommand>().Execute();
 			Factory.Create<CloseApplicationCommand>().Execute();
 

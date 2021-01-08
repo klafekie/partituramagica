@@ -1,6 +1,7 @@
 ﻿#region usings
 
 using System;
+using PartituraMagica.Lib.Domain;
 
 #endregion
 
@@ -14,8 +15,7 @@ namespace PartituraMagica.Lib.Playing
 		void IncreaseSpeed();
 		void TogglePaused();
 		void DecreaseSpeed();
-		void PauseFor(int seconds);
-		void Init(PlayerMemento memento);
+		void Init(PlayerMemento memento, IPlayerView playerView);
 		void ToMemento(PlayerMemento memento);
 	}
 }

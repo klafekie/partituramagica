@@ -21,7 +21,7 @@ namespace PartituraMagica
 	public class Partitura
 	{
 		private List<Page> pages;
-		private bool dirty;
+		private bool hasChanges;
 		private ILabelProvider labelProvider;
 		private string partPattern;
 		private SnippetMemento _snippets;
@@ -31,7 +31,7 @@ namespace PartituraMagica
 			get => _snippets;
 			set
 			{
-				dirty = true;
+				hasChanges = true;
 				_snippets = value;
 			}
 		}
@@ -39,7 +39,7 @@ namespace PartituraMagica
 		public Partitura()
 		{
 			this.pages = new List<Page>();
-			this.dirty = false;
+			this.hasChanges = false;
 			//@todo p3 not nice to depend on a class outside the
 			//domain "package" here cause this would be a cyclic dependency
 			this.labelProvider = new AbcLabelProvider(this);
@@ -59,7 +59,7 @@ namespace PartituraMagica
 
 		public PartituraJsonMemento ToMemento()
 		{
-			this.dirty = false;
+			this.hasChanges = false;
 			return new PartituraJsonMemento()
 			{
 				PartPattern = PartPattern,
@@ -68,17 +68,17 @@ namespace PartituraMagica
 			};
 		}
 
-		public bool Dirty
+		public bool HasChanges
 		{
 			get
 			{
-				if (this.dirty)
+				if (this.hasChanges)
 				{
 					return true;
 				}
 				foreach (Page p in pages)
 				{
-					if (p.Dirty)
+					if (p.HasChanges)
 					{
 						return true;
 					}
@@ -94,7 +94,7 @@ namespace PartituraMagica
 			for (int i = pages.Count; i <= index; i++)
 			{
 				pages.Add(new Page());
-				dirty = true;
+				hasChanges = true;
 			}
 			return pages[index];
 		}
@@ -153,7 +153,7 @@ namespace PartituraMagica
 			}
 			set
 			{
-				this.dirty = true;
+				this.hasChanges = true;
 				this.partPattern = value.ToUpper().Trim();
 			}
 		}

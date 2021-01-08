@@ -1,5 +1,6 @@
 ﻿#region usings
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using PartituraMagica.Lib.Domain;
@@ -10,14 +11,22 @@ namespace PartituraMagica.Lib.Playing
 {
 	internal class SnippetManager : ISnippetManager
 	{
+		private class Snippet
+		{
+			public double Start { get; set; }
+			public double End { get; set; }
+			public int Index { get; set; }
+		}
+
+		private const double MIN_SNIPPET_LENGTH = 10;
 		private readonly PlayerPositionHolder _positionHolder;
 		private readonly SortedList<double, double> _snippets = new SortedList<double, double>();
 		private readonly ISpeedManager _speedManager;
+		private IPlayerView _playerView;
 		private int? _playingSnippetIndex;
-		private List<(double Start, double End)> _playingSnippets;
+		private List<Snippet> _playingSnippets;
 
 		private double? _recordingStartPos;
-		private bool _snippedChangeInProgress;
 
 		public SnippetManager(PlayerPositionHolder positionHolder, ISpeedManager speedManager)
 		{
@@ -27,6 +36,41 @@ namespace PartituraMagica.Lib.Playing
 		}
 
 		public bool HasChanges { get; set; }
+
+		public void Init(SnippetMemento memento, IPlayerView playerView)
+		{
+			_playerView = playerView;
+			_snippets.Clear();
+			_playingSnippetIndex = null;
+			_playingSnippets = null;
+
+			if (memento.Snippets != null)
+				foreach (var pair in memento.Snippets)
+					_snippets.Add(pair.Key, pair.Value);
+
+			playerView.UpdateAvailableSnippets(_snippets.Count);
+
+			UpdateSnippetUi();
+		}
+
+		public void RemoveAllSnippets()
+		{
+			//TODO confirm from user
+			_snippets.Clear();
+			HasChanges = true;
+			Finish();
+		}
+
+		public void RemoveCurrentSnippet()
+		{
+			int? index = GetCurrentPlayingSnippetIndex();
+			if (index == null) return;
+
+			//TODO confirm from user
+			HasChanges = true;
+			_snippets.RemoveAt(index.Value);
+			Finish();
+		}
 
 		public void Finish()
 		{
@@ -39,30 +83,33 @@ namespace PartituraMagica.Lib.Playing
 		{
 			if (_recordingStartPos == null && _playingSnippetIndex == null)
 				_recordingStartPos = _positionHolder.XPos;
+			UpdateSnippetUi();
 		}
 
 		public void StopRecording()
 		{
 			if (_recordingStartPos != null)
 			{
-				_snippets.Add(_recordingStartPos.Value, _positionHolder.XPos);
-				HasChanges = true;
-				_recordingStartPos = null;
+				double start = _recordingStartPos.Value;
+				double end = _positionHolder.XPos;
+
+				//big enough?
+				if (start + MIN_SNIPPET_LENGTH <= end)
+				{
+					//sortedList allows no duplicates in Key.
+					if (_snippets.ContainsKey(start))
+						_snippets[start] =
+							Math.Max(_snippets[start], end);
+					else
+						_snippets.Add(start, end);
+
+					HasChanges = true;
+					_recordingStartPos = null;
+				}
 			}
-		}
 
-		public void RepeatAllSnippets()
-		{
-			if (_snippets.Count == 0 || _recordingStartPos != null) return;
-
-			_playingSnippets = new List<(double, double)>();
-			foreach (var snippet in _snippets)
-				for (int i = 0; i < 3; i++) //TODO make repeat count configurable
-					_playingSnippets.Add((snippet.Key, snippet.Value));
-			_playingSnippetIndex = 0;
-
-			_positionHolder.XPos = _playingSnippets.First().Start;
-			_speedManager.PauseFor(2);
+			_playerView.UpdateAvailableSnippets(_snippets.Count);
+			UpdateSnippetUi();
 		}
 
 		public SnippetMemento ToMemento()
@@ -73,10 +120,82 @@ namespace PartituraMagica.Lib.Playing
 			};
 		}
 
-		public void Init(SnippetMemento memento)
+
+		public void RepeatAllSnippets()
 		{
-			if (memento.Snippets == null) return;
-			foreach (var pair in memento.Snippets) _snippets.Add(pair.Key, pair.Value);
+			if (_snippets.Count == 0 || _recordingStartPos != null) return;
+
+			if (_snippets.Count == 1) RepeatSnippet(0);
+
+			Finish();
+			PlaySnippets(3, null);
+			UpdateSnippetUi();
+		}
+
+		public void RepeatSnippet(int snippetIndex)
+		{
+			if (_snippets.Count <= snippetIndex || _recordingStartPos != null) return;
+
+			Finish();
+			PlaySnippets(10, snippetIndex);
+			UpdateSnippetUi();
+		}
+
+		private void UpdateSnippetUi()
+		{
+			_playerView.UpdateSnippetUi(new SnippedUiState
+			{
+				RecordIsEnabled = _playingSnippetIndex == null,
+				RecordIsSelected = _recordingStartPos != null,
+				RepeatAllIsEnabled = _recordingStartPos == null && _snippets.Any(),
+				RepeatAllIsSelected = _playingSnippetIndex != null,
+				SelectedSnippetIndex = GetCurrentPlayingSnippetIndex(),
+				DeleteCurrentIsEnabled = _playingSnippetIndex != null,
+				DeleteAllIsEnabled = _recordingStartPos == null && _snippets.Any()
+			});
+		}
+
+		private int? GetCurrentPlayingSnippetIndex()
+		{
+			if (_playingSnippetIndex == null || _playingSnippets == null) return null;
+			return _playingSnippets[_playingSnippetIndex.Value].Index;
+		}
+
+
+		private void PlaySnippets(int repeatCount, int? selectedIndex)
+		{
+			_playingSnippets = new List<Snippet>();
+
+			if (selectedIndex == null)
+			{
+				int i = 0;
+				foreach (var snippet in _snippets)
+				{
+					EspandSnippet(snippet.Key, snippet.Value, i);
+					i++;
+				}
+			}
+			else
+			{
+				EspandSnippet(_snippets.Keys[selectedIndex.Value], _snippets.Values[selectedIndex.Value], selectedIndex.Value);
+			}
+
+
+			_playingSnippetIndex = 0;
+			_positionHolder.XPos = _playingSnippets.First().Start;
+			_speedManager.IsPaused = true;
+			_playerView.ExecuteDelayed(1500, () => { _speedManager.IsPaused = false; });
+
+			void EspandSnippet(double start, double end, int i)
+			{
+				for (int j = 0; j < repeatCount; j++)
+					_playingSnippets.Add(new Snippet
+					{
+						Start = start,
+						End = end,
+						Index = i
+					});
+			}
 		}
 
 		private void ViewHasScrolled()
@@ -85,33 +204,28 @@ namespace PartituraMagica.Lib.Playing
 
 			//todo mark corresponding button in repeat menu
 
-			//we must pause at the end and at the beginning of each snippet. 
-			//While pausing at the end of the snippet, _snippedChangeInProgress is true.
-			//it is reset on first scroll event we receive after the pause.
-			if (!_snippedChangeInProgress)
+			if (_positionHolder.XPos >= _playingSnippets[_playingSnippetIndex.Value].End)
 			{
-				if (_positionHolder.XPos >= _playingSnippets[_playingSnippetIndex.Value].End)
+				if (_playingSnippets.Count > _playingSnippetIndex.Value + 1)
 				{
-					if (_playingSnippets.Count > _playingSnippetIndex.Value + 1)
+					_speedManager.IsPaused = true;
+					UpdateSnippetUi();
+					_playerView.ExecuteDelayed(1500, () =>
 					{
-						_snippedChangeInProgress = true;
+						if (_playingSnippetIndex == null)
+							//during the pause snippet playing was paused or player window closed
+							return;
+
 						_playingSnippetIndex++;
-						_speedManager.PauseFor(2);
-					}
-					else
-					{
-						_speedManager.IsPaused = true;
-						Finish();
-					}
+						_positionHolder.XPos = _playingSnippets[_playingSnippetIndex.Value].Start;
+						_speedManager.IsPaused = false;
+						UpdateSnippetUi();
+					});
 				}
-			}
-			else
-			{
-				_snippedChangeInProgress = false;
-				if (_playingSnippets.Count > _playingSnippetIndex.Value)
+				else
 				{
-					_positionHolder.XPos = _playingSnippets[_playingSnippetIndex.Value].Start;
-					_speedManager.PauseFor(2);
+					_speedManager.IsPaused = true;
+					Finish();
 				}
 			}
 		}

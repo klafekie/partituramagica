@@ -133,7 +133,7 @@
 			this.splitBtnRepeatAll.Size = new System.Drawing.Size(72, 52);
 			this.splitBtnRepeatAll.Text = "Repeat All Snippets";
 			this.splitBtnRepeatAll.ToolTipText = "Repeat All Snippets";
-			this.splitBtnRepeatAll.Click += new System.EventHandler(this.splitBtnRepeatAll_Click);
+			this.splitBtnRepeatAll.ButtonClick += new System.EventHandler(this.splitBtnRepeatAll_Click);
 			// 
 			// btnRepeatSnippet1
 			// 
@@ -188,6 +188,7 @@
 			this.btnRemoveAllSnippets.Size = new System.Drawing.Size(511, 54);
 			this.btnRemoveAllSnippets.Text = "Remove All Snippets";
 			this.btnRemoveAllSnippets.ToolTipText = "Remove All Snippets";
+			this.btnRemoveAllSnippets.Click += new System.EventHandler(this.btnRemoveAllSnippets_Click);
 			// 
 			// toolStrip4
 			// 

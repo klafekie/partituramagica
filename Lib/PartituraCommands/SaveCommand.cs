@@ -29,7 +29,7 @@ namespace PartituraMagica.Lib.PartituraCommands
 		public bool CanExecute()
 		{
 			return P.Active != null && P.Active.IsOpen
-			                        && P.Active.Partitura.Dirty;
+			                        && P.Active.Partitura.HasChanges;
 		}
 	}
 }

@@ -104,9 +104,10 @@ namespace PartituraMagica.App
 		public void ShowPartituraInfo(IEditedPartitura active)
 		{
 			int pageCount = active.GetPageCount();
+			string star = active.Partitura.HasChanges ? "*" : "";
 			Title = pageCount == 0
-				? $"Partitura Magica - {Path.GetFileNameWithoutExtension(active.Path)} (no pages)"
-				: $"Partitura Magica - {Path.GetFileNameWithoutExtension(active.Path)} ({active.CurrentPageIndex + 1} / {pageCount})";
+				? $"Partitura Magica - {Path.GetFileNameWithoutExtension(active.Path)}{star} (no pages)"
+				: $"Partitura Magica - {Path.GetFileNameWithoutExtension(active.Path)}{star} ({active.CurrentPageIndex + 1} / {pageCount})";
 		}
 
 		public void ClearPartituraInfo()

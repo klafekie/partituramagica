@@ -1,6 +1,7 @@
 ﻿#region usings
 
 using System;
+using PartituraMagica.Lib.Domain;
 
 #endregion
 
@@ -9,17 +10,17 @@ namespace PartituraMagica.Lib.Playing
 	internal class SpeedManager : ISpeedManager
 	{
 		private bool _isPaused = true;
-		private DateTime? _resumePlayingTime;
+		private IPlayerView _playerView;
 
 		public bool IsPaused
 		{
-			get
+			get => _isPaused;
+			set
 			{
-				if (_resumePlayingTime != null && _resumePlayingTime <= DateTime.Now) SetIsPausedAndTriggerEvent(false);
-
-				return _isPaused;
+				bool isChanged = _isPaused != value;
+				_isPaused = value;
+				if (isChanged) IsPausedChanged?.Invoke();
 			}
-			set => SetIsPausedAndTriggerEvent(value);
 		}
 
 		public float Speed { get; set; }
@@ -41,28 +42,16 @@ namespace PartituraMagica.Lib.Playing
 			Speed *= 0.8F;
 		}
 
-		public void PauseFor(int seconds)
-		{
-			IsPaused = true;
-			_resumePlayingTime = DateTime.Now.AddSeconds(seconds);
-		}
-
-		public void Init(PlayerMemento memento)
-		{
-			Speed = memento.Speed;
-		}
-
 		public void ToMemento(PlayerMemento memento)
 		{
 			memento.Speed = Speed;
 		}
 
-		private void SetIsPausedAndTriggerEvent(bool value)
+		public void Init(PlayerMemento memento, IPlayerView playerView)
 		{
-			bool isChanged = _isPaused != value;
-			_resumePlayingTime = null; //abort any timed pause.
-			_isPaused = value;
-			if (isChanged) IsPausedChanged?.Invoke();
+			_playerView = playerView;
+			Speed = memento.Speed;
+			IsPausedChanged += () => { playerView.MarkPaused(IsPaused); };
 		}
 	}
 }

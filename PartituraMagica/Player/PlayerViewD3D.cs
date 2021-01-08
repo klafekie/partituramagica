@@ -70,6 +70,20 @@ namespace PartituraMagica.App.Player
 			Enabled = false;
 		}
 
+		public void ExecuteDelayed(int milliseconds, Action action)
+		{
+			var timer = new Timer
+			{
+				Enabled = true, Interval = milliseconds
+			};
+			timer.Tick += (sender, args) =>
+			{
+				action();
+				timer.Stop();
+			};
+			timer.Start();
+		}
+
 		public void MarkActivePart(int index)
 		{
 			int buttonCount = toolStrip1.Items.Count - 2 * PART_A_BUTTON_INDEX;
@@ -90,6 +104,83 @@ namespace PartituraMagica.App.Player
 			btnPauseResume.IconChar = isPaused
 				? IconChar.Play
 				: IconChar.Pause;
+		}
+
+		public void UpdateAvailableSnippets(int snippetsCount)
+		{
+			splitBtnRepeatAll.DropDownItems.Clear();
+
+			for (int i = 0; i < snippetsCount; i++)
+			{
+				var btn = new IconMenuItem
+				{
+					AutoSize = false,
+					IconChar = GetIconChar(i),
+					IconColor = Color.Black,
+					IconFont = IconFont.Auto,
+					IconSize = 40,
+					ImageScaling = ToolStripItemImageScaling.None,
+					Name = "btnRepeatSnippet" + i,
+					Size = new Size(446, 52),
+					Text = $"Repeat {i + 1} only",
+					ToolTipText = $"Repeat {i + 1} only"
+				};
+				int i1 = i;
+				btn.Click += (sender, args) => _playerController.RepeatSnippet(i1);
+
+				splitBtnRepeatAll.DropDownItems.Add(btn);
+			}
+		}
+
+		public void UpdateSnippetUi(SnippedUiState state)
+		{
+			btnRecordSnippet.Enabled = state.RecordIsEnabled;
+			btnRecordSnippet.Checked = state.RepeatAllIsSelected;
+
+			splitBtnRepeatAll.Enabled = state.RepeatAllIsEnabled;
+			//TODO splitBtnRepeatAll. = state.RepeatAllIsSelected;
+
+			int i = 0;
+			foreach (var item in splitBtnRepeatAll.DropDown.Items.Cast<IconMenuItem>())
+			{
+				item.Checked = state.SelectedSnippetIndex != null && state.SelectedSnippetIndex.Value == i;
+				i++;
+			}
+
+			if (state.SelectedSnippetIndex != null)
+			{
+				IconChar iconChar = GetIconChar(state.SelectedSnippetIndex.Value);
+				string text = state.SelectedSnippetIndex.Value.ToString();
+
+				splitBtnRepeatAll.IconChar = iconChar;
+				splitBtnRepeatAll.Text = text;
+				btnRemoveCurrentSnippet.IconChar = iconChar;
+			}
+			else
+			{
+				splitBtnRepeatAll.IconChar = IconChar.SyncAlt;
+				splitBtnRepeatAll.Text = "Repeat All Snippets";
+
+				btnRemoveCurrentSnippet.IconChar = IconChar.None;
+			}
+
+			comboBtnEditSnippet.Enabled = state.DeleteAllIsEnabled || state.DeleteCurrentIsEnabled;
+			btnRemoveAllSnippets.Enabled = state.DeleteAllIsEnabled;
+			btnRemoveCurrentSnippet.Enabled = state.DeleteCurrentIsEnabled;
+		}
+
+		private IconChar GetIconChar(int i)
+		{
+			switch (i)
+			{
+				case 0: return IconChar.DiceOne;
+				case 1: return IconChar.DiceTwo;
+				case 2: return IconChar.DiceThree;
+				case 3: return IconChar.DiceFour;
+				case 4: return IconChar.DiceFive;
+				case 5: return IconChar.DiceSix;
+				default: return IconChar.None;
+			}
 		}
 
 		private void CreatePartButtons(string partPattern)
@@ -117,6 +208,7 @@ namespace PartituraMagica.App.Player
 					Size = new Size(52, 60),
 					TextAlign = ContentAlignment.TopCenter
 				};
+
 				toolStrip1.Items.Insert(PART_A_BUTTON_INDEX, button);
 
 				int index = partIndex;
@@ -208,10 +300,6 @@ namespace PartituraMagica.App.Player
 			_playerController.ZoomOut(true);
 		}
 
-		private void btnRemoveCurrentSnippet_Click(object sender, EventArgs e)
-		{
-		}
-
 		private void btnRecordSnippet_MouseDown(object sender, MouseEventArgs e)
 		{
 			_playerController.StartSnippetRecording();
@@ -225,6 +313,16 @@ namespace PartituraMagica.App.Player
 		private void splitBtnRepeatAll_Click(object sender, EventArgs e)
 		{
 			_playerController.RepeatAllSnippets();
+		}
+
+		private void btnRemoveAllSnippets_Click(object sender, EventArgs e)
+		{
+			_playerController.RemoveAllSnippets();
+		}
+
+		private void btnRemoveCurrentSnippet_Click(object sender, EventArgs e)
+		{
+			_playerController.RemoveCurrentSnippet();
 		}
 	}
 }

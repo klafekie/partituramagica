@@ -15,8 +15,12 @@ namespace PartituraMagica.Lib.Domain
 	{
 		void Close();
 		void StartScrolling(IPlayedPartitura partitura, IPlayerController playerMemento);
+		void ExecuteDelayed(int milliseconds, Action action);
 
 		void MarkActivePart(int index);
 		void MarkPaused(bool isPaused);
+
+		void UpdateAvailableSnippets(int snippetsCount);
+		void UpdateSnippetUi(SnippedUiState state);
 	}
 }

@@ -1,6 +1,10 @@
-﻿using System.Reflection;
+﻿#region usings
+
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+
+#endregion
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
@@ -38,4 +42,6 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyVersion("1.0.0.74")]
 [assembly: AssemblyFileVersion("1.0.0.74")]
-[assembly: InternalsVisibleTo("UnitTests")]
+[assembly: InternalsVisibleTo("Test")]
+//allow Moq fraemwork to access internal types
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]

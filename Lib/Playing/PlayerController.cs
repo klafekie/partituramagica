@@ -21,8 +21,7 @@ namespace PartituraMagica.Lib.Playing
 		private readonly ISnippetManager _snippetManager;
 		private readonly ISpeedManager _speedManager;
 		private readonly IZoomManager _zoomManager;
-		private IPlayedPartitura _partitura;
-		private IPlayerView _playerView;
+		private string _partituraRuntimePath;
 
 		public PlayerController(IPartNavigator navigator, ISnippetManager snippetManager, ISpeedManager speedManager,
 			IZoomManager zoomManager, PlayerPositionHolder positionHolder, IFileSystem fileSystem,
@@ -129,6 +128,21 @@ namespace PartituraMagica.Lib.Playing
 			_snippetManager.RepeatAllSnippets();
 		}
 
+		public void RepeatSnippet(int i)
+		{
+			_snippetManager.RepeatSnippet(i);
+		}
+
+		public void RemoveAllSnippets()
+		{
+			_snippetManager.RemoveAllSnippets();
+		}
+
+		public void RemoveCurrentSnippet()
+		{
+			_snippetManager.RemoveCurrentSnippet();
+		}
+
 		public void Pause()
 		{
 			_speedManager.IsPaused = true;
@@ -142,7 +156,7 @@ namespace PartituraMagica.Lib.Playing
 			_speedManager.ToMemento(memento);
 			_zoomManager.ToMemento(memento);
 
-			SavePlayer(memento, _partitura.RuntimePath);
+			SavePlayer(memento, _partituraRuntimePath);
 
 			if (_snippetManager.HasChanges)
 				_editedPartitura.Partitura.Snippets = _snippetManager.ToMemento();
@@ -161,6 +175,7 @@ namespace PartituraMagica.Lib.Playing
 
 		public void ScrollForward()
 		{
+			//IDEA: merge speedmanager and positionHolder?
 			if (_speedManager.IsPaused) return;
 
 			if (!_navigator.IsPartituraFinished())
@@ -174,21 +189,15 @@ namespace PartituraMagica.Lib.Playing
 
 		public void Init(IPlayedPartitura partitura, IPlayerView playerView)
 		{
-			_playerView = playerView;
-			_partitura = partitura;
+			_partituraRuntimePath = partitura.RuntimePath;
 
-			_navigator.Init(partitura);
+			_navigator.Init(partitura, playerView);
 
-			var memento = LoadPlayer(partitura.RuntimePath);
+			var memento = LoadPlayer(_partituraRuntimePath);
 			_zoomManager.Init(memento);
-			_speedManager.Init(memento);
+			_speedManager.Init(memento, playerView);
 
-			_snippetManager.Init(_editedPartitura.Partitura.Snippets);
-
-			_playerView.MarkActivePart(0);
-			_navigator.CurrentPartIndexChanged += () => _playerView.MarkActivePart(_navigator.CurrentPartIndex);
-
-			_speedManager.IsPausedChanged += () => { _playerView.MarkPaused(_speedManager.IsPaused); };
+			_snippetManager.Init(_editedPartitura.Partitura.Snippets, playerView);
 		}
 
 		private PlayerMemento LoadPlayer(string partituraRuntimePath)

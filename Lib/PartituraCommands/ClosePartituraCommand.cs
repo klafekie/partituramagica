@@ -31,7 +31,7 @@ namespace PartituraMagica.Lib.PartituraCommands
 				if (c == DialogResult.Yes) cmd.Execute();
 			}
 
-			if (P.Active.IsOpen && (!P.Active.Partitura.Dirty || c == DialogResult.No))
+			if (P.Active.IsOpen && (!P.Active.Partitura.HasChanges || c == DialogResult.No))
 			{
 				//file was really safed or user doesn't care
 				P.Panel.Clear();

@@ -159,7 +159,7 @@ namespace PartituraMagica.Test
 				_.LookForRegistries();
 
 				_.Assembly("ClassLibrary1");
-				_.Assembly("UnitTests");
+				_.Assembly("Test");
 
 				_.Include(type => type.Name.EndsWith("Command") || type.Name.EndsWith("ServiceRegistry"));
 				_.AddAllTypesOf<ICommand>().NameBy(x => x.Name.Replace("Command", ""));

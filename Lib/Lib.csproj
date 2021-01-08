@@ -122,6 +122,7 @@
     <Compile Include="Domain\Rect.cs" />
     <Compile Include="Domain\RectJsonMemento.cs" />
     <Compile Include="Domain\Shape.cs" />
+    <Compile Include="Domain\SnippedUiState.cs" />
     <Compile Include="LibServiceRegistry.cs" />
     <Compile Include="PageEditing\ABCLabelProvider.cs" />
     <Compile Include="PageEditing\AddBoxCommand.cs" />

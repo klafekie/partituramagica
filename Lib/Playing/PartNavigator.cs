@@ -17,17 +17,20 @@ namespace PartituraMagica.Lib.Playing
 		private readonly PlayerPositionHolder _playerPosition;
 		private PartPositionCalculator _calculator;
 		private int _currentPartIndex;
+		private IPlayerView _playerView;
 
 		public PartNavigator(PlayerPositionHolder playerPosition)
 		{
 			_playerPosition = playerPosition;
 		}
 
-
-		public void Init(IPlayedPartitura partitura)
+		public void Init(IPlayedPartitura partitura, IPlayerView playerView)
 		{
 			_playerPosition.ViewHasScrolled += OnViewHasScrolled;
 			_calculator = new PartPositionCalculator(partitura);
+			_playerView = playerView;
+			_playerView.MarkActivePart(0);
+			CurrentPartIndexChanged += OnCurrentPartIndexChanged;
 		}
 
 		public int CurrentPartIndex
@@ -104,6 +107,11 @@ namespace PartituraMagica.Lib.Playing
 		public IList<Clipping> GetClippings()
 		{
 			return _calculator.GetClippings();
+		}
+
+		private void OnCurrentPartIndexChanged()
+		{
+			_playerView.MarkActivePart(CurrentPartIndex);
 		}
 
 		private void OnViewHasScrolled()
