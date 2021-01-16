@@ -57,7 +57,7 @@
 			this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panel1.Location = new System.Drawing.Point(0, 0);
 			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(1006, 208);
+			this.panel1.Size = new System.Drawing.Size(1264, 706);
 			this.panel1.TabIndex = 1;
 			// 
 			// toolStripContainer1
@@ -66,21 +66,21 @@
 			// toolStripContainer1.ContentPanel
 			// 
 			this.toolStripContainer1.ContentPanel.Controls.Add(this.panel1);
-			this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(1006, 208);
+			this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(1264, 706);
 			this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
 			this.toolStripContainer1.Name = "toolStripContainer1";
-			this.toolStripContainer1.Size = new System.Drawing.Size(1006, 483);
+			this.toolStripContainer1.Size = new System.Drawing.Size(1264, 761);
 			this.toolStripContainer1.TabIndex = 2;
 			this.toolStripContainer1.Text = "toolStripContainer1";
 			// 
 			// toolStripContainer1.TopToolStripPanel
 			// 
+			this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip1);
 			this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip5);
 			this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip4);
 			this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip3);
 			this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip2);
-			this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip1);
 			this.toolStripContainer1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.PlayerViewD3D_KeyDown);
 			this.toolStripContainer1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.PlayerViewD3D_KeyUp);
 			// 
@@ -91,9 +91,9 @@
             this.btnRecordSnippet,
             this.splitBtnRepeatAll,
             this.comboBtnEditSnippet});
-			this.toolStrip5.Location = new System.Drawing.Point(3, 0);
+			this.toolStrip5.Location = new System.Drawing.Point(181, 0);
 			this.toolStrip5.Name = "toolStrip5";
-			this.toolStrip5.Size = new System.Drawing.Size(239, 55);
+			this.toolStrip5.Size = new System.Drawing.Size(208, 55);
 			this.toolStrip5.TabIndex = 4;
 			// 
 			// btnRecordSnippet
@@ -198,7 +198,7 @@
             this.btnWider,
             this.btnZoomOut,
             this.btnSmaller});
-			this.toolStrip4.Location = new System.Drawing.Point(3, 55);
+			this.toolStrip4.Location = new System.Drawing.Point(389, 0);
 			this.toolStrip4.Name = "toolStrip4";
 			this.toolStrip4.Size = new System.Drawing.Size(230, 55);
 			this.toolStrip4.TabIndex = 3;
@@ -272,7 +272,7 @@
 			this.toolStrip3.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnSlower,
             this.btnFaster});
-			this.toolStrip3.Location = new System.Drawing.Point(34, 110);
+			this.toolStrip3.Location = new System.Drawing.Point(619, 0);
 			this.toolStrip3.Name = "toolStrip3";
 			this.toolStrip3.Size = new System.Drawing.Size(116, 55);
 			this.toolStrip3.TabIndex = 2;
@@ -315,7 +315,7 @@
             this.btnPauseResume,
             this.btnJumpForward});
 			this.toolStrip2.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
-			this.toolStrip2.Location = new System.Drawing.Point(3, 165);
+			this.toolStrip2.Location = new System.Drawing.Point(3, 0);
 			this.toolStrip2.Name = "toolStrip2";
 			this.toolStrip2.Size = new System.Drawing.Size(178, 55);
 			this.toolStrip2.TabIndex = 1;
@@ -374,9 +374,9 @@
             this.btnPreviousPart,
             this.btnNextPart,
             this.btnLastPart});
-			this.toolStrip1.Location = new System.Drawing.Point(3, 220);
+			this.toolStrip1.Location = new System.Drawing.Point(735, 0);
 			this.toolStrip1.Name = "toolStrip1";
-			this.toolStrip1.Size = new System.Drawing.Size(220, 55);
+			this.toolStrip1.Size = new System.Drawing.Size(251, 55);
 			this.toolStrip1.TabIndex = 0;
 			// 
 			// btnFirstPart
@@ -444,7 +444,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(1006, 483);
+			this.ClientSize = new System.Drawing.Size(1264, 761);
 			this.Controls.Add(this.toolStripContainer1);
 			this.Name = "PlayerViewD3D";
 			this.Text = "PlayerView";
