@@ -28,7 +28,7 @@ namespace PartituraMagica
 
 		internal SnippetMemento Snippets
 		{
-			get => _snippets;
+			get => _snippets ?? new SnippetMemento();
 			set
 			{
 				hasChanges = true;

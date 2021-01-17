@@ -22,7 +22,10 @@ namespace PartituraMagica.Lib.Playing
 		private readonly PlayerPositionHolder _positionHolder;
 		private readonly SortedList<double, double> _snippets = new SortedList<double, double>();
 		private readonly ISpeedManager _speedManager;
+
 		private IPlayerView _playerView;
+
+		//TODO naming: this is the index inside the expanded list.
 		private int? _playingSnippetIndex;
 		private List<Snippet> _playingSnippets;
 
@@ -63,7 +66,7 @@ namespace PartituraMagica.Lib.Playing
 
 		public void RemoveCurrentSnippet()
 		{
-			int? index = GetCurrentPlayingSnippetIndex();
+			int? index = GetCurrentPlayingSnippet();
 			if (index == null) return;
 
 			//TODO confirm from user
@@ -125,10 +128,29 @@ namespace PartituraMagica.Lib.Playing
 		{
 			if (_snippets.Count == 0 || _recordingStartPos != null) return;
 
-			if (_snippets.Count == 1) RepeatSnippet(0);
+			UpdateExpandedSnippets();
 
-			Finish();
-			PlaySnippets(3, null);
+			int? currentPlayingSnippet = GetCurrentPlayingSnippet();
+			if (currentPlayingSnippet == null) //first click
+			{
+				JumpToSnippet(0);
+			}
+			else
+			{
+				if (currentPlayingSnippet < _snippets.Count - 1) //jump to next snippet
+				{
+					JumpToSnippet(currentPlayingSnippet.Value + 1);
+				}
+				else
+				{
+					//last snipped. go to end of last snippet to facilitate recording more snippets after last snippet.
+					_playingSnippetIndex = null;
+					_positionHolder.XPos = _playingSnippets.Last().End;
+					_speedManager.IsPaused = true;
+					_playingSnippets = null;
+				}
+			}
+
 			UpdateSnippetUi();
 		}
 
@@ -136,9 +158,30 @@ namespace PartituraMagica.Lib.Playing
 		{
 			if (_snippets.Count <= snippetIndex || _recordingStartPos != null) return;
 
-			Finish();
-			PlaySnippets(10, snippetIndex);
+			UpdateExpandedSnippets();
+
+			JumpToSnippet(snippetIndex);
+
 			UpdateSnippetUi();
+		}
+
+		private void UpdateExpandedSnippets()
+		{
+			_playingSnippets = new List<Snippet>();
+			int i = 0;
+			foreach (var snippet in _snippets)
+			{
+				for (int j = 0; j < 3; j++)
+					//TODO repeat count configurable
+					_playingSnippets.Add(new Snippet
+					{
+						Start = snippet.Key,
+						End = snippet.Value,
+						Index = i
+					});
+
+				i++;
+			}
 		}
 
 		private void UpdateSnippetUi()
@@ -149,60 +192,41 @@ namespace PartituraMagica.Lib.Playing
 				RecordIsSelected = _recordingStartPos != null,
 				RepeatAllIsEnabled = _recordingStartPos == null && _snippets.Any(),
 				RepeatAllIsSelected = _playingSnippetIndex != null,
-				SelectedSnippetIndex = GetCurrentPlayingSnippetIndex(),
+				SelectedSnippetIndex = GetCurrentPlayingSnippet(),
 				DeleteCurrentIsEnabled = _playingSnippetIndex != null,
 				DeleteAllIsEnabled = _recordingStartPos == null && _snippets.Any()
 			});
 		}
 
-		private int? GetCurrentPlayingSnippetIndex()
+		private int? GetCurrentPlayingSnippet()
 		{
 			if (_playingSnippetIndex == null || _playingSnippets == null) return null;
 			return _playingSnippets[_playingSnippetIndex.Value].Index;
 		}
 
-
-		private void PlaySnippets(int repeatCount, int? selectedIndex)
+		private void JumpToSnippet(int selectedIndex)
 		{
-			_playingSnippets = new List<Snippet>();
-
-			if (selectedIndex == null)
+			int i = 0;
+			foreach (Snippet snippet in _playingSnippets)
 			{
-				int i = 0;
-				foreach (var snippet in _snippets)
+				if (snippet.Index == selectedIndex)
 				{
-					EspandSnippet(snippet.Key, snippet.Value, i);
-					i++;
+					_playingSnippetIndex = i;
+					_positionHolder.XPos = snippet.Start;
+					break;
 				}
-			}
-			else
-			{
-				EspandSnippet(_snippets.Keys[selectedIndex.Value], _snippets.Values[selectedIndex.Value], selectedIndex.Value);
+
+				i++;
 			}
 
 
-			_playingSnippetIndex = 0;
-			_positionHolder.XPos = _playingSnippets.First().Start;
 			_speedManager.IsPaused = true;
 			_playerView.ExecuteDelayed(1500, () => { _speedManager.IsPaused = false; });
-
-			void EspandSnippet(double start, double end, int i)
-			{
-				for (int j = 0; j < repeatCount; j++)
-					_playingSnippets.Add(new Snippet
-					{
-						Start = start,
-						End = end,
-						Index = i
-					});
-			}
 		}
 
 		private void ViewHasScrolled()
 		{
 			if (_playingSnippetIndex == null || _playingSnippets.Count <= _playingSnippetIndex.Value) return;
-
-			//todo mark corresponding button in repeat menu
 
 			if (_positionHolder.XPos >= _playingSnippets[_playingSnippetIndex.Value].End)
 			{

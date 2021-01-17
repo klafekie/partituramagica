@@ -19,7 +19,7 @@ namespace PartituraMagica.Lib.Domain
 			public PlayedPartitura(EditedPartitura editedPartitura)
 			{
 				PartPattern = editedPartitura.Partitura?.PartPattern?.Trim() ?? "A";
-				RuntimePath = editedPartitura.Path + ".runtime";
+				RuntimePath = editedPartitura.Path.Replace(".partitura.json", ".runtime.json");
 
 				ImagePaths = new List<string>();
 				int pageCount = editedPartitura.GetPageCount();

@@ -122,8 +122,8 @@ namespace PartituraMagica.App.Player
 					ImageScaling = ToolStripItemImageScaling.None,
 					Name = "btnRepeatSnippet" + i,
 					Size = new Size(446, 52),
-					Text = $"Repeat {i + 1} only",
-					ToolTipText = $"Repeat {i + 1} only"
+					Text = $"Go to snippet {i + 1}",
+					ToolTipText = $"Go to snippet {i + 1}"
 				};
 				int i1 = i;
 				btn.Click += (sender, args) => _playerController.RepeatSnippet(i1);
@@ -194,6 +194,7 @@ namespace PartituraMagica.App.Player
 				{
 					Name = partString,
 					Text = partString,
+					ToolTipText = $"Go to Part {partString}",
 					AutoSize = false,
 					DisplayStyle = ToolStripItemDisplayStyle.Text,
 					Font = new Font("Segoe UI", 26F, FontStyle.Bold),
