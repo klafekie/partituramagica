@@ -367,7 +367,7 @@ namespace PartituraMagica
 			return this.splitters.FindAt(MakeRelative(pos.X));
 		}
 
-		public bool Update(Point lastPos, Point newPos)
+		public bool Update(Point lastPos, Point newPos, Shape lastShape)
 		{
 			bool splitterMoved = false;
 			double deltaX = newPos.X - lastPos.X;
@@ -375,7 +375,7 @@ namespace PartituraMagica
 
 			Rect result = null;
 
-			switch (GetShapeTypeAt(lastPos))
+			switch (lastShape)
 			{
 				case Shape.BoxContent:
 					result = this.coords.Move(deltaX, deltaY);
@@ -405,7 +405,9 @@ namespace PartituraMagica
 					result = this.coords.AddLeft(-deltaX, this.MinBoxSize);
 					break;
 				case Shape.BoxSplitter:
-					splitterMoved = this.splitters.MoveSplitter(deltaX, FindSplitterAt(lastPos), this.coords.Size);
+					int splitterId = FindSplitterAt(lastPos);
+					if (splitterId >= 0)
+						splitterMoved = this.splitters.MoveSplitter(deltaX, splitterId, this.coords.Size);
 					break;
 				default:
 					throw new ArgumentException("unexpected shapeType");

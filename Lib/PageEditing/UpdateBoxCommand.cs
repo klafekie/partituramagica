@@ -20,10 +20,11 @@ namespace PartituraMagica.Lib.PageEditing
 		public bool CanExecute()
 		{
 			Page current = P.Active.CurrentPage;
-			if (current == null || !current.IsBoxSelected() || _mainWindow.CurrentMousePosition == null ||
-			    _mainWindow.PreviousMousePosition == null) return false;
+			if (current == null || !current.IsAnyBoxSelected() || _mainWindow.CurrentMousePosition == null ||
+			    _mainWindow.PreviousMousePosition == null ||
+			    _mainWindow.CurrentMouseShape == Shape.NothingSpecial) return false;
 			return current.CanUpdateSelectedBox(_mainWindow.PreviousMousePosition.Value,
-				_mainWindow.CurrentMousePosition.Value);
+				_mainWindow.CurrentMousePosition.Value, _mainWindow.CurrentMouseShape);
 		}
 
 		public void Execute()
@@ -31,6 +32,7 @@ namespace PartituraMagica.Lib.PageEditing
 			Debug.Assert(CanExecute());
 			P.Active.CurrentPage.UpdateSelectedBox(_mainWindow.PreviousMousePosition.Value,
 				_mainWindow.CurrentMousePosition.Value,
+				_mainWindow.CurrentMouseShape,
 				P.Panel);
 		}
 	}

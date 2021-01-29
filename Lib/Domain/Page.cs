@@ -124,19 +124,19 @@ namespace PartituraMagica
 		/** returns true exactly if (at least) one item
 		 * e.g. a Box is selected.
 		 */
-		public bool IsBoxSelected()
+		public bool IsAnyBoxSelected()
 		{
 			return selectedBoxId > -1;
 		}
 
-		public bool CanUpdateSelectedBox(Point lastPos, Point newPos)
+		public bool CanUpdateSelectedBox(Point lastPos, Point newPos, Shape lastShape)
 		{
-			if (!IsBoxSelected())
+			if (!IsAnyBoxSelected())
 				return false;
 
 			// Create a copy of the Box to try out if updating succeeds.
 			Box copy = new Box(SelectedBox);
-			if (!copy.Update(lastPos, newPos))
+			if (!copy.Update(lastPos, newPos, lastShape))
 			{
 				return false;
 			}
@@ -159,8 +159,6 @@ namespace PartituraMagica
 		/// </summary>
 		private bool Overlaps(Rect r, bool includeSelectedBox)
 		{
-			// [Program code fixed: parameter 'includeSelectedBox' is renamed from 'ignoreSelectedBox' jed 20150118]
-
 			// Make a rectangle which is the given rectangle but over the full page width.
 			Rect completeRow =
 					new Rect(0, r.Top, pageWith, r.Height).AddAboveAndBelow(Page.ClickTolerance);
@@ -188,10 +186,10 @@ namespace PartituraMagica
 		/** returns ids of all rectangles that need to be updated 
 		 * and corresponding new coords. 
 		 */
-		public void UpdateSelectedBox(Point lastPos, Point newPos, IDrawingPanel panel)
+		public void UpdateSelectedBox(Point lastPos, Point newPos, Shape lastShape, IDrawingPanel panel)
 		{
 			_hasChanges = true;
-			SelectedBox.Update(lastPos, newPos);
+			SelectedBox.Update(lastPos, newPos, lastShape);
 			SelectedBox.Paint(panel);
 		}
 
@@ -236,7 +234,7 @@ namespace PartituraMagica
 			Box b = GetBoxAt(pos);
 			if (b != null)
 			{
-				if (IsBoxSelected())
+				if (IsAnyBoxSelected())
 				{
 					SelectedBox.Deselect(panel);
 				}

@@ -20,7 +20,7 @@ namespace PartituraMagica.Lib.PageEditing
 			if (P.Active.CurrentPageIndex == 0 && P.Active.CurrentPage.IsLeftTopSelected())
 				//the implicit 'A' cannot be removed
 				return false;
-			return P.Active.CurrentPage.IsBoxSelected() && P.Active.CurrentPage.IsSelectionLabelled();
+			return P.Active.CurrentPage.IsAnyBoxSelected() && P.Active.CurrentPage.IsSelectionLabelled();
 		}
 
 		public void Execute()

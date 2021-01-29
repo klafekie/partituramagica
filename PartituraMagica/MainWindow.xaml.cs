@@ -90,7 +90,10 @@ namespace PartituraMagica.App
 			InitializeComponent();
 
 			_controller.Panel = new DrawingPanel(PageCanvas);
+			CurrentMouseShape = Shape.NothingSpecial;
 		}
+
+		public Shape CurrentMouseShape { get; set; }
 
 		public Point? PreviousMousePosition { get; set; }
 		public Point? CurrentMousePosition { get; set; }
@@ -159,14 +162,6 @@ namespace PartituraMagica.App
 			_commandFactory.Create(name).Execute();
 		}
 
-		private void PageCanvas_MouseMove(object sender, MouseEventArgs e)
-		{
-			UpdateMousePosition(e);
-			if (!_waiting) SetMouseCursor(CurrentMousePosition.Value);
-			if (e.LeftButton == MouseButtonState.Pressed && PreviousMousePosition != null)
-				_commandFactory.Create("UpdateBox").TryExecute();
-		}
-
 		private void UpdateMousePosition(MouseEventArgs e)
 		{
 			Point currentPos = e.GetPosition(PageCanvas);
@@ -175,10 +170,9 @@ namespace PartituraMagica.App
 			CurrentMousePosition = currentPos;
 		}
 
-		private void SetMouseCursor(Point currentPos)
+		private void SetMouseCursor(Shape type)
 		{
 			Cursor cursor;
-			Shape type = _controller.GetShapeAt(currentPos);
 			switch (type)
 			{
 				case Shape.BoxContent:
@@ -211,28 +205,39 @@ namespace PartituraMagica.App
 			Mouse.SetCursor(cursor);
 		}
 
-		private void PageCanvas_MouseDown(object sender, MouseButtonEventArgs e)
+		private void UpdateMouseShape()
+		{
+			CurrentMouseShape = _controller.GetShapeAt(CurrentMousePosition.Value);
+			if (!_waiting) SetMouseCursor(CurrentMouseShape);
+		}
+
+		private void PageCanvas_MouseMove(object sender, MouseEventArgs e)
 		{
 			UpdateMousePosition(e);
+			if (e.LeftButton == MouseButtonState.Pressed && PreviousMousePosition != null)
+				_commandFactory.Create("UpdateBox").TryExecute();
+			else
+				UpdateMouseShape();
+		}
 
-			ICommand cmd;
+		private void PageCanvas_MouseDown(object sender, MouseButtonEventArgs e)
+		{
 			if (e.ClickCount == 1)
 			{
-				cmd = _commandFactory.Create("SelectBox");
-				if (!cmd.CanExecute())
-				{
-					cmd = _commandFactory.Create("AddBox");
-					if (!cmd.CanExecute())
-						return;
-				}
+				if (!_commandFactory.Create("SelectBox").TryExecute())
+					_commandFactory.Create("AddBox").TryExecute();
 			}
 			else
 			{
-				cmd = _commandFactory.Create("SplitBox");
-				if (!cmd.CanExecute()) return;
+				_commandFactory.Create("SplitBox").TryExecute();
 			}
 
-			cmd.Execute();
+			UpdateMouseShape();
+		}
+
+		private void PageCanvas_MouseUp(object sender, MouseButtonEventArgs e)
+		{
+			CurrentMouseShape = Shape.NothingSpecial;
 		}
 
 		private void WindowClosing(object sender, CancelEventArgs e)

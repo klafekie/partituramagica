@@ -25,7 +25,7 @@ namespace PartituraMagica.Lib.PageEditing
 
 		public bool CanExecute()
 		{
-			return P.Active.CurrentPage != null && P.Active.CurrentPage.IsBoxSelected()
+			return P.Active.CurrentPage != null && P.Active.CurrentPage.IsAnyBoxSelected()
 			                                    && _mainWindow.CurrentMousePosition != null;
 		}
 
