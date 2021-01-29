@@ -54,7 +54,7 @@ namespace PartituraMagica.Test
 			//user chooses a partitura file he is queried for the image files
 
 			fileSystem.Setup(fs => fs.ShowSavePartituraDialog())
-				.Returns("c:\\partituraFile.partitura.json");
+				.Returns("c:\\partituraFile.partitura2");
 			//NewCommand calls AddPageCommand
 			fileSystem.Setup(fs => fs.ShowOpenImagesDialog())
 				.Returns(new List<string> {"d:\\image1.jpg", "d:\\image2.jpg"});
@@ -65,7 +65,7 @@ namespace PartituraMagica.Test
 			Assert.NotNull(TestedPartitura.Partitura);
 
 			Assert.AreEqual(TestedPartitura.GetPageCount(), 2);
-			Assert.AreEqual(TestedPartitura.Path, "c:\\partituraFile.partitura.json");
+			Assert.AreEqual(TestedPartitura.Path, "c:\\partituraFile.partitura2");
 
 			//manually add two more pages
 			fileSystem.Setup(fs => fs.ShowOpenImagesDialog())
@@ -87,10 +87,10 @@ namespace PartituraMagica.Test
 
 			//now safe to another location and reopen to see that there are still the same pages
 			fileSystem.Setup(fs => fs.ShowSavePartituraDialog())
-				.Returns("c:\\otherDir\\partituraFile.partitura.json");
+				.Returns("c:\\otherDir\\partituraFile.partitura2");
 
 			StringBuilder sb = new StringBuilder();
-			fileSystem.Setup(fs => fs.WriteFile("c:\\otherDir\\partituraFile.partitura.json", It.IsAny<string>()))
+			fileSystem.Setup(fs => fs.WriteFile("c:\\otherDir\\partituraFile.partitura2", It.IsAny<string>()))
 				.Callback((string path, string aString) => sb.Append(aString));
 
 			Factory.Create<SaveAsCommand>().Execute();
@@ -100,9 +100,9 @@ namespace PartituraMagica.Test
 
 			//OpenCommand
 			fileSystem.Setup(fs => fs.ShowOpenPartituraDialog())
-				.Returns("c:\\otherDir\\partituraFile.partitura.json");
+				.Returns("c:\\otherDir\\partituraFile.partitura2");
 
-			fileSystem.Setup(fs => fs.ReadFile("c:\\otherDir\\partituraFile.partitura.json"))
+			fileSystem.Setup(fs => fs.ReadFile("c:\\otherDir\\partituraFile.partitura2"))
 				.Returns(sb.ToString);
 
 			Factory.Create<OpenCommand>().Execute();
@@ -138,7 +138,7 @@ namespace PartituraMagica.Test
 
 			//NewCommand
 			fileSystem.Setup(fs => fs.ShowSavePartituraDialog())
-				.Returns("c:\\partituraFile.partitura.json");
+				.Returns("c:\\partituraFile.partitura2");
 
 
 			try

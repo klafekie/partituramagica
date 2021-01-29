@@ -32,7 +32,7 @@ namespace PartituraFileConverter
 					PlayerMemento memento = (PlayerMemento) sf.Deserialize(str);
 
 					string asString = JsonSerializer.Serialize(memento);
-					File.WriteAllText(file + ".json", asString);
+					File.WriteAllText(file + "2", asString);
 				}
 			}
 
@@ -47,7 +47,7 @@ namespace PartituraFileConverter
 #pragma warning restore 618
 
 					string asString = JsonSerializer.Serialize(memento);
-					File.WriteAllText(file + ".json", asString);
+					File.WriteAllText(file + "2", asString);
 				}
 			}
 

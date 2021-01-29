@@ -95,13 +95,6 @@ namespace PartituraMagica.Test
 
 			ScrollForward();
 			ScrollForward();
-			ScrollForward();
-			ScrollForward();
-			ScrollForward();
-			ScrollForward();
-			ScrollForward();
-			ScrollForward();
-			ScrollForward();
 			ScrollForward(true);
 
 			void ScrollForward(bool isLast = false)

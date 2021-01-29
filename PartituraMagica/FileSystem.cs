@@ -14,6 +14,8 @@ namespace PartituraMagica.App
 {
 	internal class FileSystem : IFileSystem
 	{
+		private const string PARTITURA_FILES_PATTERN = "Partitura files (*.partitura2)|*.partitura2";
+
 		public ICollection<string> GetMatchingFileNames(string path, string pattern)
 		{
 			return Directory.GetFiles(path, pattern, SearchOption.TopDirectoryOnly);
@@ -39,7 +41,7 @@ namespace PartituraMagica.App
 			{
 				Multiselect = false,
 				Title = "Open Partitura File",
-				Filter = "Partitura files (*.partitura.json)|*.partitura.json",
+				Filter = PARTITURA_FILES_PATTERN,
 				RestoreDirectory = true
 			};
 
@@ -52,7 +54,7 @@ namespace PartituraMagica.App
 			SaveFileDialog dialog = new SaveFileDialog
 			{
 				Title = "Save Partitura File",
-				Filter = "Partitura files (*.partitura.json)|*.partitura.json",
+				Filter = PARTITURA_FILES_PATTERN,
 				RestoreDirectory = true
 			};
 
