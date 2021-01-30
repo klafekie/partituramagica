@@ -200,7 +200,7 @@ namespace PartituraMagica.Test
 			CreateAddBoxCommand(new Point(100, 200)).Execute();
 
 			//enlarge box to be 50 pixels wide.
-			CreateUpdateBoxCommand(new Point(100, 200), new Point(140, 200)).Execute();
+			Update(Shape.BoxRightBottomCorner, 100, 200, 140, 200);
 			CollectionAssert.Contains(panel.Rectangles.Values, new Rect(90, 190, 50, 10));
 
 			CreateSplitBoxCommand(new Point(114, 200)).Execute();
@@ -246,8 +246,8 @@ namespace PartituraMagica.Test
 			CreateAddBoxCommand(new Point(100, 200)).Execute();
 			//since we have only a single box, update can be executed 
 			// everywhere within page borders
-			Assert.True(CanUpdate(90, 190, 0, 0));
-			Assert.True(CanUpdate(95, 195, 990, 1950));
+			Assert.True(CanUpdate(Shape.BoxLeftTopCorner, 90, 190, 0, 0));
+			Assert.True(CanUpdate(Shape.BoxContent, 95, 195, 990, 1950));
 
 			Assert.False(CanUpdate(Shape.BoxLeftTopCorner, 94, 194, 95, 194),
 				"cannot reduce height more, cause we're already at the minimum");
@@ -280,7 +280,7 @@ namespace PartituraMagica.Test
 			CreateAddBoxCommand(new Point(100, 200)).Execute();
 
 			//enlarge second box to be 50 pixels wide (90,200,50,10)
-			CreateUpdateBoxCommand(new Point(100, 200), new Point(140, 200)).Execute();
+			Update(Shape.BoxRightBottomCorner, 100, 200, 140, 200);
 			AssertPanelContains(new Rect(90, 190, 50, 10));
 
 			CreateSplitBoxCommand(new Point(125, 200)).Execute();
@@ -316,13 +316,13 @@ namespace PartituraMagica.Test
 			CreateAddBoxCommand(new Point(105, 50)).Execute();
 			CreateAddBoxCommand(new Point(100, 100)).Execute();
 			//resize lower box into or over upper box
-			Assert.False(CanUpdate(95, 90, 95, 45));
-			Assert.False(CanUpdate(95, 90, 95, 5));
+			Assert.False(CanUpdate(Shape.BoxTopMargin, 95, 90, 95, 45));
+			Assert.False(CanUpdate(Shape.BoxTopMargin, 95, 90, 95, 5));
 			//move lower box into or over upper box
-			Assert.False(CanUpdate(95, 95, 95, 45));
+			Assert.False(CanUpdate(Shape.BoxContent, 95, 95, 95, 45));
 			//moving over the upper box in a single step would work,
 			//but this will never happen when done with the mouse...
-			Assert.True(CanUpdate(95, 95, 95, 5));
+			Assert.True(CanUpdate(Shape.BoxContent, 95, 95, 95, 5));
 		}
 
 		[Test]
@@ -349,7 +349,7 @@ namespace PartituraMagica.Test
 			CreateAddBoxCommand(new Point(100, 200)).Execute();
 
 			//enlarge box to be 50 pixels wide.
-			CreateUpdateBoxCommand(new Point(100, 200), new Point(140, 200)).Execute();
+			Update(Shape.BoxRightBottomCorner, 100, 200, 140, 200);
 			AssertPanelContains(new Rect(90, 190, 50, 10));
 
 			CreateSplitBoxCommand(new Point(120, 200)).Execute();

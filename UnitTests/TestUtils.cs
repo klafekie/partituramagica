@@ -38,20 +38,13 @@ namespace PartituraMagica.Test
 			Factory = new CommandFactory(container);
 		}
 
-		protected void Update(double oldX, double oldY, double newX, double newY)
-		{
-			mainWindow.Setup(mw => mw.CurrentMousePosition).Returns(new Point(newX, newY));
-			mainWindow.Setup(w => w.PreviousMousePosition).Returns(new Point(oldX, oldY));
-
-			Factory.Create<UpdateBoxCommand>().Execute();
-		}
-
 		protected void Update(Shape type, double oldX, double oldY, double newX, double newY)
 		{
 			AssertShapeAt(oldX, oldY, type);
 
 			mainWindow.Setup(w => w.CurrentMousePosition).Returns(new Point(newX, newY));
 			mainWindow.Setup(w => w.PreviousMousePosition).Returns(new Point(oldX, oldY));
+			mainWindow.Setup(w => w.CurrentMouseShape).Returns(type);
 
 			Factory.Create<UpdateBoxCommand>().Execute();
 		}
@@ -75,33 +68,21 @@ namespace PartituraMagica.Test
 			Assert.AreEqual(label, panel.Labels[id]);
 		}
 
-		protected bool CanUpdate(double oldX, double oldY, double newX, double newY)
-		{
-			mainWindow.Setup(w => w.CurrentMousePosition).Returns(new Point(newX, newY));
-			mainWindow.Setup(w => w.PreviousMousePosition).Returns(new Point(oldX, oldY));
-
-			return Factory.Create<UpdateBoxCommand>().CanExecute();
-		}
-
 		protected bool CanUpdate(Shape type,
 			double oldX, double oldY, double newX, double newY)
 		{
 			AssertShapeAt(oldX, oldY, type);
-			return CanUpdate(oldX, oldY, newX, newY);
+			mainWindow.Setup(w => w.CurrentMousePosition).Returns(new Point(newX, newY));
+			mainWindow.Setup(w => w.PreviousMousePosition).Returns(new Point(oldX, oldY));
+			mainWindow.Setup(w => w.CurrentMouseShape).Returns(type);
+
+			return Factory.Create<UpdateBoxCommand>().CanExecute();
 		}
 
 		protected AddBoxCommand CreateAddBoxCommand(Point pos)
 		{
 			mainWindow.Setup(w => w.CurrentMousePosition).Returns(pos);
 			return Factory.Create<AddBoxCommand>();
-		}
-
-		protected UpdateBoxCommand CreateUpdateBoxCommand(Point oldPos, Point newPos)
-		{
-			mainWindow.Setup(w => w.CurrentMousePosition).Returns(newPos);
-			mainWindow.Setup(w => w.PreviousMousePosition).Returns(oldPos);
-
-			return Factory.Create<UpdateBoxCommand>();
 		}
 
 		protected SplitBoxCommand CreateSplitBoxCommand(Point pos)
