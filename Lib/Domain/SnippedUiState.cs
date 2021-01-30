@@ -12,5 +12,6 @@
 
 		public bool DeleteCurrentIsEnabled { get; set; }
 		public bool DeleteAllIsEnabled { get; set; }
+		public bool StopPlayingEnabled { get; set; }
 	}
 }

@@ -17,8 +17,12 @@ namespace PartituraMagica.Lib.Playing
 		void StartRecording();
 		void StopRecording();
 
-		void RepeatAllSnippets();
-		void RepeatSnippet(int i);
+		void GoToFirstSnippet();
+		void GoToSnippet(int i);
+		void GoToPreviousSnippet();
+		void GoToNextSnippet();
+		void GoToLastSnippet();
+		void GoToEnd();
 
 		void RemoveAllSnippets();
 		void RemoveCurrentSnippet();

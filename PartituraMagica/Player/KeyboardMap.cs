@@ -21,26 +21,27 @@ namespace PartituraMagica.App.Player
 
 		public void HandleKeyDown(object sender, KeyEventArgs e)
 		{
-			switch (e.KeyCode)
-			{
-				case Keys.F4:
-					if (e.Modifiers == Keys.Alt) _playerView.Close();
-					break;
-				case Keys.Escape:
-					_playerView.Close();
-					break;
-				case Keys.Oemplus:
-				case Keys.Add:
-					if (e.Modifiers == Keys.None) _playerController.IncreaseSpeed();
-					break;
-				case Keys.OemMinus:
-				case Keys.Subtract:
-					if (e.Modifiers == Keys.None) _playerController.DecreaseSpeed();
-					break;
-				case Keys.Space:
-					_playerController.Pause();
-					break;
-			}
+			if (!e.Control && !e.Alt)
+				switch (e.KeyCode)
+				{
+					case Keys.F4:
+						if (e.Modifiers == Keys.Alt) _playerView.Close();
+						break;
+					case Keys.Escape:
+						_playerView.Close();
+						break;
+					case Keys.Oemplus:
+					case Keys.Add:
+						if (e.Modifiers == Keys.None) _playerController.IncreaseSpeed();
+						break;
+					case Keys.OemMinus:
+					case Keys.Subtract:
+						if (e.Modifiers == Keys.None) _playerController.DecreaseSpeed();
+						break;
+					case Keys.Space:
+						_playerController.Pause();
+						break;
+				}
 
 			if (e.Control)
 				switch (e.KeyCode)
@@ -64,6 +65,23 @@ namespace PartituraMagica.App.Player
 						break;
 					case Keys.End:
 						_playerController.GoToLastPart();
+						break;
+				}
+
+			if (e.Alt)
+				switch (e.KeyCode)
+				{
+					case Keys.Left:
+						_playerController.GoToPreviousSnippet();
+						break;
+					case Keys.Right:
+						_playerController.GoToNextSnippet();
+						break;
+					case Keys.Home:
+						_playerController.GoToFirstSnippet();
+						break;
+					case Keys.End:
+						_playerController.GoToLastSnippet();
 						break;
 				}
 		}

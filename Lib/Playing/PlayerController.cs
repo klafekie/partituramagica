@@ -123,14 +123,34 @@ namespace PartituraMagica.Lib.Playing
 			_snippetManager.StopRecording();
 		}
 
-		public void RepeatAllSnippets()
+		public void GoToFirstSnippet()
 		{
-			_snippetManager.RepeatAllSnippets();
+			_snippetManager.GoToFirstSnippet();
 		}
 
-		public void RepeatSnippet(int i)
+		public void GoToSnippet(int i)
 		{
-			_snippetManager.RepeatSnippet(i);
+			_snippetManager.GoToSnippet(i);
+		}
+
+		public void StopPlayingSnippets()
+		{
+			_snippetManager.GoToEnd();
+		}
+
+		public void GoToPreviousSnippet()
+		{
+			_snippetManager.GoToPreviousSnippet();
+		}
+
+		public void GoToNextSnippet()
+		{
+			_snippetManager.GoToNextSnippet();
+		}
+
+		public void GoToLastSnippet()
+		{
+			_snippetManager.GoToLastSnippet();
 		}
 
 		public void RemoveAllSnippets()

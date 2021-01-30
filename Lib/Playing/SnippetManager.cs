@@ -123,8 +123,7 @@ namespace PartituraMagica.Lib.Playing
 			};
 		}
 
-
-		public void RepeatAllSnippets()
+		public void GoToFirstSnippet()
 		{
 			if (_snippets.Count == 0 || _recordingStartPos != null) return;
 
@@ -138,23 +137,30 @@ namespace PartituraMagica.Lib.Playing
 			else
 			{
 				if (currentPlayingSnippet < _snippets.Count - 1) //jump to next snippet
-				{
 					JumpToSnippet(currentPlayingSnippet.Value + 1);
-				}
 				else
-				{
 					//last snipped. go to end of last snippet to facilitate recording more snippets after last snippet.
-					_playingSnippetIndex = null;
-					_positionHolder.XPos = _playingSnippets.Last().End;
-					_speedManager.IsPaused = true;
-					_playingSnippets = null;
-				}
+					GoToEnd();
 			}
 
 			UpdateSnippetUi();
 		}
 
-		public void RepeatSnippet(int snippetIndex)
+		public void GoToLastSnippet()
+		{
+			GoToSnippet(_snippets.Count - 1);
+		}
+
+		public void GoToEnd()
+		{
+			_playingSnippetIndex = null;
+			_positionHolder.XPos = _playingSnippets.Last().End;
+			_speedManager.IsPaused = true;
+			_playingSnippets = null;
+			UpdateSnippetUi();
+		}
+
+		public void GoToSnippet(int snippetIndex)
 		{
 			if (_snippets.Count <= snippetIndex || _recordingStartPos != null) return;
 
@@ -163,6 +169,20 @@ namespace PartituraMagica.Lib.Playing
 			JumpToSnippet(snippetIndex);
 
 			UpdateSnippetUi();
+		}
+
+		public void GoToPreviousSnippet()
+		{
+			int? index = GetCurrentPlayingSnippet();
+			if (index != null && index.Value > 0)
+				GoToSnippet(index.Value - 1);
+		}
+
+		public void GoToNextSnippet()
+		{
+			int? index = GetCurrentPlayingSnippet();
+			if (index != null && index.Value < _snippets.Count - 1)
+				GoToSnippet(index.Value + 1);
 		}
 
 		private void UpdateExpandedSnippets()
@@ -192,6 +212,7 @@ namespace PartituraMagica.Lib.Playing
 				RecordIsSelected = _recordingStartPos != null,
 				RepeatAllIsEnabled = _recordingStartPos == null && _snippets.Any(),
 				RepeatAllIsSelected = _playingSnippetIndex != null,
+				StopPlayingEnabled = _playingSnippetIndex != null,
 				SelectedSnippetIndex = GetCurrentPlayingSnippet(),
 				DeleteCurrentIsEnabled = _playingSnippetIndex != null,
 				DeleteAllIsEnabled = _recordingStartPos == null && _snippets.Any()

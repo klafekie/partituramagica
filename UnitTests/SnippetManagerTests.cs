@@ -90,7 +90,7 @@ namespace PartituraMagica.Test
 			};
 			dut.Init(_memento, _playerView.Object);
 			{
-				dut.RepeatSnippet(0);
+				dut.GoToSnippet(0);
 			}
 
 			ScrollForward();
@@ -138,7 +138,7 @@ namespace PartituraMagica.Test
 			};
 			dut.Init(_memento, _playerView.Object);
 			{
-				dut.RepeatAllSnippets();
+				dut.GoToFirstSnippet();
 			}
 
 			ScrollForward(1);
@@ -188,7 +188,7 @@ namespace PartituraMagica.Test
 			};
 			dut.Init(_memento, _playerView.Object);
 			{
-				dut.RepeatAllSnippets();
+				dut.GoToFirstSnippet();
 			}
 
 			ScrollForward(1);

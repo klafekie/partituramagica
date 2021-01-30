@@ -126,10 +126,27 @@ namespace PartituraMagica.App.Player
 					ToolTipText = $"Go to snippet {i + 1}"
 				};
 				int i1 = i;
-				btn.Click += (sender, args) => _playerController.RepeatSnippet(i1);
+				btn.Click += (sender, args) => _playerController.GoToSnippet(i1);
 
 				splitBtnRepeatAll.DropDownItems.Add(btn);
 			}
+
+			var endBtn = new IconMenuItem
+			{
+				AutoSize = false,
+				IconChar = IconChar.WindowClose,
+				IconColor = Color.Black,
+				IconFont = IconFont.Auto,
+				IconSize = 40,
+				ImageScaling = ToolStripItemImageScaling.None,
+				Name = "btnCancelSnippetPlaying",
+				Size = new Size(446, 52),
+				Text = "Stop playing snippets",
+				ToolTipText = "Stop playing snippets"
+			};
+			endBtn.Click += (sender, args) => _playerController.StopPlayingSnippets();
+
+			splitBtnRepeatAll.DropDownItems.Add(endBtn);
 		}
 
 		public void UpdateSnippetUi(SnippedUiState state)
@@ -140,17 +157,19 @@ namespace PartituraMagica.App.Player
 			splitBtnRepeatAll.Enabled = state.RepeatAllIsEnabled;
 			//TODO splitBtnRepeatAll. = state.RepeatAllIsSelected;
 
-			int i = 0;
-			foreach (var item in splitBtnRepeatAll.DropDown.Items.Cast<IconMenuItem>())
+			for (int i = 0; i < splitBtnRepeatAll.DropDown.Items.Count - 1; i++)
 			{
+				var item = splitBtnRepeatAll.DropDown.Items[1] as IconMenuItem;
 				item.Checked = state.SelectedSnippetIndex != null && state.SelectedSnippetIndex.Value == i;
-				i++;
 			}
+
+			splitBtnRepeatAll.DropDown.Items[splitBtnRepeatAll.DropDown.Items.Count - 1].Enabled = state.StopPlayingEnabled;
 
 			if (state.SelectedSnippetIndex != null)
 			{
 				IconChar iconChar = GetIconChar(state.SelectedSnippetIndex.Value);
-				string text = state.SelectedSnippetIndex.Value.ToString();
+
+				string text = (state.SelectedSnippetIndex.Value + 1).ToString();
 
 				splitBtnRepeatAll.IconChar = iconChar;
 				splitBtnRepeatAll.Text = text;
@@ -163,6 +182,10 @@ namespace PartituraMagica.App.Player
 
 				btnRemoveCurrentSnippet.IconChar = IconChar.None;
 			}
+
+			splitBtnRepeatAll.DisplayStyle = splitBtnRepeatAll.IconChar == IconChar.None
+				? ToolStripItemDisplayStyle.Text
+				: ToolStripItemDisplayStyle.Image;
 
 			comboBtnEditSnippet.Enabled = state.DeleteAllIsEnabled || state.DeleteCurrentIsEnabled;
 			btnRemoveAllSnippets.Enabled = state.DeleteAllIsEnabled;
@@ -313,7 +336,7 @@ namespace PartituraMagica.App.Player
 
 		private void splitBtnRepeatAll_Click(object sender, EventArgs e)
 		{
-			_playerController.RepeatAllSnippets();
+			_playerController.GoToFirstSnippet();
 		}
 
 		private void btnRemoveAllSnippets_Click(object sender, EventArgs e)
