@@ -257,7 +257,8 @@ namespace PartituraMagica.Lib.Playing
 					UpdateSnippetUi();
 					_playerView.ExecuteDelayed(1500, () =>
 					{
-						if (_playingSnippetIndex == null)
+						if (_playingSnippetIndex == null ||
+						    _playingSnippetIndex.Value >= _playingSnippets.Count - 1)
 							//during the pause snippet playing was paused or player window closed
 							return;
 

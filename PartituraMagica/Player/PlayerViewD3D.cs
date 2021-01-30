@@ -2,7 +2,6 @@
 
 using System;
 using System.Drawing;
-using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Interop;
 using FontAwesome.Sharp;
@@ -29,8 +28,6 @@ namespace PartituraMagica.App.Player
 
 			public IntPtr Handle { get; }
 		}
-
-		private const int PART_A_BUTTON_INDEX = 2;
 
 		private readonly IntPtr _ownerHandle;
 		private readonly IScrollingPanel _scrollingPanel;
@@ -86,16 +83,11 @@ namespace PartituraMagica.App.Player
 
 		public void MarkActivePart(int index)
 		{
-			int buttonCount = toolStrip1.Items.Count - 2 * PART_A_BUTTON_INDEX;
-			if (buttonCount < index + 1)
-				//this check is required. When you play to second part, then close and reopen player the Items list is empty sometimes.
-				return;
+			if (index >= dropdownAllParts.DropDown.Items.Count) return;
 
-			for (int i = 0; i < buttonCount; i++)
-			{
-				var button = (ToolStripButton) toolStrip1.Items[i + PART_A_BUTTON_INDEX];
-				button.Checked = i == index;
-			}
+			var button = (IconToolStripButton) dropdownAllParts.DropDown.Items[index];
+			button.Select();
+			dropdownAllParts.Text = button.Text;
 		}
 
 		public void MarkPaused(bool isPaused)
@@ -187,7 +179,7 @@ namespace PartituraMagica.App.Player
 				? ToolStripItemDisplayStyle.Text
 				: ToolStripItemDisplayStyle.Image;
 
-			comboBtnEditSnippet.Enabled = state.DeleteAllIsEnabled || state.DeleteCurrentIsEnabled;
+			dropDownEditSnippet.Enabled = state.DeleteAllIsEnabled || state.DeleteCurrentIsEnabled;
 			btnRemoveAllSnippets.Enabled = state.DeleteAllIsEnabled;
 			btnRemoveCurrentSnippet.Enabled = state.DeleteCurrentIsEnabled;
 		}
@@ -210,8 +202,8 @@ namespace PartituraMagica.App.Player
 		{
 			string[] partStrings = new string[partPattern.Length];
 			for (int i = 0; i < partPattern.Length; i++) partStrings[i] = partPattern[i].ToString();
-			int partIndex = partStrings.Length - 1;
-			foreach (var partString in partStrings.Reverse())
+			int partIndex = 0;
+			foreach (var partString in partStrings)
 			{
 				var button = new IconToolStripButton
 				{
@@ -233,11 +225,11 @@ namespace PartituraMagica.App.Player
 					TextAlign = ContentAlignment.TopCenter
 				};
 
-				toolStrip1.Items.Insert(PART_A_BUTTON_INDEX, button);
-
 				int index = partIndex;
 				button.Click += (sender, args) => { _playerController.GoToPart(index); };
-				partIndex--;
+
+				dropdownAllParts.DropDown.Items.Add(button);
+				partIndex++;
 			}
 		}
 
