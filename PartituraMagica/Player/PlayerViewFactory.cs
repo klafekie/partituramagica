@@ -1,6 +1,7 @@
 ﻿#region usings
 
 using System;
+using System.Diagnostics;
 using PartituraMagica.Lib.Domain;
 using PartituraMagica.Lib.Playing;
 
@@ -12,6 +13,7 @@ namespace PartituraMagica.App.Player
 	{
 		private readonly Func<IPlayerView> _getViewInstance;
 		private readonly IPlayerController _playerController;
+		private bool _disposed;
 		private IPlayerView _playerView;
 
 		public PlayerViewFactory(Func<IPlayerView> getViewInstance,
@@ -23,13 +25,31 @@ namespace PartituraMagica.App.Player
 
 		public void Dispose()
 		{
+			Trace.TraceInformation("disposing PlayerFactory");
 			_playerView?.Dispose();
 			_playerView = null;
+			_disposed = true;
+		}
+
+		public void Create()
+		{
+			try
+			{
+				if (!_disposed)
+				{
+					_playerView?.Dispose();
+					_playerView = _getViewInstance();
+					_playerView.Init();
+				}
+			}
+			catch (Exception ex)
+			{
+				Trace.TraceError("Error in Create: " + ex);
+			}
 		}
 
 		public void CreateAndShowView(IPlayedPartitura partitura)
 		{
-			_playerView = _getViewInstance();
 			_playerController.Init(partitura, _playerView);
 
 			try

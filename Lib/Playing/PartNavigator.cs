@@ -61,6 +61,10 @@ namespace PartituraMagica.Lib.Playing
 				if (_playerPosition.XPos < currentPartStartPos + MinPartScroll) CurrentPartIndex--;
 				_playerPosition.XPos = _calculator.GetPatternXPosition(CurrentPartIndex);
 			}
+			else
+			{
+				FirstPartClicked();
+			}
 		}
 
 		public void PartClicked(int partIndex)

@@ -27,6 +27,5 @@ namespace PartituraMagica.Lib.Domain
 		void MessageBox(string text);
 		void CloseAndExit();
 		bool Activate();
-		void SignalWait(bool doWait);
 	}
 }

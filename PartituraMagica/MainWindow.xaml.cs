@@ -2,7 +2,6 @@
 
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
@@ -20,7 +19,6 @@ namespace PartituraMagica.App
 	{
 		private readonly ICommandFactory _commandFactory;
 		private readonly ICommandParameters _controller;
-		private bool _waiting;
 
 		public static RoutedUICommand AddPage { get; } = new
 			RoutedUICommand("Add ...", "AddPages", typeof(MainWindow));
@@ -85,7 +83,6 @@ namespace PartituraMagica.App
 			_controller = controller;
 
 			_commandFactory = commandFactory;
-			Trace.WriteLine("hallo listener");
 
 			InitializeComponent();
 
@@ -127,13 +124,6 @@ namespace PartituraMagica.App
 		public void CloseAndExit()
 		{
 			Application.Current.Shutdown();
-		}
-
-
-		public void SignalWait(bool doWait)
-		{
-			_waiting = doWait;
-			Cursor = doWait ? Cursors.Wait : Cursors.Arrow;
 		}
 
 		public new bool IsEnabled
@@ -208,7 +198,7 @@ namespace PartituraMagica.App
 		private void UpdateMouseShape()
 		{
 			CurrentMouseShape = _controller.GetShapeAt(CurrentMousePosition.Value);
-			if (!_waiting) SetMouseCursor(CurrentMouseShape);
+			SetMouseCursor(CurrentMouseShape);
 		}
 
 		private void PageCanvas_MouseMove(object sender, MouseEventArgs e)

@@ -2,7 +2,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using PartituraMagica.Lib.Domain;
 using PartituraMagica.Lib.Playing;
@@ -15,10 +17,12 @@ namespace PartituraMagica.App.Player
 {
 	internal class ScrollingPanel : IScrollingPanel
 	{
+		private const double CLIPPING_LOAD_BUFFER = 2000;
 		private readonly List<ClippingD3D> _clippingD3Ds = new List<ClippingD3D>();
 		private readonly ApplicationConfiguration _configuration = new ApplicationConfiguration();
 		private readonly IImageLoader _imageLoader;
 		private readonly IPlayerController _playerController;
+		private readonly ITextureCache _textureCache;
 
 		private Direct3D _d3D;
 
@@ -26,19 +30,20 @@ namespace PartituraMagica.App.Player
 
 		private bool _isRendering;
 
-		public ScrollingPanel(IImageLoader imageLoader, IPlayerController playerController)
+		public ScrollingPanel(IImageLoader imageLoader, IPlayerController playerController, ITextureCache textureCache)
 		{
 			_imageLoader = imageLoader;
 			_playerController = playerController;
+			_textureCache = textureCache;
 		}
 
 		public void Dispose()
 		{
 			_isRendering = false;
-			_device?.Dispose();
 			foreach (ClippingD3D l in _clippingD3Ds) l.Dispose();
+			_textureCache.SetDevice(null);
+			_device?.Dispose();
 			_clippingD3Ds.Clear();
-			ClippingD3D.Cleanup();
 			_d3D?.Dispose();
 		}
 
@@ -73,19 +78,25 @@ namespace PartituraMagica.App.Player
 			// Antialiasing: see http://msdn.microsoft.com/en-us/library/windows/desktop/bb173422%28v=vs.85%29.aspx
 			// seems that it is not doing anything when working with images, only for shapes
 			_device.SetRenderState(RenderState.MultisampleAntialias, false);
+			_device.Clear(ClearFlags.Target, _configuration.InvertColors ? Color.Black : _configuration.Color, 1.0f, 0);
+
+			_textureCache.SetDevice(_device);
 		}
 
 		public void StartScrolling(IPlayedPartitura partitura)
 		{
+			Trace.TraceInformation("PartituraMagica.App.Player.ScrollingPanel.StartScrolling()");
 			_clippingD3Ds.Clear();
 			var paths = partitura.ImagePaths;
 			foreach (Clipping c in _playerController.GetClippings())
 			{
 				string path = paths[c.PageIndex];
 				IGreyImage image = _imageLoader.GetImage(path);
-				ClippingD3D line = new ClippingD3D(image, c.Coords, _configuration.InvertColors, _configuration.Color);
+				ClippingD3D line = new ClippingD3D(image, c.Coords, _configuration, _textureCache);
 				_clippingD3Ds.Add(line);
 			}
+
+			Trace.TraceInformation("PartituraMagica.App.Player.ScrollingPanel.StartScrolling.beforeInit clippings");
 
 			float offset = 0F;
 			foreach (ClippingD3D l in _clippingD3Ds)
@@ -96,6 +107,8 @@ namespace PartituraMagica.App.Player
 
 			string[] parts = new string[partitura.PartPattern.Length];
 			for (int i = 0; i < partitura.PartPattern.Length; i++) parts[i] = partitura.PartPattern[i].ToString();
+
+			Trace.TraceInformation("PartituraMagica.App.Player.ScrollingPanel.StartScrolling.isRendering");
 
 			_isRendering = true;
 
@@ -113,9 +126,10 @@ namespace PartituraMagica.App.Player
 			if (!_isRendering)
 				return;
 
-			_device.Clear(ClearFlags.Target, _configuration.InvertColors ? Color.Black : _configuration.Color, 1.0f, 0);
 			try
 			{
+				_device.Clear(ClearFlags.Target, _configuration.InvertColors ? Color.Black : _configuration.Color, 1.0f, 0);
+
 				_device.BeginScene();
 
 				_playerController.GetNextZoom(out float zoomX, out float zoomY);
@@ -124,7 +138,10 @@ namespace PartituraMagica.App.Player
 					Matrix.Scaling(zoomX, zoomY, 1F) *
 					Matrix.Translation((float) -_playerController.XPos * zoomX, 0, 0));
 
-				foreach (ClippingD3D clipping in _clippingD3Ds)
+				var visibleClippings = _clippingD3Ds.Where(clip =>
+					clip.XPos >= _playerController.XPos - CLIPPING_LOAD_BUFFER &&
+					clip.XPos <= _playerController.XPos + CLIPPING_LOAD_BUFFER);
+				foreach (ClippingD3D clipping in visibleClippings)
 					clipping.Render(_device);
 			}
 			finally

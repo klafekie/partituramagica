@@ -27,12 +27,10 @@ namespace PartituraMagica.Lib.PageEditing
 		public void Execute()
 		{
 			Debug.Assert(CanExecute());
-			_mainWindow.SignalWait(true);
-			BoxFinder b = new BoxFinder(P.Panel.CurrentImage);
+			var boxes = new BoxFinder(P.Panel.CurrentImage).Execute();
 
-			foreach (Rect r in b.Execute())
+			foreach (Rect r in boxes)
 				_commandFactory.Create<AddBoxCommand>(c => c.Rectangle = r).TryExecute();
-			_mainWindow.SignalWait(false);
 		}
 	}
 }

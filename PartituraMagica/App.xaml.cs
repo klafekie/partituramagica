@@ -9,6 +9,7 @@ using System.Windows.Threading;
 using Lamar;
 using PartituraMagica.Lib.Domain;
 using PartituraMagica.Lib.PartituraCommands;
+using PartituraMagica.Lib.Playing;
 
 #endregion
 
@@ -33,6 +34,7 @@ namespace PartituraMagica.App
 		protected override void OnExit(ExitEventArgs e)
 		{
 			base.OnExit(e);
+			Trace.TraceInformation("disposing DI container");
 			_container?.Dispose(); //this will dispose all disposable objects created by container
 		}
 
@@ -66,6 +68,9 @@ namespace PartituraMagica.App
 					.Create<OpenCommand>(c => c.Path = args[1]).Execute();
 
 			wnd.Show();
+
+			//create player view as early as possible to start loading Textures in background
+			_container.GetInstance<IPlayerViewFactory>().Create();
 		}
 	}
 }

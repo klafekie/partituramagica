@@ -24,6 +24,7 @@ namespace PartituraMagica.App
 			For<IFileSystem>().Use<FileSystem>().Singleton();
 			For<PlayerPositionHolder>().Use<PlayerPositionHolder>().Singleton();
 			For<IScrollingPanel>().Use<ScrollingPanel>().Singleton();
+			For<ITextureCache>().Use<TextureCache>().Singleton();
 
 			Scan(_ =>
 			{

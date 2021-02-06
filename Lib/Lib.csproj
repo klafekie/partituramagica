@@ -154,6 +154,7 @@
     <Compile Include="Playing\IScrollingPanel.cs" />
     <Compile Include="Playing\ISnippetManager.cs" />
     <Compile Include="Playing\ISpeedManager.cs" />
+    <Compile Include="Playing\ITextureCache.cs" />
     <Compile Include="Playing\IZoomManager.cs" />
     <Compile Include="Playing\PartNavigator.cs" />
     <Compile Include="Playing\PartPositionCalculator.cs" />

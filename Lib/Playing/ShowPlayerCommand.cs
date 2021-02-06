@@ -42,6 +42,7 @@ namespace PartituraMagica.Lib.Playing
 			{
 				_mainWindow.IsEnabled = true;
 				_mainWindow.Activate();
+				_factory.Create();
 			}
 		}
 

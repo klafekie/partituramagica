@@ -45,6 +45,10 @@ namespace PartituraMagica.App.Player
 			_ownerHandle = new WindowInteropHelper(mainWindow).Handle;
 
 			_scrollingPanel = scrollingPanel;
+		}
+
+		public void Init()
+		{
 			_scrollingPanel.Init(panel1.Handle);
 		}
 

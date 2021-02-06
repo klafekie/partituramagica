@@ -24,5 +24,6 @@ namespace PartituraMagica.Lib.Domain
 		void UpdateSnippetUi(SnippedUiState state);
 
 		bool IsExpectedError(Exception ex);
+		void Init();
 	}
 }

@@ -20,5 +20,6 @@ namespace PartituraMagica.Lib.Playing
 		void CreateAndShowView(IPlayedPartitura partitura);
 
 		bool IsExpectedError(Exception exception);
+		void Create();
 	}
 }

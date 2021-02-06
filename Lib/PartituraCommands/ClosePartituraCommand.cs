@@ -2,6 +2,7 @@
 
 using System.Diagnostics;
 using PartituraMagica.Lib.Domain;
+using PartituraMagica.Lib.Playing;
 
 #endregion
 
@@ -11,12 +12,15 @@ namespace PartituraMagica.Lib.PartituraCommands
 	{
 		private readonly ICommandFactory _commandFactory;
 		private readonly IMainWindow _mainWindow;
+		private readonly ITextureCache _textureCache;
 
-		public ClosePartituraCommand(ICommandParameters p, IMainWindow mainWindow, ICommandFactory commandFactory)
+		public ClosePartituraCommand(ICommandParameters p, IMainWindow mainWindow, ICommandFactory commandFactory,
+			ITextureCache textureCache)
 			: base(p)
 		{
 			_mainWindow = mainWindow;
 			_commandFactory = commandFactory;
+			_textureCache = textureCache;
 		}
 
 		public void Execute()
@@ -36,6 +40,7 @@ namespace PartituraMagica.Lib.PartituraCommands
 				//file was really safed or user doesn't care
 				P.Panel.Clear();
 				P.Active.Close();
+				_textureCache.ClearAllTextures();
 
 				_mainWindow.ClearPartituraInfo();
 				_mainWindow.PartPattern = string.Empty;
