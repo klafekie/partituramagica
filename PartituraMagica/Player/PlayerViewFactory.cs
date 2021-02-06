@@ -32,7 +32,21 @@ namespace PartituraMagica.App.Player
 			_playerView = _getViewInstance();
 			_playerController.Init(partitura, _playerView);
 
-			_playerView.StartScrolling(partitura, _playerController);
+			try
+			{
+				_playerView.StartScrolling(partitura, _playerController);
+			}
+			catch
+			{
+				_playerView.Close();
+				throw;
+			}
+		}
+
+		public bool IsExpectedError(Exception exception)
+		{
+			return _playerView != null &&
+			       _playerView.IsExpectedError(exception);
 		}
 	}
 }

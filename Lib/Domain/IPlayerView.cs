@@ -22,5 +22,7 @@ namespace PartituraMagica.Lib.Domain
 
 		void UpdateAvailableSnippets(int snippetsCount);
 		void UpdateSnippetUi(SnippedUiState state);
+
+		bool IsExpectedError(Exception ex);
 	}
 }

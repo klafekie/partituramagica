@@ -28,16 +28,20 @@ namespace PartituraMagica.Lib.Playing
 
 				_mainWindow.IsEnabled = false;
 				_factory.CreateAndShowView(P.CreatePlayedPartitura());
-				_mainWindow.IsEnabled = true;
-				_mainWindow.Activate();
 			}
 			catch (Exception e)
 			{
 				Trace.TraceError("Exception when showing the player:");
 				Trace.TraceError(e.ToString());
-				_mainWindow.MessageBox("A problem with the initialization of DirectX has occurred:\n\n" +
-				                       e.Message +
-				                       "\n\nPlease see ReleaseNotes.doc for troubleshooting hints and restart the application.");
+				if (!_factory.IsExpectedError(e))
+					_mainWindow.MessageBox("A problem with the initialization of DirectX has occurred:\n\n" +
+					                       e.Message +
+					                       "\n\nPlease see ReleaseNotes.doc for troubleshooting hints and restart the application.");
+			}
+			finally
+			{
+				_mainWindow.IsEnabled = true;
+				_mainWindow.Activate();
 			}
 		}
 

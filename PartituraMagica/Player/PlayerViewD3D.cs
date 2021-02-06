@@ -7,6 +7,7 @@ using System.Windows.Interop;
 using FontAwesome.Sharp;
 using PartituraMagica.Lib.Domain;
 using PartituraMagica.Lib.Playing;
+using SlimDX;
 using IWin32Window = System.Windows.Forms.IWin32Window;
 
 #endregion
@@ -60,18 +61,24 @@ namespace PartituraMagica.App.Player
 			Show(w);
 
 			_playerController.PlayerShown();
-			_scrollingPanel.StartScrolling(partitura);
-
-			//we return here only if window is closed
-			_playerController.PlayerClosed();
-			Enabled = false;
+			try
+			{
+				_scrollingPanel.StartScrolling(partitura);
+			}
+			finally
+			{
+				Close();
+				_playerController.PlayerClosed();
+				Enabled = false;
+			}
 		}
 
 		public void ExecuteDelayed(int milliseconds, Action action)
 		{
 			var timer = new Timer
 			{
-				Enabled = true, Interval = milliseconds
+				Enabled = true,
+				Interval = milliseconds
 			};
 			timer.Tick += (sender, args) =>
 			{
@@ -182,6 +189,12 @@ namespace PartituraMagica.App.Player
 			dropDownEditSnippet.Enabled = state.DeleteAllIsEnabled || state.DeleteCurrentIsEnabled;
 			btnRemoveAllSnippets.Enabled = state.DeleteAllIsEnabled;
 			btnRemoveCurrentSnippet.Enabled = state.DeleteCurrentIsEnabled;
+		}
+
+		public bool IsExpectedError(Exception ex)
+		{
+			//Devoce Lost happens for example when user locks his computer while partitura is playing.
+			return ex is SlimDXException slimEx && slimEx.ResultCode.Name == "D3DERR_DEVICELOST";
 		}
 
 		private IconChar GetIconChar(int i)

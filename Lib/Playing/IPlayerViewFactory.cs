@@ -4,6 +4,7 @@
 
 #region usings
 
+using System;
 using PartituraMagica.Lib.Domain;
 
 #endregion
@@ -17,5 +18,7 @@ namespace PartituraMagica.Lib.Playing
 		 * This method call blocks until the player vindow is closed.
 		 */
 		void CreateAndShowView(IPlayedPartitura partitura);
+
+		bool IsExpectedError(Exception exception);
 	}
 }
