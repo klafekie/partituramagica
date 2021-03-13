@@ -50,12 +50,12 @@ namespace PartituraMagica.App.Player
 		public void Init(IntPtr handle)
 		{
 			_d3D = new Direct3D();
-			/* Experiment jed 20141227, setting BackBuffer size explicitly. Without that, seen that device.ViewPort size was 640 * 480 pixels.
-			 * Setting the size to the monitor resolution improved quality a lot. But maybe it should be the exact #pixels in the player panel?
-			 * Values: Laptop jed: 1600*900. Monitor jed: 1680*1050.
+
+			/*
+			 * back buffer should have at least the same dimensions as the used display adapter.
 			 */
-			const int bbWidth = 1600;
-			const int bbHeight = 900;
+			int bbWidth = _d3D.Adapters.Select(a => a.CurrentDisplayMode.Width).Max();
+			int bbHeight = _d3D.Adapters.Select(a => a.CurrentDisplayMode.Height).Max();
 
 			_device = new Device(_d3D, _d3D.Adapters.DefaultAdapter.Adapter,
 				DeviceType.Hardware, handle, CreateFlags.HardwareVertexProcessing,

@@ -41,6 +41,9 @@ namespace PartituraMagica.App
 
 		private void Application_Startup(object sender, StartupEventArgs e)
 		{
+			System.Windows.Forms.Application.EnableVisualStyles();
+			System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
+
 			Trace.WriteLine("");
 			Trace.WriteLine("-------------------");
 			Trace.TraceInformation("-- Application started --");
