@@ -41,7 +41,7 @@ namespace PartituraMagica.Lib.PartituraCommands
 					var allImages = new List<string>();
 					int pageCount = P.Active.GetPageCount();
 					for (int i = 0; i < pageCount; i++) allImages.Add(P.Active.GetImagePath(i));
-					foreach (string image in allImages) _textureCache.AddTexture(image);
+					foreach (string image in allImages) _textureCache.AddImage(image);
 
 					_commandFactory.Create<ShowFirstPageCommand>().TryExecute();
 					_mainWindow.PartPattern = P.Active.Partitura.PartPattern;

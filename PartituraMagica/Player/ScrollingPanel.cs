@@ -41,46 +41,14 @@ namespace PartituraMagica.App.Player
 		{
 			_isRendering = false;
 			foreach (ClippingD3D l in _clippingD3Ds) l.Dispose();
-			_textureCache.SetDevice(null);
-			_device?.Dispose();
 			_clippingD3Ds.Clear();
 			_d3D?.Dispose();
 		}
 
 		public void Init(IntPtr handle)
 		{
-			_d3D = new Direct3D();
-
-			/*
-			 * back buffer should have at least the same dimensions as the used display adapter.
-			 */
-			int bbWidth = _d3D.Adapters.Select(a => a.CurrentDisplayMode.Width).Max();
-			int bbHeight = _d3D.Adapters.Select(a => a.CurrentDisplayMode.Height).Max();
-
-			_device = new Device(_d3D, _d3D.Adapters.DefaultAdapter.Adapter,
-				DeviceType.Hardware, handle, CreateFlags.HardwareVertexProcessing,
-				new PresentParameters
-				{
-					// Added BackBufferWidth and BackBufferHeight as experiment for improving vision quality [jed])
-					BackBufferWidth = bbWidth,
-					BackBufferHeight = bbHeight,
-					PresentationInterval = PresentInterval.One,
-					Multisample = MultisampleType.None,
-					// Options are: None, NonMaskable, and NSamples where N in 2..16.
-					Windowed = true,
-					SwapEffect = SwapEffect.Discard
-				});
-
-			_device.SetRenderState(RenderState.CullMode, Cull.None);
-			_device.SetRenderState(RenderState.Lighting, false);
-			_device.SetRenderState(RenderState.Clipping, false);
-			_device.SetRenderState(RenderState.AlphaBlendEnable, false);
-			// Antialiasing: see http://msdn.microsoft.com/en-us/library/windows/desktop/bb173422%28v=vs.85%29.aspx
-			// seems that it is not doing anything when working with images, only for shapes
-			_device.SetRenderState(RenderState.MultisampleAntialias, false);
+			_device = (Device) _textureCache.CreateDevice(handle);
 			_device.Clear(ClearFlags.Target, _configuration.InvertColors ? Color.Black : _configuration.Color, 1.0f, 0);
-
-			_textureCache.SetDevice(_device);
 		}
 
 		public void StartScrolling(IPlayedPartitura partitura)

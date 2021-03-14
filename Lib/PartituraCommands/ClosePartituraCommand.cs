@@ -40,7 +40,7 @@ namespace PartituraMagica.Lib.PartituraCommands
 				//file was really safed or user doesn't care
 				P.Panel.Clear();
 				P.Active.Close();
-				_textureCache.ClearAllTextures();
+				_textureCache.ClearAllImages();
 
 				_mainWindow.ClearPartituraInfo();
 				_mainWindow.PartPattern = string.Empty;
