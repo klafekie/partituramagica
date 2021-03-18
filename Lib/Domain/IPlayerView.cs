@@ -25,5 +25,12 @@ namespace PartituraMagica.Lib.Domain
 
 		bool IsExpectedError(Exception ex);
 		void Init();
+
+		/// <summary>
+		///   Show a simple message box to ask for confirmation.
+		/// </summary>
+		/// <param name="message"></param>
+		/// <returns>true if user confirmed</returns>
+		bool ShowConfirmDialog(string message);
 	}
 }

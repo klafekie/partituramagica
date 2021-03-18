@@ -2,6 +2,6 @@
 {
 	public interface IImageLoader
 	{
-		IGreyImage GetImage(string path);
+		IGreyImage LoadImage(string path);
 	}
 }

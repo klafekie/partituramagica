@@ -21,6 +21,7 @@ namespace PartituraMagica.App
 			For<IPlayerViewFactory>().Use<PlayerViewFactory>().Singleton();
 			For<IPlayerView>().Use<PlayerViewD3D>();
 			For<IImageLoader>().Use(s => s.GetInstance<ICommandParameters>().Panel);
+			For<IDrawingPanel>().Use(s => s.GetInstance<ICommandParameters>().Panel);
 			For<IFileSystem>().Use<FileSystem>().Singleton();
 			For<PlayerPositionHolder>().Use<PlayerPositionHolder>().Singleton();
 			For<IScrollingPanel>().Use<ScrollingPanel>().Singleton();

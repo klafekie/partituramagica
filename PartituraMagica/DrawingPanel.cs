@@ -18,18 +18,98 @@ namespace PartituraMagica.App
 	{
 		private class Clipping
 		{
-			public readonly Rectangle R;
-			public readonly TextBlock T;
+			private static readonly Brush SelectedColor = Brushes.LightGreen;
+			private static readonly Brush NotSelectedColor = Brushes.SlateBlue;
+
+			private readonly Line _line;
+			private readonly Rectangle _rectangle;
+			private readonly TextBlock _text;
 
 			public Clipping()
 			{
-				R = new Rectangle();
-				T = new TextBlock {FontSize = 24};
+				_rectangle = new Rectangle {StrokeThickness = Page.ClickTolerance, Stroke = NotSelectedColor};
+				_text = new TextBlock {FontSize = 24, Foreground = NotSelectedColor};
+				_line = new Line
+				{
+					StrokeThickness = Page.ClickTolerance / 2D,
+					Stroke = NotSelectedColor,
+					StrokeDashArray =
+						new DoubleCollection {2, 1, 3, 1}
+				};
+			}
+
+			public void Select()
+			{
+				Panel.SetZIndex(_rectangle, 1);
+				Panel.SetZIndex(_line, 1);
+				Panel.SetZIndex(_text, 3);
+
+				_rectangle.Stroke = SelectedColor;
+				_line.Stroke = SelectedColor;
+				_text.Foreground = SelectedColor;
+			}
+
+			public void Deselect()
+			{
+				Panel.SetZIndex(_rectangle, 0);
+				Panel.SetZIndex(_line, 0);
+				Panel.SetZIndex(_text, 2);
+				_rectangle.Stroke = NotSelectedColor;
+				_line.Stroke = NotSelectedColor;
+				_text.Foreground = NotSelectedColor;
+			}
+
+			public void RemoveFrom(Canvas pageCanvas)
+			{
+				pageCanvas.Children.Remove(_rectangle);
+				pageCanvas.Children.Remove(_line);
+				pageCanvas.Children.Remove(_text);
+			}
+
+			public void SetCoordinates(Rect coordinates)
+			{
+				//Trace.WriteLine("DrawingPanel.Clipping:" + coordinates);
+				double thickness = _rectangle.StrokeThickness;
+				double left = coordinates.X - thickness / 2.0;
+				double top = coordinates.Y - thickness / 2.0;
+				double centerY = coordinates.CenterY;
+
+				_rectangle.Width = coordinates.Width + thickness;
+				_rectangle.Height = coordinates.Height + thickness;
+
+				Canvas.SetLeft(_rectangle, left);
+				Canvas.SetTop(_rectangle, top);
+				Canvas.SetLeft(_line, left);
+				Canvas.SetTop(_line, top);
+				_line.X1 = 0;
+				_line.Y1 = centerY;
+				_line.X2 = coordinates.Width + thickness;
+				_line.Y2 = centerY;
+				Canvas.SetLeft(_text, left + Page.ClickTolerance);
+				Canvas.SetTop(_text, top + Page.ClickTolerance);
+			}
+
+			public void Label(string label)
+			{
+				if (string.IsNullOrEmpty(label))
+				{
+					_text.Visibility = Visibility.Collapsed;
+				}
+				else
+				{
+					_text.Text = label;
+					_text.Visibility = Visibility.Visible;
+				}
+			}
+
+			public void AddTo(Canvas pageCanvas)
+			{
+				pageCanvas.Children.Add(_rectangle);
+				pageCanvas.Children.Add(_line);
+				pageCanvas.Children.Add(_text);
 			}
 		}
 
-		private static readonly Brush SelectedColor = Brushes.LightGreen;
-		private static readonly Brush NotSelectedColor = Brushes.DarkSlateBlue;
 		private readonly Dictionary<string, GreyImage> _imageCache = new Dictionary<string, GreyImage>();
 		private readonly Canvas _pageCanvas;
 
@@ -42,58 +122,30 @@ namespace PartituraMagica.App
 			Clear();
 		}
 
-		public void AddRectangle(int id, Rect coordinates)
-		{
-			Clipping c = new Clipping();
-
-			c.R.StrokeThickness = Page.ClickTolerance;
-			c.R.Stroke = NotSelectedColor;
-
-			SetCoords(c, coordinates);
-
-			_pageCanvas.Children.Add(c.R);
-			_pageCanvas.Children.Add(c.T);
-			_id2Clipping[id] = c;
-		}
-
 		public void AddOrUpdateRectangle(int id, Rect coordinates)
 		{
 			if (_id2Clipping.TryGetValue(id, out Clipping c))
-				SetCoords(c, coordinates);
+				c.SetCoordinates(coordinates);
 			else
 				AddRectangle(id, coordinates);
 		}
 
 		public void RemoveRectangle(int id)
 		{
-			Clipping i = _id2Clipping[id];
-			_pageCanvas.Children.Remove(i.R);
-			_pageCanvas.Children.Remove(i.T);
+			_id2Clipping[id].RemoveFrom(_pageCanvas);
 			_id2Clipping.Remove(id);
 		}
 
 		public void SelectRectangle(int id)
 		{
-			//we could optimize by just changing zindex of last selected rect
-			//but this requires to store last selected id.
-			foreach (Clipping c in _id2Clipping.Values)
-			{
-				Panel.SetZIndex(c.R, 0);
-				Panel.SetZIndex(c.T, 2);
-			}
+			foreach (Clipping c in _id2Clipping.Values) c.Deselect();
 
-			Clipping selectedClipping = _id2Clipping[id];
-			selectedClipping.R.Stroke = SelectedColor;
-			selectedClipping.T.Foreground = SelectedColor;
-			Panel.SetZIndex(selectedClipping.R, 1); //bring to top			
-			Panel.SetZIndex(selectedClipping.T, 3); //text on top of rectangle
+			_id2Clipping[id].Select();
 		}
 
 		public void DeselectRectangle(int id)
 		{
-			Clipping selectedClipping = _id2Clipping[id];
-			selectedClipping.R.Stroke = NotSelectedColor;
-			selectedClipping.T.Foreground = NotSelectedColor;
+			_id2Clipping[id].Deselect();
 		}
 
 		public void Clear()
@@ -104,7 +156,7 @@ namespace PartituraMagica.App
 
 		public Point DrawImage(string path)
 		{
-			GreyImage bm = LoadImage(path);
+			var bm = LoadImage(path);
 
 			Image image = new Image
 			{
@@ -124,42 +176,29 @@ namespace PartituraMagica.App
 
 		public void LabelRectangle(int id, string label)
 		{
-			Clipping i = _id2Clipping[id];
-			if (string.IsNullOrEmpty(label))
-			{
-				//hide i.t
-				i.T.Visibility = Visibility.Collapsed;
-			}
-			else
-			{
-				i.T.Text = label;
-				i.T.Visibility = Visibility.Visible;
-			}
+			_id2Clipping[id].Label(label);
 		}
 
-		public IGreyImage CurrentImage => GetImage(_currentImagePath);
+		public IGreyImage CurrentImage => LoadImage(_currentImagePath);
 
-		public IGreyImage GetImage(string path)
+		IGreyImage IImageLoader.LoadImage(string path)
 		{
 			return LoadImage(path);
 		}
 
-		private static void SetCoords(Clipping c, Rect coordinates)
+		public void AddRectangle(int id, Rect coordinates)
 		{
-			double thickness = c.R.StrokeThickness;
-			double left = coordinates.X - thickness / 2.0;
-			double top = coordinates.Y - thickness / 2.0;
+			//Trace.WriteLine("DrawingPanel.AddRectangle:" + coordinates);
 
-			c.R.Width = coordinates.Width + thickness;
-			c.R.Height = coordinates.Height + thickness;
-			Canvas.SetLeft(c.R, left);
-			Canvas.SetTop(c.R, top);
-			Canvas.SetLeft(c.T, left + Page.ClickTolerance);
-			Canvas.SetTop(c.T, top + Page.ClickTolerance);
+			Clipping clipping = new Clipping();
+			clipping.SetCoordinates(coordinates);
+			clipping.AddTo(_pageCanvas);
+			_id2Clipping[id] = clipping;
 		}
 
-		private GreyImage LoadImage(string path)
+		public GreyImage LoadImage(string path)
 		{
+			if (path == null) return null;
 			if (!_imageCache.ContainsKey(path))
 			{
 				BitmapImage bm = new BitmapImage();

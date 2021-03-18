@@ -26,14 +26,6 @@ namespace PartituraMagica.Test
 			Clear();
 		}
 
-		public void AddRectangle(int id, Rect coordinates)
-		{
-			Rectangles.Add(id, coordinates);
-			Selection.Add(id, false);
-			Labels.Add(id, null);
-			LastId = id;
-		}
-
 		public void AddOrUpdateRectangle(int id, Rect coordinates)
 		{
 			if (Rectangles.ContainsKey(id))
@@ -89,9 +81,17 @@ namespace PartituraMagica.Test
 
 		public IGreyImage CurrentImage => new FakeImage();
 
-		public IGreyImage GetImage(string path)
+		public IGreyImage LoadImage(string path)
 		{
 			return new FakeImage();
+		}
+
+		public void AddRectangle(int id, Rect coordinates)
+		{
+			Rectangles.Add(id, coordinates);
+			Selection.Add(id, false);
+			Labels.Add(id, null);
+			LastId = id;
 		}
 
 		public bool IsSelected(Rect theirs)

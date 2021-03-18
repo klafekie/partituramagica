@@ -174,6 +174,7 @@ namespace PartituraMagica.App
 					break;
 				case Shape.BoxTopMargin:
 				case Shape.BoxBottomMargin:
+				case Shape.BoxCenterY:
 					cursor = Cursors.SizeNS;
 					break;
 				case Shape.BoxRightTopCorner:

@@ -34,7 +34,7 @@ namespace PartituraMagica.Lib.PageEditing
 		public void Execute()
 		{
 			Debug.Assert(CanExecute());
-			//Trace.TraceInformation("Adding Box at " + r);
+			//TODO p2 passing Panel and currentPageindex as parameters should be replaced by DI
 			P.Active.Partitura.AddBox(P.Active.CurrentPageIndex,
 				Rectangle, P.Panel);
 		}
@@ -45,12 +45,11 @@ namespace PartituraMagica.Lib.PageEditing
 			    _mainWindow.CurrentMousePosition.Value.X < 0D ||
 			    _mainWindow.CurrentMousePosition.Value.Y < 0D) return new Rect(0, 0, 0, 0);
 
-			double defaultWidth = 2 * Page.ClickTolerance + 1;
-			double defaultHeight = defaultWidth;
-			Rect r = new Rect(_mainWindow.CurrentMousePosition.Value.X - defaultWidth,
-				_mainWindow.CurrentMousePosition.Value.Y - defaultHeight,
-				defaultWidth, defaultHeight);
-			return r;
+			return new Rect(
+				_mainWindow.CurrentMousePosition.Value.X - Box.MinDistanceX,
+				_mainWindow.CurrentMousePosition.Value.Y - Box.MinDistanceY,
+				Box.MinDistanceX,
+				Box.MinDistanceY);
 		}
 	}
 }

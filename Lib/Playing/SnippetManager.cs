@@ -58,18 +58,20 @@ namespace PartituraMagica.Lib.Playing
 
 		public void RemoveAllSnippets()
 		{
-			//TODO confirm from user
-			_snippets.Clear();
-			HasChanges = true;
-			Finish();
+			if (_playerView.ShowConfirmDialog("Do you want to delete all snippets?"))
+			{
+				_snippets.Clear();
+				HasChanges = true;
+				Finish();
+			}
 		}
 
 		public void RemoveCurrentSnippet()
 		{
 			int? index = GetCurrentPlayingSnippet();
-			if (index == null) return;
+			if (index == null || !_playerView.ShowConfirmDialog("Do you want to delete current snippet?"))
+				return;
 
-			//TODO confirm from user
 			HasChanges = true;
 			_snippets.RemoveAt(index.Value);
 			Finish();

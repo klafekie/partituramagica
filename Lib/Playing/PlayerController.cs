@@ -186,6 +186,7 @@ namespace PartituraMagica.Lib.Playing
 		{
 			_positionHolder.XPos = 0;
 			_speedManager.IsPaused = false;
+			_navigator.FirstPartClicked();
 		}
 
 		public bool IsPartituraFinished()

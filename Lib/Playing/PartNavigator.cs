@@ -29,7 +29,8 @@ namespace PartituraMagica.Lib.Playing
 			_playerPosition.ViewHasScrolled += OnViewHasScrolled;
 			_calculator = new PartPositionCalculator(partitura);
 			_playerView = playerView;
-			_playerView.MarkActivePart(0);
+			_currentPartIndex =
+				-1; //make sure that change event is triggered so that correct part button is selected in player
 			CurrentPartIndexChanged += OnCurrentPartIndexChanged;
 		}
 

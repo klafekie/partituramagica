@@ -94,7 +94,7 @@ namespace PartituraMagica
 				}
 			}
 
-			internal IEnumerable<KeyValuePair<int, Rect>> GetAllCoordsWithIds(int boxId, Size boxSize)
+			internal IEnumerable<KeyValuePair<int, Rect>> GetAllCoordsWithIds(int boxId, Rect box)
 			{
 				List<KeyValuePair<int, Rect>> result = new List<KeyValuePair<int, Rect>>();
 				KeyValuePair<double, int> lastSplitter = default(KeyValuePair<double, int>);
@@ -119,8 +119,8 @@ namespace PartituraMagica
 
 					result.Add(
 							new KeyValuePair<int, Rect>(id,
-									new Rect(x, 0, width, boxSize.Height)));
-
+									new Rect(box, x, 0, width, box.Height)));
+					
 					lastSplitter = entry;
 					i++;
 				}
@@ -128,19 +128,19 @@ namespace PartituraMagica
 				if (i == 0) //no splitters at all
 				{
 					x = 0D;
-					width = boxSize.Width;
+					width = box.Width;
 					id = boxId;
 				}
 				else //rightmost rect
 				{
 					x = lastSplitter.Key;
-					width = boxSize.Width - lastSplitter.Key;
+					width = box.Width - lastSplitter.Key;
 					id = lastSplitter.Value;
 				}
 
 				result.Add(
 						new KeyValuePair<int, Rect>(id,
-								new Rect(x, 0D, width, boxSize.Height)));
+								new Rect(box, x, 0D, width, box.Height)));
 
 				return result;
 			}
@@ -218,7 +218,7 @@ namespace PartituraMagica
 		public Box(Box rhs)
 		{
 			this.id = rhs.id;
-			this.coords = new Rect(rhs.coords);
+			this.coords = rhs.coords; //no need for deep copying cause Rect is immutable
 			this.splitters = new SplitterList(rhs.splitters);
 
 			this.selectedId = rhs.selectedId;
@@ -267,18 +267,25 @@ namespace PartituraMagica
 		 * the minimum distance between to objects (boxes or splitters)
 		 * on the screen 
 		 */
-		private static double MinItemDistance
+		public static double MinDistanceX
 		{
 			get
 			{
 				return 2.0 * Page.ClickTolerance + 1.0;
 			}
 		}
+		public static double MinDistanceY
+		{
+			get
+			{
+				return 3.0 * Page.ClickTolerance + 1.0; //allow space for the centerY line
+			}
+		}
 
 		private Rect MakeAbsolute(Rect r)
 		{
-			r.OuterRect = this.coords.OuterRect;
-			return r.Move(this.coords.X, this.coords.Y);
+			Rect safeRect = new Rect(r, outerRect: coords.OuterRect);
+			return safeRect.Move(coords.X, coords.Y);
 		}
 
 		private double MakeRelative(double abs)
@@ -293,7 +300,7 @@ namespace PartituraMagica
 				double borderLine = MakeRelative(this.coords.X);
 				borderLine = Math.Max(borderLine,
 						this.splitters.RightmostPos);
-				return new Size(borderLine + MinItemDistance, MinItemDistance);
+				return new Size(borderLine + MinDistanceX, MinDistanceY);
 			}
 		}
 
@@ -330,21 +337,32 @@ namespace PartituraMagica
 			{
 				column = 2;
 			}
+			
 			if (pos.Y <= inner.Top)
 			{
 				row = 0;
 			}
-			else if (pos.Y < inner.Bottom)
+			else if (pos.Y < inner.Top + inner.CenterY - Page.ClickTolerance)
 			{
 				row = 1;
 			}
-			else
+			else if (pos.Y < inner.Top + inner.CenterY + Page.ClickTolerance)
 			{
 				row = 2;
+			}
+			else if (pos.Y < inner.Bottom)
+			{
+				row = 3;
+			}
+			else
+			{
+				row = 4;
 			}
 
 			Shape[,] shapeTypeGrid = {
 						 {Shape.BoxLeftTopCorner, Shape.BoxTopMargin, Shape.BoxRightTopCorner},
+						 {Shape.BoxLeftMargin, Shape.BoxContent, Shape.BoxRightMargin},
+						 {Shape.BoxLeftMargin, Shape.BoxCenterY, Shape.BoxRightMargin},
 						 {Shape.BoxLeftMargin, Shape.BoxContent, Shape.BoxRightMargin},
 						 {Shape.BoxLeftBottomCorner, Shape.BoxBottomMargin, Shape.BoxRightBottomCorner}
 					};
@@ -393,7 +411,10 @@ namespace PartituraMagica
 					result = this.coords.AddRight(deltaX, this.MinBoxSize);
 					break;
 				case Shape.BoxRightBottomCorner:
-					result = this.coords.AddRightBottom(deltaX, deltaY, this.MinBoxSize);
+					//for convenience the centerY line is adjusted when tearing at right bottom corner.
+					//this happesn for newly created boxes. 
+					//TODO would be better to have a "isNewManuallyCreated" Flag for boxes
+					result = this.coords.AddRightBottom(deltaX, deltaY, this.MinBoxSize, adjustCenterY: true);
 					break;
 				case Shape.BoxBottomMargin:
 					result = this.coords.AddBelow(deltaY, this.MinBoxSize);
@@ -408,6 +429,9 @@ namespace PartituraMagica
 					int splitterId = FindSplitterAt(lastPos);
 					if (splitterId >= 0)
 						splitterMoved = this.splitters.MoveSplitter(deltaX, splitterId, this.coords.Size);
+					break;
+				case Shape.BoxCenterY:
+					result = this.coords.AdjustCenterY(deltaY);
 					break;
 				default:
 					throw new ArgumentException("unexpected shapeType");
@@ -544,10 +568,16 @@ namespace PartituraMagica
 		internal IEnumerable<KeyValuePair<int, Rect>> GetAllCoordsWithIds()
 		{
 			IEnumerable<KeyValuePair<int, Rect>> relResults =
-					this.splitters.GetAllCoordsWithIds(this.Id, this.coords.Size);
+					this.splitters.GetAllCoordsWithIds(this.Id, this.coords);
 
 			var result = from entry in relResults
 									 select new KeyValuePair<int, Rect>(entry.Key, MakeAbsolute(entry.Value));
+			//foreach (KeyValuePair<int, Rect> keyValuePair in result)
+			//{
+			//	Trace.WriteLine("Box.GetAllCoordsWithIds():" + keyValuePair.Value);
+			//}
+			
+
 			return result;
 		}
 

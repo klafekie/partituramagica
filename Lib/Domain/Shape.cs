@@ -12,6 +12,7 @@
 		BoxRightTopCorner,
 		BoxLeftTopCorner,
 		BoxContent,
-		BoxSplitter
+		BoxSplitter,
+		BoxCenterY
 	}
 }

@@ -25,7 +25,8 @@ namespace PartituraMagica.App
 		private readonly Direct3D _d3D;
 		private readonly ConcurrentQueue<(Device, Texture[])> _disposables;
 
-		private readonly ConcurrentDictionary<string, Texture> _textures;
+		private readonly ConcurrentDictionary<string, (bool isRequested, Texture texture)> _textures;
+
 
 		private Device _device;
 		private State _state;
@@ -33,9 +34,10 @@ namespace PartituraMagica.App
 		public TextureCache()
 		{
 			_state = State.Idle;
-			_textures = new ConcurrentDictionary<string, Texture>();
+			_textures = new ConcurrentDictionary<string, (bool, Texture)>();
 			_disposables = new ConcurrentQueue<(Device, Texture[])>();
 			_d3D = new Direct3D();
+
 			Task.Run(WorkerLoop);
 		}
 
@@ -52,14 +54,14 @@ namespace PartituraMagica.App
 		public void AddImage(string imageFile)
 		{
 			Trace.TraceInformation("Adding image file: " + imageFile);
-			_textures.TryAdd(imageFile, null);
+			_textures.TryAdd(imageFile, (isRequested: false, texture: null));
 		}
 
 		public void ClearAllImages()
 		{
 			Trace.TraceInformation("clear existing images");
 			//only enqueue the textures for disposing
-			_disposables.Enqueue((null, _textures.Values.ToArray()));
+			_disposables.Enqueue((null, _textures.Values.Select(v => v.texture).ToArray()));
 			_textures.Clear();
 		}
 
@@ -69,8 +71,15 @@ namespace PartituraMagica.App
 			if (_device != null)
 			{
 				Trace.TraceInformation("enqueuing disposable device");
-				_disposables.Enqueue((_device, _textures.Values.ToArray()));
-				var knownImages = _textures.Keys.OrderBy(k => k).ToArray();
+				_disposables.Enqueue((_device, _textures.Values.Select(v => v.texture).ToArray()));
+				//make a copy before ordering to avoid concurrency issues
+				var knownImages = _textures
+					.ToArray()
+					.OrderByDescending(pair => pair.Value.isRequested)
+					.ThenBy(pair => pair.Key)
+					.Select(pair => pair.Key)
+					.ToArray();
+
 				_textures.Clear();
 				foreach (string image in knownImages) AddImage(image);
 			}
@@ -106,18 +115,30 @@ namespace PartituraMagica.App
 
 		public object GetTexture(string image)
 		{
-			//Trace.TraceInformation("Cache.Get() looking for: " + image);
-			int attempts = 0;
-			Texture texture;
-			while ((!_textures.TryGetValue(image, out texture) || texture == null) && attempts < 100)
+			if (!_textures.TryGetValue(image, out var tuple))
 			{
-				Trace.TraceInformation("Cache.Get() waiting for: " + image);
-				attempts++;
-				Thread.Sleep(100);
+				Trace.TraceError("Call AddImage() before trying to get the corresponding texture");
+				return null;
 			}
 
-			//Trace.TraceInformation("Cache.Get() found: " + image);
-			return texture;
+			if (tuple.texture != null) return tuple.texture;
+
+			Trace.TraceInformation("Requesting priority for: " + image);
+			//this will update the value in dictionary only if it is still (false, null).
+			//so this doesn't harm if in the meantime the worker thread has set the texture.
+			_textures.TryUpdate(image, (true, null), (false, null));
+
+			int attempts = 0;
+			do
+			{
+				tuple = _textures[image];
+				if (tuple.texture != null) return tuple.texture;
+				Trace.TraceInformation("GetTexture() waiting for: " + image);
+				attempts++;
+				Thread.Sleep(100);
+			} while (attempts < 150);
+
+			return null; //give up
 		}
 
 		private void WorkerLoop()
@@ -126,9 +147,12 @@ namespace PartituraMagica.App
 			{
 				while (_state != State.Stopping)
 				{
-					string nextImage = _textures
-						.OrderBy(pair => pair.Key)
-						.FirstOrDefault(pair => pair.Value == null).Key;
+					var keyValuePairs = _textures
+						.ToArray()
+						.OrderByDescending(pair => pair.Value.isRequested)
+						.ThenBy(pair => pair.Key);
+					string nextImage = keyValuePairs
+						.FirstOrDefault(pair => pair.Value.texture == null).Key;
 
 					if (nextImage != null && _device != null)
 					{
@@ -143,7 +167,7 @@ namespace PartituraMagica.App
 						{
 							//only use the texture if current device hasn't changed and we are not about to dispose the texture cache
 							Trace.TraceInformation("Using Texture");
-							_textures.TryUpdate(nextImage, texture, null);
+							_textures[nextImage] = (false, texture);
 						}
 						else
 						{
@@ -157,8 +181,9 @@ namespace PartituraMagica.App
 				}
 
 				Trace.TraceInformation("left workerloop.");
-				Trace.TraceInformation($"disposing {_textures.Values.Count(t => t != null)} textures and current device");
-				foreach (Texture texture in _textures.Values) texture?.Dispose();
+				Trace.TraceInformation(
+					$"disposing {_textures.Values.Count(t => t.texture != null)} textures and current device");
+				foreach (Texture texture in _textures.Values.Select(v => v.texture)) texture?.Dispose();
 				DisposeOldStuff();
 				_textures.Clear();
 				_device?.Dispose();

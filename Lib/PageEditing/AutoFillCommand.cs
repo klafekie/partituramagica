@@ -9,14 +9,17 @@ namespace PartituraMagica.Lib.PageEditing
 {
 	public class AutoFillCommand : PartituraCommandBase, ICommand
 	{
+		private readonly BoxLayouter _boxLayouer;
 		private readonly ICommandFactory _commandFactory;
-		private readonly IMainWindow _mainWindow;
+		private readonly SystemFinder _systemFinder;
 
-		public AutoFillCommand(ICommandParameters p, IMainWindow mainWindow, ICommandFactory commandFactory)
+		public AutoFillCommand(ICommandParameters p, ICommandFactory commandFactory, BoxLayouter boxLayouer,
+			SystemFinder systemFinder)
 			: base(p)
 		{
-			_mainWindow = mainWindow;
 			_commandFactory = commandFactory;
+			_boxLayouer = boxLayouer;
+			_systemFinder = systemFinder;
 		}
 
 		public bool CanExecute()
@@ -27,7 +30,11 @@ namespace PartituraMagica.Lib.PageEditing
 		public void Execute()
 		{
 			Debug.Assert(CanExecute());
-			var boxes = new BoxFinder(P.Panel.CurrentImage).Execute();
+			var systems = _systemFinder.DetectSystems();
+			foreach (var system in systems) Trace.WriteLine("AutoFillCommand Systems:" + system);
+
+			var boxes = _boxLayouer.Execute(systems);
+			foreach (var box in boxes) Trace.WriteLine("AutoFillCommand boxes:" + box);
 
 			foreach (Rect r in boxes)
 				_commandFactory.Create<AddBoxCommand>(c => c.Rectangle = r).TryExecute();

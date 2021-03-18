@@ -59,7 +59,7 @@ namespace PartituraMagica.App.Player
 			foreach (Clipping c in _playerController.GetClippings())
 			{
 				string path = paths[c.PageIndex];
-				IGreyImage image = _imageLoader.GetImage(path);
+				IGreyImage image = _imageLoader.LoadImage(path);
 				ClippingD3D line = new ClippingD3D(image, c.Coords, _configuration, _textureCache);
 				_clippingD3Ds.Add(line);
 			}

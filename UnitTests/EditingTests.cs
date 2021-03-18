@@ -32,28 +32,6 @@ namespace PartituraMagica.Test
 
 		protected int CurrentPageIndex;
 
-
-		public void RunAll()
-		{
-			Setup();
-			TestAddRemoveBoxes();
-			Setup();
-			TestUpdateRightMargin();
-			Setup();
-			TestUpdateMultipleBoxes();
-			Setup();
-			TestSplitBox();
-			Setup();
-			TestUpdateSplittedBox();
-			Setup();
-			TestAddRemoveManyBoxes();
-			Setup();
-			TestMoveSplitters();
-			Setup();
-			TestLabel();
-			TearDown();
-		}
-
 		//@todo p3 currently there is no reverse op for Splitting a Box
 
 		private void LabelAt(double x, double y)

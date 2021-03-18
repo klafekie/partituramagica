@@ -8,6 +8,7 @@ using FontAwesome.Sharp;
 using PartituraMagica.Lib.Domain;
 using PartituraMagica.Lib.Playing;
 using SlimDX;
+using DialogResult = System.Windows.Forms.DialogResult;
 using IWin32Window = System.Windows.Forms.IWin32Window;
 
 #endregion
@@ -50,6 +51,12 @@ namespace PartituraMagica.App.Player
 		public void Init()
 		{
 			_scrollingPanel.Init(panel1.Handle);
+		}
+
+		public bool ShowConfirmDialog(string message)
+		{
+			var result = MessageBox.Show(message, "Please confirm", MessageBoxButtons.OKCancel);
+			return result == DialogResult.OK;
 		}
 
 		public void StartScrolling(IPlayedPartitura partitura, IPlayerController playerController)

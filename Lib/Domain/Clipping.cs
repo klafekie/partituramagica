@@ -1,3 +1,9 @@
+#region usings
+
+using JetBrains.Annotations;
+
+#endregion
+
 namespace PartituraMagica.Lib.Domain
 {
 	/// <summary>
@@ -26,11 +32,12 @@ namespace PartituraMagica.Lib.Domain
 		public Clipping(Clipping rhs)
 		{
 			PageIndex = rhs.PageIndex;
-			Coords = new Rect(rhs.Coords);
+			Coords = rhs.Coords;
 			Id = rhs.Id;
 		}
 
 		//c'tor for testing
+		[UsedImplicitly]
 		public Clipping(int pageIndex, double x, double y, double width, double height)
 		{
 			PageIndex = pageIndex;

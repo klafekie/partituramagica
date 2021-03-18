@@ -87,9 +87,9 @@ namespace PartituraMagica
 			int id = ++largestBoxIdTillNow;
 
 			//this guarantess that the box cannot be moved out of the page area:
-			coords.OuterRect = new Rect(0, 0, pageWith, pageHeight);
+			var safeRect = new Rect(coords, outerRect: new Rect(0, 0, pageWith, pageHeight));
 
-			Box b = new Box(id, coords);
+			Box b = new Box(id, safeRect);
 			boxes.Add(id, b);
 			PaintPage(panel, labelProvider);
 			SelectBoxAt(b.Coords.TopLeft, panel);
@@ -113,7 +113,7 @@ namespace PartituraMagica
 				if (dist < distance)
 				{
 					distance = dist;
-					nearestBoxPos = b.Coords.LeftTop;
+					nearestBoxPos = b.Coords.TopLeft;
 				}
 			}
 			//works also when there are no boxes remaining...

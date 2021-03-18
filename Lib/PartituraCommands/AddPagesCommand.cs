@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using PartituraMagica.Lib.Domain;
 using PartituraMagica.Lib.PageEditing;
+using PartituraMagica.Lib.Playing;
 
 #endregion
 
@@ -14,12 +15,15 @@ namespace PartituraMagica.Lib.PartituraCommands
 	{
 		private readonly ICommandFactory _commandFactory;
 		private readonly IMainWindow _mainWindow;
+		private readonly ITextureCache _textureCache;
 
-		public AddPagesCommand(ICommandParameters p, ICommandFactory commandFactory, IMainWindow mainWindow)
+		public AddPagesCommand(ICommandParameters p, ICommandFactory commandFactory, IMainWindow mainWindow,
+			ITextureCache textureCache)
 			: base(p)
 		{
 			_commandFactory = commandFactory;
 			_mainWindow = mainWindow;
+			_textureCache = textureCache;
 		}
 
 		public bool CanExecute()
@@ -37,10 +41,11 @@ namespace PartituraMagica.Lib.PartituraCommands
 				foreach (var sourceFile in sourceFiles)
 				{
 					int index = P.Active.GetPageCount();
-					string destFile = P.Active.GetImagePath(index);
-					Debug.Assert(sourceFile != destFile,
+					string destinationFile = P.Active.GetImagePath(index);
+					Debug.Assert(sourceFile != destinationFile,
 						"cause the index of destFile is always higher than the index of all existing image files");
-					P.FileSystem.Copy(sourceFile, destFile);
+					P.FileSystem.Copy(sourceFile, destinationFile);
+					_textureCache.AddImage(destinationFile);
 					_commandFactory.Create<ShowPageCommand>(c => c.Index = index).TryExecute();
 
 					if (P.Active.CurrentPageIndex == index)

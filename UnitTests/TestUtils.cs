@@ -8,6 +8,7 @@ using Moq;
 using NUnit.Framework;
 using PartituraMagica.Lib.Domain;
 using PartituraMagica.Lib.PageEditing;
+using PartituraMagica.Lib.Playing;
 
 #endregion
 
@@ -22,6 +23,7 @@ namespace PartituraMagica.Test
 		public Mock<IEditedPartitura> activePartitura;
 		public Mock<FakeFileSystem> fileSystem;
 		public Mock<IMainWindow> mainWindow;
+		public Mock<ITextureCache> textureCache;
 
 		public virtual void Setup()
 		{
@@ -33,6 +35,7 @@ namespace PartituraMagica.Test
 
 			fileSystem = new Mock<FakeFileSystem> {CallBase = true};
 			mainWindow = new Mock<IMainWindow>();
+			textureCache = new Mock<ITextureCache>();
 
 			var container = new Container(new TestServiceRegistry(this));
 			Factory = new CommandFactory(container);
@@ -116,6 +119,7 @@ namespace PartituraMagica.Test
 
 
 		public IMainWindow MainWindow => mainWindow.Object;
+		public ITextureCache TextureCache => textureCache.Object;
 
 
 		public Shape GetShapeAt(Point currentPos)
@@ -135,6 +139,8 @@ namespace PartituraMagica.Test
 		{
 			For<IMainWindow>().Use(utils.MainWindow).Singleton();
 			For<ICommandParameters>().Use(utils).Singleton();
+			For<IGreyImage>().Use(x => x.GetInstance<ICommandParameters>().Panel.CurrentImage);
+			For<ITextureCache>().Use(utils.TextureCache).Singleton();
 			Scan(_ =>
 			{
 				_.LookForRegistries();

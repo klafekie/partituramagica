@@ -42,6 +42,9 @@
     <Reference Include="BaselineTypeDiscovery, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\BaselineTypeDiscovery.1.1.0\lib\net461\BaselineTypeDiscovery.dll</HintPath>
     </Reference>
+    <Reference Include="JetBrains.Annotations, Version=2020.3.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <HintPath>..\packages\JetBrains.Annotations.2020.3.0\lib\net20\JetBrains.Annotations.dll</HintPath>
+    </Reference>
     <Reference Include="Lamar, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Lamar.5.0.0\lib\netstandard2.0\Lamar.dll</HintPath>
     </Reference>
@@ -127,7 +130,8 @@
     <Compile Include="PageEditing\ABCLabelProvider.cs" />
     <Compile Include="PageEditing\AddBoxCommand.cs" />
     <Compile Include="PageEditing\AutoFillCommand.cs" />
-    <Compile Include="PageEditing\BoxFinder.cs" />
+    <Compile Include="PageEditing\SystemFinder.cs" />
+    <Compile Include="PageEditing\BoxLayouter.cs" />
     <Compile Include="PageEditing\UnLabelPartCommand.cs" />
     <Compile Include="PageEditing\LabelPartCommand.cs" />
     <Compile Include="PageEditing\RemoveBoxCommand.cs" />

@@ -22,8 +22,8 @@ namespace PartituraMagica.App
 		private struct PositionedColoredTextured
 		{
 			public float X;
-			public readonly float Y;
-			private readonly float Z;
+			public float Y;
+			public readonly float Z;
 			public int Color;
 			public float Tu;
 			public float Tv;
@@ -76,29 +76,35 @@ namespace PartituraMagica.App
 				//Debug.WriteLine("offset: " + offset.ToString());
 				DataStream stream = _mesh.LockVertexBuffer(LockFlags.None);
 
-				float width = _image.Width * 96F / (float) _image.DpiX;
-				float height = _image.Height * 96F / (float) _image.DpiY;
+				float imageWidth = _image.Width * 96F / (float) _image.DpiX;
+				float imageHeight = _image.Height * 96F / (float) _image.DpiY;
 
 				var vertices = new PositionedColoredTextured[_mesh.VertexCount];
 				for (int i = 0; i < _mesh.VertexCount; ++i)
+				{
 					vertices[i] = stream.Read<PositionedColoredTextured>();
-				//var vertice = vertices[i];
-				//Debug.WriteLine(String.Format("{0}: ({1}; {2}; {3}) u:{4} v:{5}", i, vertice.X, vertice.Y, vertice.Z, vertice.Tu, vertice.Tv));
+					var vertice = vertices[i];
+					//Trace.WriteLine($"{i}: ({vertice.X}; {vertice.Y}; {vertice.Z}) u:{vertice.Tu} v:{vertice.Tv}");
+				}
+
 				_mesh.UnlockVertexBuffer();
 				stream = _mesh.LockVertexBuffer(LockFlags.None);
+				float deltaY = (float) (_coords.Height / 2D - _coords.CenterY);
 				for (int i = 0; i < _mesh.VertexCount; ++i)
 				{
 					var vertice = vertices[i];
-					float left = (float) _coords.X / width;
-					float top = (float) _coords.Y / height;
-					float right = (float) _coords.Right / width;
-					float bottom = (float) _coords.Bottom / height;
+					float left = (float) _coords.X / imageWidth;
+					float top = (float) _coords.Y / imageHeight;
+					float right = (float) _coords.Right / imageWidth;
+					float bottom = (float) _coords.Bottom / imageHeight;
 
 					vertice.Color = _configuration.Color.ToArgb();
 					vertice.Tu = vertice.X >= 0 ? right : left;
 					vertice.Tv = vertice.Y >= 0 ? top : bottom;
 					vertice.X += offset + (float) _coords.Width / 2F;
-					//Debug.WriteLine(String.Format("{0}: ({1}; {2}; {3}) u:{4} v:{5}", i, vertice.X, vertice.Y, vertice.Z, vertice.Tu, vertice.Tv));
+					vertice.Y -= deltaY;
+
+					//Trace.WriteLine($"{i}: ({vertice.X}; {vertice.Y}; {vertice.Z}) u:{vertice.Tu} v:{vertice.Tv}");
 
 					stream.Write(vertice);
 				}
@@ -111,9 +117,12 @@ namespace PartituraMagica.App
 
 		public void Render(Device dev)
 		{
-			if (_mesh == null) return;
+			if (_mesh == null) throw new Exception("mesh not initialized");
 
-			dev.SetTexture(0, (Texture) _cache.GetTexture(_image.Path));
+			Texture texture = (Texture) _cache.GetTexture(_image.Path);
+
+			if (texture == null) throw new Exception("Couldn't load texture");
+			dev.SetTexture(0, texture);
 
 			// Set the 'blending mode': how colors are mixed.
 			// Note: the following three calls (ColorOperation, ColorArg1, ColorArg2 belong together [according to
