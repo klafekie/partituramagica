@@ -108,9 +108,9 @@ namespace PartituraMagica.Lib.Playing
 			_zoomManager.ZoomOut(xOnly);
 		}
 
-		public void GetNextZoom(out float zoomX, out float zoomY)
+		public void GetNextZoomAndYPosition(out float zoomX, out float zoomY, out float yPosition)
 		{
-			_zoomManager.GetNextZoom(out zoomX, out zoomY);
+			_zoomManager.GetNextZoom(out zoomX, out zoomY, out yPosition);
 		}
 
 		public void StartSnippetRecording()
@@ -162,6 +162,16 @@ namespace PartituraMagica.Lib.Playing
 		public void RemoveCurrentSnippet()
 		{
 			_snippetManager.RemoveCurrentSnippet();
+		}
+
+		public void MoveUp()
+		{
+			_zoomManager.MoveUp();
+		}
+
+		public void MoveDown()
+		{
+			_zoomManager.MoveDown();
 		}
 
 		public void Pause()

@@ -38,7 +38,7 @@ namespace PartituraMagica.Lib.Playing
 
 		void ZoomIn(bool xOnly);
 		void ZoomOut(bool xOnly);
-		void GetNextZoom(out float zoomX, out float zoomY);
+		void GetNextZoomAndYPosition(out float zoomX, out float zoomY, out float yPosition);
 
 		void StartSnippetRecording();
 		void StopSnippetRecording();
@@ -52,5 +52,7 @@ namespace PartituraMagica.Lib.Playing
 
 		void RemoveAllSnippets();
 		void RemoveCurrentSnippet();
+		void MoveUp();
+		void MoveDown();
 	}
 }

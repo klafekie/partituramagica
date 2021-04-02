@@ -7,6 +7,9 @@
 		//with the help of xZoomdelta and yzoomdelta we implement a 
 		//smooth change of the zoom. See GetNextZoom()
 		private int _xZoomDelta;
+
+		private float _yPosition;
+		private int _yPositionDelta;
 		private float _yZoom;
 		private int _yZoomDelta;
 
@@ -30,6 +33,16 @@
 			}
 		}
 
+		public float YPosition
+		{
+			get => _yPosition;
+			set
+			{
+				_yPosition = value;
+				_yPositionDelta = 0;
+			}
+		}
+
 		public void ZoomOut(bool xOnly)
 		{
 			_xZoomDelta = -15;
@@ -42,14 +55,28 @@
 			if (!xOnly) _yZoomDelta = 15;
 		}
 
+		public void Init(PlayerMemento memento)
+		{
+			XZoom = memento.XZoom;
+			YZoom = memento.YZoom;
+			YPosition = memento.YPosition;
+		}
+
+		public void ToMemento(PlayerMemento memento)
+		{
+			memento.XZoom = XZoom;
+			memento.YZoom = YZoom;
+			memento.YPosition = YPosition;
+		}
+
 		/** 
         * This method is called each time the current view is rendered.
         * When the user has increased the zoom, the new value is "smoothly"
         * reached. That is, on each call to this method the returned value is 
         * a bit bigger until the actual target zoom value is reached.
-        * This results in a nice "animated" zoom in/out behaviour
+        * This results in a nice "animated" zoom it behaviour
         */
-		public void GetNextZoom(out float zoomXRes, out float zoomYRes)
+		public void GetNextZoom(out float zoomXRes, out float zoomYRes, out float yPositionRes)
 		{
 			if (_xZoomDelta > 0)
 			{
@@ -75,20 +102,31 @@
 				_yZoomDelta++;
 			}
 
+			if (_yPositionDelta > 0)
+			{
+				_yPosition -= 0.01F;
+				_yPositionDelta--;
+			}
+
+			if (_yPositionDelta < 0)
+			{
+				_yPosition += 0.01F;
+				_yPositionDelta++;
+			}
+
 			zoomXRes = _xZoom;
 			zoomYRes = _yZoom;
+			yPositionRes = _yPosition;
 		}
 
-		public void Init(PlayerMemento memento)
+		public void MoveUp()
 		{
-			XZoom = memento.XZoom;
-			YZoom = memento.YZoom;
+			_yPositionDelta = -15;
 		}
 
-		public void ToMemento(PlayerMemento memento)
+		public void MoveDown()
 		{
-			memento.XZoom = XZoom;
-			memento.YZoom = YZoom;
+			_yPositionDelta = 15;
 		}
 	}
 }

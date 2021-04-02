@@ -12,9 +12,11 @@
         * a bit bigger until the actual target zoom value is reached.
         * This results in a nice "animated" zoom in/out behaviour
         */
-		void GetNextZoom(out float zoomXRes, out float zoomYRes);
+		void GetNextZoom(out float zoomX, out float zoomY, out float yPosition);
 
 		void Init(PlayerMemento memento);
 		void ToMemento(PlayerMemento memento);
+		void MoveUp();
+		void MoveDown();
 	}
 }

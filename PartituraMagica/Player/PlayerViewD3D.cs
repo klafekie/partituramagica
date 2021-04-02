@@ -364,5 +364,15 @@ namespace PartituraMagica.App.Player
 		{
 			_playerController.RemoveCurrentSnippet();
 		}
+
+		private void btnMoveUp_Click(object sender, EventArgs e)
+		{
+			_playerController.MoveUp();
+		}
+
+		private void btnMoveDown_Click(object sender, EventArgs e)
+		{
+			_playerController.MoveDown();
+		}
 	}
 }

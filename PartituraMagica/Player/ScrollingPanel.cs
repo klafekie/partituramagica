@@ -24,8 +24,6 @@ namespace PartituraMagica.App.Player
 		private readonly IPlayerController _playerController;
 		private readonly ITextureCache _textureCache;
 
-		private Direct3D _d3D;
-
 		private Device _device;
 
 		private bool _isRendering;
@@ -42,7 +40,6 @@ namespace PartituraMagica.App.Player
 			_isRendering = false;
 			foreach (ClippingD3D l in _clippingD3Ds) l.Dispose();
 			_clippingD3Ds.Clear();
-			_d3D?.Dispose();
 		}
 
 		public void Init(IntPtr handle)
@@ -100,11 +97,11 @@ namespace PartituraMagica.App.Player
 
 				_device.BeginScene();
 
-				_playerController.GetNextZoom(out float zoomX, out float zoomY);
+				_playerController.GetNextZoomAndYPosition(out float zoomX, out float zoomY, out float yPosition);
 
 				_device.SetTransform(TransformState.World,
 					Matrix.Scaling(zoomX, zoomY, 1F) *
-					Matrix.Translation((float) -_playerController.XPos * zoomX, 0, 0));
+					Matrix.Translation((float) -_playerController.XPos * zoomX, yPosition, 0));
 
 				var visibleClippings = _clippingD3Ds.Where(clip =>
 					clip.XPos >= _playerController.XPos - CLIPPING_LOAD_BUFFER &&
