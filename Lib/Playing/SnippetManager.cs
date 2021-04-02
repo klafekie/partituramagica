@@ -242,7 +242,6 @@ namespace PartituraMagica.Lib.Playing
 				i++;
 			}
 
-
 			_speedManager.IsPaused = true;
 			_playerView.ExecuteDelayed(1500, () => { _speedManager.IsPaused = false; });
 		}

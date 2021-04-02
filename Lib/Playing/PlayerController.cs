@@ -135,7 +135,8 @@ namespace PartituraMagica.Lib.Playing
 
 		public void StopPlayingSnippets()
 		{
-			_snippetManager.GoToEnd();
+			_snippetManager.Finish();
+			_speedManager.IsPaused = true;
 		}
 
 		public void GoToPreviousSnippet()
