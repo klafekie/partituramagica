@@ -99,7 +99,7 @@
             this.btnMoveDown});
 			this.toolStrip4.Location = new System.Drawing.Point(797, 0);
 			this.toolStrip4.Name = "toolStrip4";
-			this.toolStrip4.Size = new System.Drawing.Size(365, 55);
+			this.toolStrip4.Size = new System.Drawing.Size(334, 55);
 			this.toolStrip4.TabIndex = 3;
 			// 
 			// btnZoomIn
@@ -466,14 +466,13 @@
 			// 
 			this.btnMoveDown.AutoSize = false;
 			this.btnMoveDown.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.btnMoveDown.IconChar = FontAwesome.Sharp.IconChar.LevelUpAlt;
+			this.btnMoveDown.IconChar = FontAwesome.Sharp.IconChar.LongArrowAltDown;
 			this.btnMoveDown.IconColor = System.Drawing.Color.Black;
 			this.btnMoveDown.IconFont = FontAwesome.Sharp.IconFont.Auto;
 			this.btnMoveDown.IconSize = 40;
 			this.btnMoveDown.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
 			this.btnMoveDown.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.btnMoveDown.Name = "btnMoveDown";
-			this.btnMoveDown.Rotation = 180D;
 			this.btnMoveDown.Size = new System.Drawing.Size(52, 52);
 			this.btnMoveDown.Text = "Move Down";
 			this.btnMoveDown.Click += new System.EventHandler(this.btnMoveDown_Click);
@@ -482,7 +481,7 @@
 			// 
 			this.btnMoveUp.AutoSize = false;
 			this.btnMoveUp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.btnMoveUp.IconChar = FontAwesome.Sharp.IconChar.LevelUpAlt;
+			this.btnMoveUp.IconChar = FontAwesome.Sharp.IconChar.LongArrowAltUp;
 			this.btnMoveUp.IconColor = System.Drawing.Color.Black;
 			this.btnMoveUp.IconFont = FontAwesome.Sharp.IconFont.Auto;
 			this.btnMoveUp.IconSize = 40;

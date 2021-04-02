@@ -104,13 +104,13 @@
 
 			if (_yPositionDelta > 0)
 			{
-				_yPosition -= 0.01F;
+				_yPosition -= 0.007F;
 				_yPositionDelta--;
 			}
 
 			if (_yPositionDelta < 0)
 			{
-				_yPosition += 0.01F;
+				_yPosition += 0.007F;
 				_yPositionDelta++;
 			}
 

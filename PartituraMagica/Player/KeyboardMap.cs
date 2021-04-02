@@ -21,22 +21,19 @@ namespace PartituraMagica.App.Player
 
 		public void HandleKeyDown(object sender, KeyEventArgs e)
 		{
-			if (!e.Control && !e.Alt)
+			if (e.Modifiers == Keys.None)
 				switch (e.KeyCode)
 				{
-					case Keys.F4:
-						if (e.Modifiers == Keys.Alt) _playerView.Close();
-						break;
 					case Keys.Escape:
 						_playerView.Close();
 						break;
 					case Keys.Oemplus:
 					case Keys.Add:
-						if (e.Modifiers == Keys.None) _playerController.IncreaseSpeed();
+						_playerController.IncreaseSpeed();
 						break;
 					case Keys.OemMinus:
 					case Keys.Subtract:
-						if (e.Modifiers == Keys.None) _playerController.DecreaseSpeed();
+						_playerController.DecreaseSpeed();
 						break;
 					case Keys.Space:
 						_playerController.Pause();
@@ -71,6 +68,9 @@ namespace PartituraMagica.App.Player
 			if (e.Alt)
 				switch (e.KeyCode)
 				{
+					case Keys.F4:
+						_playerView.Close();
+						break;
 					case Keys.Left:
 						_playerController.GoToPreviousSnippet();
 						break;
@@ -99,6 +99,12 @@ namespace PartituraMagica.App.Player
 					break;
 				case Keys.Right:
 					if (e.Modifiers == Keys.None) _playerController.JumpForward();
+					break;
+				case Keys.Up:
+					_playerController.MoveUp();
+					break;
+				case Keys.Down:
+					_playerController.MoveDown();
 					break;
 			}
 		}
