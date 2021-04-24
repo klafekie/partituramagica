@@ -9,7 +9,6 @@ using System.Windows.Threading;
 using Lamar;
 using PartituraMagica.Lib.Domain;
 using PartituraMagica.Lib.PartituraCommands;
-using PartituraMagica.Lib.Playing;
 
 #endregion
 
@@ -73,7 +72,7 @@ namespace PartituraMagica.App
 			wnd.Show();
 
 			//create player view as early as possible to start loading Textures in background
-			_container.GetInstance<IPlayerViewFactory>().Create();
+			//_container.GetInstance<IPlayerViewFactory>().Create();
 		}
 	}
 }

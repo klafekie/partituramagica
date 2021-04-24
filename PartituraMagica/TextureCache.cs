@@ -104,7 +104,7 @@ namespace PartituraMagica.App
 
 			_device.SetRenderState(RenderState.CullMode, Cull.None);
 			_device.SetRenderState(RenderState.Lighting, false);
-			_device.SetRenderState(RenderState.Clipping, false);
+			_device.SetRenderState(RenderState.Clipping, true);
 			_device.SetRenderState(RenderState.AlphaBlendEnable, false);
 			// Antialiasing: see http://msdn.microsoft.com/en-us/library/windows/desktop/bb173422%28v=vs.85%29.aspx
 			// seems that it is not doing anything when working with images, only for shapes

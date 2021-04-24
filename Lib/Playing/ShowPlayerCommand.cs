@@ -27,6 +27,7 @@ namespace PartituraMagica.Lib.Playing
 				Debug.Assert(CanExecute());
 
 				_mainWindow.IsEnabled = false;
+				_factory.Create();
 				_factory.CreateAndShowView(P.CreatePlayedPartitura());
 			}
 			catch (Exception e)
@@ -42,7 +43,7 @@ namespace PartituraMagica.Lib.Playing
 			{
 				_mainWindow.IsEnabled = true;
 				_mainWindow.Activate();
-				_factory.Create();
+				//_factory.Create();
 			}
 		}
 
