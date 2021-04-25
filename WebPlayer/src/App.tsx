@@ -1,24 +1,19 @@
-import { Stage, Sprite, useTick, Container } from "@inlet/react-pixi";
-import React, { useState } from "react";
-import "./App.css";
+import { AppProvider } from "@inlet/react-pixi";
+import { ErrorBoundary } from "./ErrorBoundary";
+import { Partitura } from "./Partitura";
+import * as PIXI from "pixi.js";
 
-const Player = () => {
-	const [xPos, setXPos] = useState(0);
-	useTick((delta) => setXPos((r) => r - 1 + +0.01 * (delta || 0)));
+export const App = ({window}:any) => {
+	const app = new PIXI.Application({
+		resizeTo: window,		
+		autoDensity: true		//TODO is this really good??
+	});
+		
 	return (
-		<Container>
-			<Sprite image="./La Catedral-000.jpg" x={xPos} y={200} scale={0.3} />
-		</Container>
+		<ErrorBoundary>
+		<AppProvider value={app}>			
+				<Partitura></Partitura>			
+		</AppProvider>
+		</ErrorBoundary>
 	);
 };
-const App = () => {
-	//const app = useApp();
-
-	return (
-		<Stage width={1000}>
-			<Player />
-		</Stage>
-	);
-};
-
-export default App;
