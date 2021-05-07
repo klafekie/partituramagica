@@ -1,26 +1,28 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Stage, Text } from "@inlet/react-pixi";
-import { TextStyle } from "pixi.js";
-import React from "react";
+import { useApp } from "@inlet/react-pixi";
 import { useEffect, useState } from "react";
-import { Player } from "./Player";
+import React from "react";
 
-export interface ActivePartitura {
+interface ActivePartitura {
 	Name: string;
 	Pages: Page[];
 }
-export interface Page {
+interface Page {
 	Boxes: Box[];
 	ImagePath: string;
 }
-export interface Box {
+interface Box {
 	TextureCoords: TextureCoords;
-	Coords:Coords;
+	Coords: Coords;
 }
-export interface Coords {
-	X:number,Y:number,Width:number,Height:number,CenterY:number
+interface Coords {
+	X: number;
+	Y: number;
+	Width: number;
+	Height: number;
+	CenterY: number;
 }
-export interface TextureCoords {
+interface TextureCoords {
 	x: number;
 	y: number;
 	w: number;
@@ -28,74 +30,55 @@ export interface TextureCoords {
 	centerY: number;
 }
 
-export const EmptyPartitura: ActivePartitura = { Pages: [], Name:'' };
+const toImageCoordinates = (coords: Coords): TextureCoords => {
+	//todo get from image properties
+	const screenCordinatesFactor = 600 / 96;
 
-export const PartituraContext = React.createContext(EmptyPartitura);
-
-export const Partitura = () => {
-	const [error, setError] = useState();
-	const [isLoaded, setIsLoaded] = useState(false);
-	const [partitura, setPartitura] = useState<ActivePartitura|null>(null);
-
-	const toImageCoordinates = (coords: Coords) : TextureCoords => {
-		//todo get from image properties
-		const screenCordinatesFactor = 600 / 96;
-
-		return {
-			x: coords.X * screenCordinatesFactor,
-			y: coords.Y * screenCordinatesFactor,
-			w: coords.Width * screenCordinatesFactor,
-			h: coords.Height * screenCordinatesFactor,
-			centerY: coords.CenterY * screenCordinatesFactor,
-		};
+	return {
+		x: coords.X * screenCordinatesFactor,
+		y: coords.Y * screenCordinatesFactor,
+		w: coords.Width * screenCordinatesFactor,
+		h: coords.Height * screenCordinatesFactor,
+		centerY: coords.CenterY * screenCordinatesFactor
 	};
+};
+
+export const PartituraContext = React.createContext<ActivePartitura | null>(null);
+PartituraContext.displayName = "PartituraContext";
+
+export const Partitura = ({ children }: any) => {
+	const app = useApp();
+	const [error, setError] = useState();
+	const [isPartituraLoaded, setIsPartituraLoaded] = useState(false);
+	const [partitura, setPartitura] = useState<ActivePartitura | null>(null);
 
 	useEffect(() => {
 		fetch("/La Catedral.partitura2")
-			.then((res) => res.json())
+			.then(res => res.json())
 			.then(
-				(result:ActivePartitura) => {
-					setIsLoaded(true);
+				(result: ActivePartitura) => {
+					setIsPartituraLoaded(true);
 					result.Name = "La Catedral";
-					result.Pages.forEach((p: Page, i: number) => {						
-							p.ImagePath = "/" + result.Name + "-00" + i + ".jpg";							
-							p.Boxes.map(b => b.TextureCoords = toImageCoordinates(b.Coords) );
-						});
+					result.Pages.forEach((p: Page, i: number) => {
+						p.ImagePath = "/" + result.Name + "-00" + i + ".jpg";
+						p.Boxes.map(b => (b.TextureCoords = toImageCoordinates(b.Coords)));
+					});
 					setPartitura(result);
 				},
-				(error) => {
-					setIsLoaded(true);
+				error => {
+					setIsPartituraLoaded(true);
 					setError(error);
 				}
 			);
 	}, []);
 
 	if (error) {
-		return <span>Failed to load partitura: {error}</span>;
-	} else if (!isLoaded) {
+		return <div>Failed to load partitura: {error}</div>;
+	} else if (!isPartituraLoaded) {
 		return <div>Loading...</div>;
 	} else if (!partitura) {
-		return <div>Couldn'T load partitura</div>
+		return <div>Couldn't load partitura</div>;
 	} else {
-	
-		return (
-			// <PartituraContext.Provider value={partitura}>
-
-			<>
-				{/* <Text text="bla" style={new TextStyle({ fontSize: 50, fill:"white"})}>
-					</Text> */}
-
-				<Stage 
-					options={{
-						backgroundColor: 0xffffff,
-						resizeTo: window, //todo try without this 
-						autoDensity: true //todo try without this
-					}}
-				>
-					<Player activePartitura={partitura} />
-				</Stage>
-			</>
-			// </PartituraContext.Provider>
-		);
+		return <PartituraContext.Provider value={partitura}>{children}</PartituraContext.Provider>;
 	}
 };

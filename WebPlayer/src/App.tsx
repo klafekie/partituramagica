@@ -1,19 +1,34 @@
 import { AppProvider } from "@inlet/react-pixi";
 import { ErrorBoundary } from "./ErrorBoundary";
-import { Partitura } from "./Partitura";
-import * as PIXI from "pixi.js";
 
-export const App = ({window}:any) => {
+import * as PIXI from "pixi.js";
+import { Partitura } from "./Partitura";
+import { Player } from "./Player";
+import { PixiStage } from "./PixiStage";
+import { Textures } from "./Textures";
+
+interface Props {
+	rootElement: HTMLElement;
+}
+
+export const App = ({ rootElement }: Props) => {
 	const app = new PIXI.Application({
-		resizeTo: window,		
-		autoDensity: true		//TODO is this really good??
+		resizeTo: rootElement,
+		width: rootElement.clientWidth,
+		height: rootElement.clientHeight
 	});
-		
+
 	return (
 		<ErrorBoundary>
-		<AppProvider value={app}>			
-				<Partitura></Partitura>			
-		</AppProvider>
+			<AppProvider value={app}>
+				<Partitura>
+					<Textures>
+						<Player>
+							<PixiStage></PixiStage>
+						</Player>
+					</Textures>
+				</Partitura>
+			</AppProvider>
 		</ErrorBoundary>
 	);
 };
