@@ -1,0 +1,31 @@
+{
+	"gesture": {
+		"angleTolerance": 30,
+		"swipeDuration": 140,
+		"borderWidth": 80,
+		"pinchZoomFactor": 0.002,
+		"wheelZoomFactor": 0.00008,
+		"swipeSpeedFactor": 30,
+		"wheelSpeedFactor": 0.2,
+		"swipeYPositionFactor": 10
+	},
+	"player": {
+		"maximumSpeed": 15,
+		"minimumSpeed": 0.3,
+		"maximumZoom": 4,
+		"minimumZoom": 0.7,
+		"resumeDelay": 50,
+		"tickDeltaFactor": 0.5,
+		"boxDistance": 5
+	},
+	"keyboard": {
+		"initialKeyRepeatDelay": 32,
+		"keyRepeatDelay": 5,
+		"assumeKeyUpDelay": 100,
+		"puaseKeyCode": "Space"
+	},
+	"stage": {
+		"fontSize": 50,
+		"textColor": "green"
+	}
+}

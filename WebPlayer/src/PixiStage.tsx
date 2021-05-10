@@ -1,55 +1,85 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Stage, Container, Text, Sprite, useApp } from "@inlet/react-pixi";
-import { useEffect, useContext } from "react";
+import { useEffect, useContext, useRef } from "react";
 import * as PIXI from "pixi.js";
 import { TextureContext } from "./Textures";
 import { PlayerContext } from "./Player";
-import { Spritesheet } from "pixi.js";
-import { PartituraContext } from "./Partitura";
+import { ConfigurationContext } from "./Configuration";
+import { PlayablePartituraContext } from "./PlayablePartitura";
 
 export const PixiStage = () => {
-	const app = useApp();
-	const spritesheet = useContext(TextureContext);
+	const { fontSize, textColor } = useContext(ConfigurationContext).read().stage;
+	const pixiApp = useApp();
+	const { screen, renderer } = pixiApp;
+	const textures = useContext(TextureContext);
+	const playablePartitura = useContext(PlayablePartituraContext);
 	const player = useContext(PlayerContext);
-	const partitura = useContext(PartituraContext);
+
+	const stageWrapperRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
-		app.renderer.resize(window.innerWidth, window.innerHeight);
+		console.log(
+			"resize to ",
+			document.documentElement.clientWidth,
+			document.documentElement.clientHeight - 21
+		);
 
+		renderer.resize(
+			document.documentElement.clientWidth,
+			document.documentElement.clientHeight - 21
+		);
 		window.addEventListener("resize", function () {
-			app.renderer.resize(window.innerWidth, window.innerHeight);
+			console.log(
+				"resize to ",
+				document.documentElement.clientWidth,
+				document.documentElement.clientHeight - 21
+			);
+			renderer.resize(
+				document.documentElement.clientWidth,
+				document.documentElement.clientHeight - 21
+			);
 		});
-	}, [app.renderer]);
+	}, [renderer]);
 
-	if (!player || !Spritesheet || !partitura)
-		return <Text text="Loading ..." style={new PIXI.TextStyle({ fontSize: 50 })}></Text>;
+	if (!player || !textures || !playablePartitura)
+		return (
+			<Text
+				text="Loading ..."
+				style={new PIXI.TextStyle({ fontSize: fontSize, fill: textColor })}></Text>
+		);
 
-	let rightMost = player.xPos.current;
-
+	const { ticker, offsetY, zoom, meta } = player;
 	return (
-		<Stage
-			width={window.innerWidth}
-			height={window.innerHeight}
-			options={{
-				backgroundColor: 0xffffff
-			}}>
-			{spritesheet ? (
+		<div ref={stageWrapperRef}>
+			<Stage
+				width={screen.width}
+				height={screen.height}
+				options={{
+					backgroundColor: 0xdddddd
+				}}>
 				<Container>
-					{partitura &&
-						partitura.Pages[0].Boxes.map((box, i) => {
-							const scale = 0.7;
-							const texture = spritesheet.textures["b" + i];
-							const y = app.renderer.screen.height / 2 - box.TextureCoords.centerY * scale;
-							const sprite = (
-								<Sprite key={"b" + i} texture={texture} x={rightMost} y={y} scale={scale}></Sprite>
-							);
-							rightMost += spritesheet.textures["b" + i].width * scale;
-							return sprite;
-						})}
+					{playablePartitura.boxes.map((box, i) => {
+						const texture =
+							textures.pages[box.pageIndex].boxes[box.lineIndex].splitBoxes[box.splitterIndex]
+								.texture;
+
+						const sprite = (
+							<Sprite
+								key={"" + i}
+								texture={texture}
+								x={(box.x + ticker.currentXPos) * zoom.x + screen.width / 2}
+								y={screen.height / 2 + box.y * zoom.y + offsetY}
+								width={box.w * zoom.x}
+								height={box.h * zoom.y}></Sprite>
+						);
+
+						return sprite;
+					})}
 				</Container>
-			) : (
-				<Text text="Loading ..." style={new PIXI.TextStyle({ fontSize: 50 })}></Text>
-			)}
-		</Stage>
+				<Text
+					text={meta.positionDescription}
+					style={new PIXI.TextStyle({ fontSize: fontSize, fill: textColor })}></Text>
+			</Stage>
+		</div>
 	);
 };

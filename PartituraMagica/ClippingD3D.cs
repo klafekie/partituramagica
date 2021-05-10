@@ -2,6 +2,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using PartituraMagica.Lib;
 using PartituraMagica.Lib.Domain;
 using PartituraMagica.Lib.Playing;
 using SlimDX;
@@ -32,7 +33,7 @@ namespace PartituraMagica.App
 
 		private readonly ITextureCache _cache;
 
-		private readonly ApplicationConfiguration _configuration;
+		private readonly IApplicationConfiguration _configuration;
 		private readonly Rect _coords;
 		private readonly IGreyImage _image;
 
@@ -43,11 +44,11 @@ namespace PartituraMagica.App
 		/// </summary>
 		private Mesh _mesh; // [renamed from 'box' jed 20150118]
 
-		public float Width => (float) _coords.Width;
+		public float Width => (float)_coords.Width;
 
 		public double XPos { get; private set; }
 
-		public ClippingD3D(IGreyImage image, Rect coords, ApplicationConfiguration configuration, ITextureCache cache)
+		public ClippingD3D(IGreyImage image, Rect coords, IApplicationConfiguration configuration, ITextureCache cache)
 		{
 			_image = image;
 			_configuration = configuration;
@@ -62,7 +63,7 @@ namespace PartituraMagica.App
 
 		public void Init(Device dev, float offset)
 		{
-			_mesh = Mesh.CreateBox(dev, (float) _coords.Width, (float) _coords.Height, 0f);
+			_mesh = Mesh.CreateBox(dev, (float)_coords.Width, (float)_coords.Height, 0f);
 
 			XPos = offset;
 
@@ -76,8 +77,8 @@ namespace PartituraMagica.App
 				//Debug.WriteLine("offset: " + offset.ToString());
 				DataStream stream = _mesh.LockVertexBuffer(LockFlags.None);
 
-				float imageWidth = _image.Width * 96F / (float) _image.DpiX;
-				float imageHeight = _image.Height * 96F / (float) _image.DpiY;
+				float imageWidth = _image.Width * 96F / (float)_image.DpiX;
+				float imageHeight = _image.Height * 96F / (float)_image.DpiY;
 
 				var vertices = new PositionedColoredTextured[_mesh.VertexCount];
 				for (int i = 0; i < _mesh.VertexCount; ++i)
@@ -89,19 +90,19 @@ namespace PartituraMagica.App
 
 				_mesh.UnlockVertexBuffer();
 				stream = _mesh.LockVertexBuffer(LockFlags.None);
-				float deltaY = (float) (_coords.Height / 2D - _coords.CenterY);
+				float deltaY = (float)(_coords.Height / 2D - _coords.CenterY);
 				for (int i = 0; i < _mesh.VertexCount; ++i)
 				{
 					var vertice = vertices[i];
-					float left = (float) _coords.X / imageWidth;
-					float top = (float) _coords.Y / imageHeight;
-					float right = (float) _coords.Right / imageWidth;
-					float bottom = (float) _coords.Bottom / imageHeight;
+					float left = (float)_coords.X / imageWidth;
+					float top = (float)_coords.Y / imageHeight;
+					float right = (float)_coords.Right / imageWidth;
+					float bottom = (float)_coords.Bottom / imageHeight;
 
-					vertice.Color = _configuration.Color.ToArgb();
+					vertice.Color = _configuration.Color;
 					vertice.Tu = vertice.X >= 0 ? right : left;
 					vertice.Tv = vertice.Y >= 0 ? top : bottom;
-					vertice.X += offset + (float) _coords.Width / 2F;
+					vertice.X += offset + (float)_coords.Width / 2F;
 					vertice.Y -= deltaY;
 
 					//Trace.WriteLine($"{i}: ({vertice.X}; {vertice.Y}; {vertice.Z}) u:{vertice.Tu} v:{vertice.Tv}");
@@ -119,7 +120,7 @@ namespace PartituraMagica.App
 		{
 			if (_mesh == null) throw new Exception("mesh not initialized");
 
-			Texture texture = (Texture) _cache.GetTexture(_image.Path);
+			Texture texture = (Texture)_cache.GetTexture(_image.Path);
 
 			if (texture == null) throw new Exception("Couldn't load texture");
 			dev.SetTexture(0, texture);

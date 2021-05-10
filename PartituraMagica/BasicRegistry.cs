@@ -3,6 +3,7 @@
 using Lamar;
 using Microsoft.Extensions.DependencyInjection;
 using PartituraMagica.App.Player;
+using PartituraMagica.Lib;
 using PartituraMagica.Lib.Domain;
 using PartituraMagica.Lib.Playing;
 
@@ -26,7 +27,7 @@ namespace PartituraMagica.App
 			For<PlayerPositionHolder>().Use<PlayerPositionHolder>().Singleton();
 			For<IScrollingPanel>().Use<ScrollingPanel>().Singleton();
 			For<ITextureCache>().Use<TextureCache>().Singleton();
-
+			For<IApplicationConfiguration>().Use<ApplicationConfiguration>().Singleton();
 			Scan(_ =>
 			{
 				_.LookForRegistries();

@@ -126,6 +126,7 @@
     <Compile Include="Domain\RectJsonMemento.cs" />
     <Compile Include="Domain\Shape.cs" />
     <Compile Include="Domain\SnippedUiState.cs" />
+    <Compile Include="IApplicationConfiguration.cs" />
     <Compile Include="LibServiceRegistry.cs" />
     <Compile Include="PageEditing\ABCLabelProvider.cs" />
     <Compile Include="PageEditing\AddBoxCommand.cs" />
@@ -143,6 +144,7 @@
     <Compile Include="PartituraCommands\CloseApplicationCommand.cs" />
     <Compile Include="PartituraCommands\ClosePartituraCommand.cs" />
     <Compile Include="PartituraCommands\NewPartituraCommand.cs" />
+    <Compile Include="PartituraCommands\ApplicationStartupCommand.cs" />
     <Compile Include="PartituraCommands\OpenCommand.cs" />
     <Compile Include="PartituraCommands\SaveAsCommand.cs" />
     <Compile Include="PartituraCommands\SaveCommand.cs" />

@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using PartituraMagica.Lib;
 using PartituraMagica.Lib.Domain;
 using PartituraMagica.Lib.Playing;
 using SlimDX;
@@ -19,7 +20,7 @@ namespace PartituraMagica.App.Player
 	{
 		private const double CLIPPING_LOAD_BUFFER = 2000;
 		private readonly List<ClippingD3D> _clippingD3Ds = new List<ClippingD3D>();
-		private readonly ApplicationConfiguration _configuration = new ApplicationConfiguration();
+		private readonly IApplicationConfiguration _configuration;
 		private readonly IImageLoader _imageLoader;
 		private readonly IPlayerController _playerController;
 		private readonly ITextureCache _textureCache;
@@ -28,11 +29,13 @@ namespace PartituraMagica.App.Player
 
 		private bool _isRendering;
 
-		public ScrollingPanel(IImageLoader imageLoader, IPlayerController playerController, ITextureCache textureCache)
+		public ScrollingPanel(IImageLoader imageLoader, IPlayerController playerController, ITextureCache textureCache,
+			IApplicationConfiguration configuration)
 		{
 			_imageLoader = imageLoader;
 			_playerController = playerController;
 			_textureCache = textureCache;
+			_configuration = configuration;
 		}
 
 		public void Dispose()
@@ -44,8 +47,9 @@ namespace PartituraMagica.App.Player
 
 		public void Init(IntPtr handle)
 		{
-			_device = (Device) _textureCache.CreateDevice(handle);
-			_device.Clear(ClearFlags.Target, _configuration.InvertColors ? Color.Black : _configuration.Color, 1.0f, 0);
+			_device = (Device)_textureCache.CreateDevice(handle);
+			_device.Clear(ClearFlags.Target, _configuration.InvertColors ? Color.Black : Color.FromArgb(_configuration.Color),
+				1.0f, 0);
 		}
 
 		public void StartScrolling(IPlayedPartitura partitura)
@@ -93,7 +97,8 @@ namespace PartituraMagica.App.Player
 
 			try
 			{
-				_device.Clear(ClearFlags.Target, _configuration.InvertColors ? Color.Black : _configuration.Color, 1.0f, 0);
+				_device.Clear(ClearFlags.Target,
+					_configuration.InvertColors ? Color.Black : Color.FromArgb(_configuration.Color), 1.0f, 0);
 
 				_device.BeginScene();
 
@@ -101,7 +106,7 @@ namespace PartituraMagica.App.Player
 
 				_device.SetTransform(TransformState.World,
 					Matrix.Scaling(zoomX, zoomY, 1F) *
-					Matrix.Translation((float) -_playerController.XPos * zoomX, yPosition, 0));
+					Matrix.Translation((float)-_playerController.XPos * zoomX, yPosition, 0));
 
 				var visibleClippings = _clippingD3Ds.Where(clip =>
 					clip.XPos >= _playerController.XPos - CLIPPING_LOAD_BUFFER &&

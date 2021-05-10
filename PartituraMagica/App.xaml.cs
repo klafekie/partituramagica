@@ -1,6 +1,5 @@
 ﻿#region usings
 
-using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
@@ -63,11 +62,8 @@ namespace PartituraMagica.App
 
 			var wnd = _container.GetInstance<MainWindow>();
 
-			string[] args = Environment.GetCommandLineArgs();
-			if (args.Length == 2)
-				//first arg is the exe name
-				_container.GetInstance<ICommandFactory>()
-					.Create<OpenCommand>(c => c.Path = args[1]).Execute();
+			_container.GetInstance<ICommandFactory>()
+				.Create<ApplicationStartupCommand>().Execute();
 
 			wnd.Show();
 

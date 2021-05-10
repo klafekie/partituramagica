@@ -10,17 +10,19 @@ namespace PartituraMagica.Lib.PartituraCommands
 {
 	public class ClosePartituraCommand : PartituraCommandBase, ICommand
 	{
+		private readonly IApplicationConfiguration _applicationConfiguration;
 		private readonly ICommandFactory _commandFactory;
 		private readonly IMainWindow _mainWindow;
 		private readonly ITextureCache _textureCache;
 
 		public ClosePartituraCommand(ICommandParameters p, IMainWindow mainWindow, ICommandFactory commandFactory,
-			ITextureCache textureCache)
+			ITextureCache textureCache, IApplicationConfiguration applicationConfiguration)
 			: base(p)
 		{
 			_mainWindow = mainWindow;
 			_commandFactory = commandFactory;
 			_textureCache = textureCache;
+			_applicationConfiguration = applicationConfiguration;
 		}
 
 		public void Execute()
@@ -34,6 +36,9 @@ namespace PartituraMagica.Lib.PartituraCommands
 				if (c == DialogResult.Cancel) return;
 				if (c == DialogResult.Yes) cmd.Execute();
 			}
+
+			_applicationConfiguration.LastPartituraPath = P.Active.Path;
+			_applicationConfiguration.Save();
 
 			if (P.Active.IsOpen && (!P.Active.Partitura.HasChanges || c == DialogResult.No))
 			{

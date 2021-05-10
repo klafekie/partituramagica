@@ -1,53 +1,69 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useApp } from "@inlet/react-pixi";
 import { useEffect, useState } from "react";
 import React from "react";
+import camelcaseKeys from "camelcase-keys";
 
 interface ActivePartitura {
-	Name: string;
-	Pages: Page[];
+	name: string;
+	partPattern: string;
+	pages: Page[];
 }
 interface Page {
-	Boxes: Box[];
-	ImagePath: string;
+	boxes: Box[];
+	imagePath: string;
 }
 interface Box {
-	TextureCoords: TextureCoords;
-	Coords: Coords;
+	splitters: { key: number; value: number }[];
+	labelIds: number[];
+	textureCoords: TextureCoords[];
+	coords: Coords;
+	id: number;
 }
 interface Coords {
-	X: number;
-	Y: number;
-	Width: number;
-	Height: number;
-	CenterY: number;
+	x: number;
+	y: number;
+	width: number;
+	height: number;
+	centerY: number;
 }
 interface TextureCoords {
+	currentPartIndex?: number;
 	x: number;
 	y: number;
 	w: number;
 	h: number;
 	centerY: number;
+	id: number;
 }
 
-const toImageCoordinates = (coords: Coords): TextureCoords => {
+//TODO move to playable partitura? problem: it is also used in Texture.tsx
+const toImageCoordinates = ({ id, coords, splitters }: Box): TextureCoords[] => {
 	//todo get from image properties
-	const screenCordinatesFactor = 600 / 96;
+	const screenCordinatesFactor = ((600 / 96 / 4962) * 2895) / 2;
 
-	return {
-		x: coords.X * screenCordinatesFactor,
-		y: coords.Y * screenCordinatesFactor,
-		w: coords.Width * screenCordinatesFactor,
-		h: coords.Height * screenCordinatesFactor,
-		centerY: coords.CenterY * screenCordinatesFactor
-	};
+	let entries = [{ key: 0, value: id }, ...splitters, { key: coords.width, value: -1 }];
+
+	const splitBoxes = [];
+	for (let sI = 0; sI < entries.length - 1; sI++) {
+		const entry = entries[sI];
+		const width = entries[sI + 1].key - entry.key;
+		splitBoxes.push({
+			id: entry.value,
+			x: (coords.x + entry.key) * screenCordinatesFactor,
+			y: coords.y * screenCordinatesFactor,
+			w: width * screenCordinatesFactor,
+			h: coords.height * screenCordinatesFactor,
+			centerY: coords.centerY * screenCordinatesFactor
+		});
+	}
+
+	return splitBoxes;
 };
 
 export const PartituraContext = React.createContext<ActivePartitura | null>(null);
 PartituraContext.displayName = "PartituraContext";
 
 export const Partitura = ({ children }: any) => {
-	const app = useApp();
 	const [error, setError] = useState();
 	const [isPartituraLoaded, setIsPartituraLoaded] = useState(false);
 	const [partitura, setPartitura] = useState<ActivePartitura | null>(null);
@@ -56,12 +72,12 @@ export const Partitura = ({ children }: any) => {
 		fetch("/La Catedral.partitura2")
 			.then(res => res.json())
 			.then(
-				(result: ActivePartitura) => {
+				(pascalCased: any) => {
+					const result: ActivePartitura = camelcaseKeys(pascalCased, { deep: true });
 					setIsPartituraLoaded(true);
-					result.Name = "La Catedral";
-					result.Pages.forEach((p: Page, i: number) => {
-						p.ImagePath = "/" + result.Name + "-00" + i + ".jpg";
-						p.Boxes.map(b => (b.TextureCoords = toImageCoordinates(b.Coords)));
+					result.name = "La Catedral";
+					result.pages.forEach((p: Page, i: number) => {
+						p.boxes.map(b => (b.textureCoords = toImageCoordinates(b)));
 					});
 					setPartitura(result);
 				},
