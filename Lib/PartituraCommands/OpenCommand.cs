@@ -1,6 +1,7 @@
 ﻿#region usings
 
 using System.Collections.Generic;
+using System.IO;
 using System.Text.Json;
 using PartituraMagica.Lib.Domain;
 using PartituraMagica.Lib.Playing;
@@ -52,7 +53,7 @@ namespace PartituraMagica.Lib.PartituraCommands
 
 		public bool CanExecute()
 		{
-			return true;
+			return !string.IsNullOrEmpty(Path) && File.Exists(Path);
 		}
 	}
 }

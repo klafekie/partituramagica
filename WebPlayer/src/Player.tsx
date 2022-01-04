@@ -71,7 +71,7 @@ export const Player = ({ children }: any) => {
 	const [speed, setSpeed] = useState<number>(4);
 	const [navigationSpeed, setNavigationSpeed] = useState<number | undefined>();
 	const [offsetY, setOffsetY] = useState(0);
-	const [zoom, setZoom] = useState<Point>({ x: 2, y: 2 });
+	const [zoom, setZoom] = useState<Point>({ x: 0.5, y: 0.5 });
 	const [pause, setPause] = useState<PauseState>({ isPaused: false, waitToResume: 0 });
 	const [tickerState, setTickerState] = useState<TickerState>({ currentXPos: 0 });
 	const playablePartitura = useContext(PlayablePartituraContext);

@@ -26,8 +26,7 @@ namespace PartituraMagica.Lib.PartituraCommands
 				//first arg is the exe name
 				path = args[1];
 
-			if (!string.IsNullOrEmpty(path))
-				_commandFactory.Create<OpenCommand>(c => c.Path = path).Execute();
+			_commandFactory.Create<OpenCommand>(c => c.Path = path).TryExecute();
 		}
 
 		public bool CanExecute()

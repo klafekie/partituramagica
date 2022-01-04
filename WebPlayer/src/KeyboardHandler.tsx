@@ -51,7 +51,7 @@ export const KeyboardHandler = () => {
 					onKeyDown={onKeyDownMobile}
 					tabIndex={-1}
 					readOnly={true}
-					style={{ position: "absolute", left: -1000, right: -1000 }}></input>
+					style={{ left: -1000, right: -1000 }}></input>
 			</MobileView>
 			<BrowserView renderWithFragment={true}>
 				<input

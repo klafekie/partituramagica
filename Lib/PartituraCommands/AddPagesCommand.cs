@@ -38,7 +38,7 @@ namespace PartituraMagica.Lib.PartituraCommands
 			if (sourceFiles.Any())
 			{
 				int firstAddedIndex = P.Active.GetPageCount();
-				foreach (var sourceFile in sourceFiles)
+				foreach (var sourceFile in sourceFiles.OrderBy(a => a))
 				{
 					int index = P.Active.GetPageCount();
 					string destinationFile = P.Active.GetImagePath(index);
