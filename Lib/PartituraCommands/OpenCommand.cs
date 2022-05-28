@@ -53,7 +53,7 @@ namespace PartituraMagica.Lib.PartituraCommands
 
 		public bool CanExecute()
 		{
-			return !string.IsNullOrEmpty(Path) && File.Exists(Path);
+			return Path == null || File.Exists(Path);
 		}
 	}
 }
