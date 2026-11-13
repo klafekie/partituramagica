@@ -128,10 +128,10 @@ namespace PartituraMagica.App.Player
 					IconChar = GetIconChar(i),
 					IconColor = Color.Black,
 					IconFont = IconFont.Auto,
-					IconSize = 40,
+					IconSize = Scale(40),
 					ImageScaling = ToolStripItemImageScaling.None,
 					Name = "btnRepeatSnippet" + i,
-					Size = new Size(446, 52),
+					Size = new Size(Scale(446), Scale(52)),
 					Text = $"Go to snippet {i + 1}",
 					ToolTipText = $"Go to snippet {i + 1}"
 				};
@@ -147,10 +147,10 @@ namespace PartituraMagica.App.Player
 				IconChar = IconChar.WindowClose,
 				IconColor = Color.Black,
 				IconFont = IconFont.Auto,
-				IconSize = 40,
+				IconSize = Scale(40),
 				ImageScaling = ToolStripItemImageScaling.None,
 				Name = "btnCancelSnippetPlaying",
-				Size = new Size(446, 52),
+				Size = new Size(Scale(446), Scale(52)),
 				Text = "Stop playing snippets",
 				ToolTipText = "Stop playing snippets"
 			};
@@ -222,6 +222,12 @@ namespace PartituraMagica.App.Player
 			}
 		}
 
+		//Controls created in code are not auto scaled like designer ones, so pixel sizes must follow the display scaling (e.g. 175%).
+		private int Scale(int pixels)
+		{
+			return (int) Math.Round(pixels * DeviceDpi / 96f);
+		}
+
 		private void CreatePartButtons(string partPattern)
 		{
 			string[] partStrings = new string[partPattern.Length];
@@ -240,12 +246,12 @@ namespace PartituraMagica.App.Player
 					IconChar = IconChar.StepBackward,
 					IconColor = Color.Black,
 					IconFont = IconFont.Auto,
-					IconSize = 40,
+					IconSize = Scale(40),
 					ImageScaling = ToolStripItemImageScaling.None,
 					ImageTransparentColor = Color.Magenta,
 					Margin = new Padding(0),
 					//intentionally bigger than buttons from designer to avoid vertical misalign issue
-					Size = new Size(52, 60),
+					Size = new Size(Scale(52), Scale(60)),
 					TextAlign = ContentAlignment.TopCenter
 				};
 
