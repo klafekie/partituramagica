@@ -254,7 +254,7 @@
 			// 
 			this.dropdownAllParts.AutoSize = false;
 			this.dropdownAllParts.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-			this.dropdownAllParts.Font = new System.Drawing.Font("Segoe UI", 26F);
+			this.dropdownAllParts.Font = new System.Drawing.Font("Segoe UI", 35F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
 			this.dropdownAllParts.IconChar = FontAwesome.Sharp.IconChar.SyncAlt;
 			this.dropdownAllParts.IconColor = System.Drawing.Color.Black;
 			this.dropdownAllParts.IconFont = FontAwesome.Sharp.IconFont.Auto;
@@ -393,7 +393,7 @@
 			this.splitBtnRepeatAll.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnRepeatSnippet1});
 			this.splitBtnRepeatAll.Flip = FontAwesome.Sharp.FlipOrientation.Normal;
-			this.splitBtnRepeatAll.Font = new System.Drawing.Font("Segoe UI", 26F);
+			this.splitBtnRepeatAll.Font = new System.Drawing.Font("Segoe UI", 35F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
 			this.splitBtnRepeatAll.IconChar = FontAwesome.Sharp.IconChar.SyncAlt;
 			this.splitBtnRepeatAll.IconColor = System.Drawing.Color.Black;
 			this.splitBtnRepeatAll.IconFont = FontAwesome.Sharp.IconFont.Auto;
@@ -427,7 +427,7 @@
 			this.dropDownEditSnippet.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnRemoveCurrentSnippet,
             this.btnRemoveAllSnippets});
-			this.dropDownEditSnippet.Font = new System.Drawing.Font("Segoe UI", 26F);
+			this.dropDownEditSnippet.Font = new System.Drawing.Font("Segoe UI", 35F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
 			this.dropDownEditSnippet.IconChar = FontAwesome.Sharp.IconChar.TrashAlt;
 			this.dropDownEditSnippet.IconColor = System.Drawing.Color.Black;
 			this.dropDownEditSnippet.IconFont = FontAwesome.Sharp.IconFont.Auto;

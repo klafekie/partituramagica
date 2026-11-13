@@ -128,10 +128,10 @@ namespace PartituraMagica.App.Player
 					IconChar = GetIconChar(i),
 					IconColor = Color.Black,
 					IconFont = IconFont.Auto,
-					IconSize = Scale(40),
+					IconSize = 40,
 					ImageScaling = ToolStripItemImageScaling.None,
 					Name = "btnRepeatSnippet" + i,
-					Size = new Size(Scale(446), Scale(52)),
+					Size = new Size(446, 52),
 					Text = $"Go to snippet {i + 1}",
 					ToolTipText = $"Go to snippet {i + 1}"
 				};
@@ -147,10 +147,10 @@ namespace PartituraMagica.App.Player
 				IconChar = IconChar.WindowClose,
 				IconColor = Color.Black,
 				IconFont = IconFont.Auto,
-				IconSize = Scale(40),
+				IconSize = 40,
 				ImageScaling = ToolStripItemImageScaling.None,
 				Name = "btnCancelSnippetPlaying",
-				Size = new Size(Scale(446), Scale(52)),
+				Size = new Size(446, 52),
 				Text = "Stop playing snippets",
 				ToolTipText = "Stop playing snippets"
 			};
@@ -222,16 +222,6 @@ namespace PartituraMagica.App.Player
 			}
 		}
 
-		//Controls created in code are not auto scaled like designer ones, so pixel sizes must follow the display scaling (e.g. 175%).
-		//DeviceDpi is not used: without EnableWindowsFormsHighDpiAutoResizing it stays at 96.
-		private int Scale(int pixels)
-		{
-			using (var graphics = CreateGraphics())
-			{
-				return (int) Math.Round(pixels * graphics.DpiX / 96f);
-			}
-		}
-
 		private void CreatePartButtons(string partPattern)
 		{
 			string[] partStrings = new string[partPattern.Length];
@@ -246,16 +236,16 @@ namespace PartituraMagica.App.Player
 					ToolTipText = $"Go to Part {partString}",
 					AutoSize = false,
 					DisplayStyle = ToolStripItemDisplayStyle.Text,
-					Font = new Font("Segoe UI", 26F, FontStyle.Bold),
+					Font = new Font("Segoe UI", 35F, FontStyle.Bold, GraphicsUnit.Pixel),
 					IconChar = IconChar.StepBackward,
 					IconColor = Color.Black,
 					IconFont = IconFont.Auto,
-					IconSize = Scale(40),
+					IconSize = 40,
 					ImageScaling = ToolStripItemImageScaling.None,
 					ImageTransparentColor = Color.Magenta,
 					Margin = new Padding(0),
 					//intentionally bigger than buttons from designer to avoid vertical misalign issue
-					Size = new Size(Scale(52), Scale(60)),
+					Size = new Size(52, 60),
 					TextAlign = ContentAlignment.TopCenter
 				};
 
