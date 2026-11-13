@@ -223,9 +223,13 @@ namespace PartituraMagica.App.Player
 		}
 
 		//Controls created in code are not auto scaled like designer ones, so pixel sizes must follow the display scaling (e.g. 175%).
+		//DeviceDpi is not used: without EnableWindowsFormsHighDpiAutoResizing it stays at 96.
 		private int Scale(int pixels)
 		{
-			return (int) Math.Round(pixels * DeviceDpi / 96f);
+			using (var graphics = CreateGraphics())
+			{
+				return (int) Math.Round(pixels * graphics.DpiX / 96f);
+			}
 		}
 
 		private void CreatePartButtons(string partPattern)
