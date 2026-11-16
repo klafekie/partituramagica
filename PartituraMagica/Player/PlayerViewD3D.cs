@@ -131,7 +131,7 @@ namespace PartituraMagica.App.Player
 					IconSize = 40,
 					ImageScaling = ToolStripItemImageScaling.None,
 					Name = "btnRepeatSnippet" + i,
-					Size = new Size(446, 52),
+					Size = new System.Drawing.Size(446, 52),
 					Text = $"Go to snippet {i + 1}",
 					ToolTipText = $"Go to snippet {i + 1}"
 				};
@@ -150,7 +150,7 @@ namespace PartituraMagica.App.Player
 				IconSize = 40,
 				ImageScaling = ToolStripItemImageScaling.None,
 				Name = "btnCancelSnippetPlaying",
-				Size = new Size(446, 52),
+				Size = new System.Drawing.Size(446, 52),
 				Text = "Stop playing snippets",
 				ToolTipText = "Stop playing snippets"
 			};
@@ -245,7 +245,7 @@ namespace PartituraMagica.App.Player
 					ImageTransparentColor = Color.Magenta,
 					Margin = new Padding(0),
 					//intentionally bigger than buttons from designer to avoid vertical misalign issue
-					Size = new Size(52, 60),
+					Size = new System.Drawing.Size(52, 60),
 					TextAlign = ContentAlignment.TopCenter
 				};
 

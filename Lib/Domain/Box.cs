@@ -2,8 +2,6 @@
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows;
-using System.Windows.Input;
 using PartituraMagica.Lib.Domain;
 
 namespace PartituraMagica

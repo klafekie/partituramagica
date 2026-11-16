@@ -2,12 +2,10 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Windows;
 using PartituraMagica.Lib.Domain;
 
 #endregion
 
-//using System.Windows;
 
 namespace PartituraMagica.Test
 {

@@ -1,188 +1,24 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{60124B27-CC5F-469A-872D-9FF665C0DEB7}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
     <RootNamespace>PartituraMagica.Lib</RootNamespace>
+    <!-- The assembly name is used by the Lamar assembly scans in the app and in the tests. -->
     <AssemblyName>ClassLibrary1</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <OldToolsVersion>3.5</OldToolsVersion>
-    <UpgradeBackupLocation />
-    <TargetFrameworkProfile />
+    <!-- Properties\AssemblyInfo.cs holds the assembly attributes (incl. InternalsVisibleTo). -->
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="BaselineTypeDiscovery, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\BaselineTypeDiscovery.1.1.0\lib\net461\BaselineTypeDiscovery.dll</HintPath>
-    </Reference>
-    <Reference Include="JetBrains.Annotations, Version=2020.3.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
-      <HintPath>..\packages\JetBrains.Annotations.2020.3.0\lib\net20\JetBrains.Annotations.dll</HintPath>
-    </Reference>
-    <Reference Include="Lamar, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lamar.5.0.0\lib\netstandard2.0\Lamar.dll</HintPath>
-    </Reference>
-    <Reference Include="LamarCodeGeneration, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\LamarCodeGeneration.3.0.0\lib\netstandard2.0\LamarCodeGeneration.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.5.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.2.0.0\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.5.0.0\lib\net45\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
-    <Reference Include="System.Text.Encodings.Web, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Text.Encodings.Web.5.0.0\lib\net461\System.Text.Encodings.Web.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Text.Json, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Text.Json.5.0.0\lib\net461\System.Text.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml" />
-    <Reference Include="WindowsBase">
-      <RequiredTargetFramework>3.0</RequiredTargetFramework>
-    </Reference>
+    <PackageReference Include="JetBrains.Annotations" Version="2020.3.0" />
+    <PackageReference Include="Lamar" Version="5.0.0" />
+    <PackageReference Include="System.Text.Json" Version="5.0.0" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="Domain\BoxJsonMemento.cs" />
-    <Compile Include="Domain\EditedPartitura.cs" />
-    <Compile Include="Domain\Box.cs" />
-    <Compile Include="Domain\Clipping.cs" />
-    <Compile Include="Domain\CommandBase.cs" />
-    <Compile Include="Domain\CommandFactory.cs" />
-    <Compile Include="Domain\IEditedPartitura.cs" />
-    <Compile Include="Domain\ICommandFactory.cs" />
-    <Compile Include="Domain\ICommand.cs" />
-    <Compile Include="Domain\ICommandParameters.cs" />
-    <Compile Include="Domain\IDrawingPanel.cs" />
-    <Compile Include="Domain\IFileSystem.cs" />
-    <Compile Include="Domain\IGreyImage.cs" />
-    <Compile Include="Domain\IImageLoader.cs" />
-    <Compile Include="Domain\ILabelProvider.cs" />
-    <Compile Include="Domain\IMainWindow.cs" />
-    <Compile Include="Domain\IPlayerView.cs" />
-    <Compile Include="Domain\IPlayedPartitura.cs" />
-    <Compile Include="Domain\Page.cs" />
-    <Compile Include="Domain\PageJsonMemento.cs" />
-    <Compile Include="Domain\PageMemento.cs" />
-    <Compile Include="Domain\Part.cs" />
-    <Compile Include="Domain\PartituraJsonMemento.cs" />
-    <Compile Include="Domain\Partitura.cs" />
-    <Compile Include="Domain\PartituraException.cs" />
-    <Compile Include="Domain\PartituraMemento.cs" />
-    <Compile Include="Domain\PlayerMemento.cs" />
-    <Compile Include="Domain\PlayerPositionHolder.cs" />
-    <Compile Include="Domain\Rect.cs" />
-    <Compile Include="Domain\RectJsonMemento.cs" />
-    <Compile Include="Domain\Shape.cs" />
-    <Compile Include="Domain\SnippedUiState.cs" />
-    <Compile Include="IApplicationConfiguration.cs" />
-    <Compile Include="LibServiceRegistry.cs" />
-    <Compile Include="PageEditing\ABCLabelProvider.cs" />
-    <Compile Include="PageEditing\AddBoxCommand.cs" />
-    <Compile Include="PageEditing\AutoFillCommand.cs" />
-    <Compile Include="PageEditing\SystemFinder.cs" />
-    <Compile Include="PageEditing\BoxLayouter.cs" />
-    <Compile Include="PageEditing\UnLabelPartCommand.cs" />
-    <Compile Include="PageEditing\LabelPartCommand.cs" />
-    <Compile Include="PageEditing\RemoveBoxCommand.cs" />
-    <Compile Include="PageEditing\SelectBoxCommand.cs" />
-    <Compile Include="PageEditing\SplitBoxCommand.cs" />
-    <Compile Include="PageEditing\UpdateBoxCommand.cs" />
-    <Compile Include="PageEditing\UpdatePartPatternCommand.cs" />
-    <Compile Include="PartituraCommands\AddPagesCommand.cs" />
-    <Compile Include="PartituraCommands\CloseApplicationCommand.cs" />
-    <Compile Include="PartituraCommands\ClosePartituraCommand.cs" />
-    <Compile Include="PartituraCommands\NewPartituraCommand.cs" />
-    <Compile Include="PartituraCommands\ApplicationStartupCommand.cs" />
-    <Compile Include="PartituraCommands\OpenCommand.cs" />
-    <Compile Include="PartituraCommands\SaveAsCommand.cs" />
-    <Compile Include="PartituraCommands\SaveCommand.cs" />
-    <Compile Include="PartituraCommands\ShowFirstPageCommand.cs" />
-    <Compile Include="PartituraCommands\ShowLastPageCommand.cs" />
-    <Compile Include="PartituraCommands\ShowPageCommand.cs" />
-    <Compile Include="PartituraCommands\ShowNextPageCommand.cs" />
-    <Compile Include="PartituraCommands\ShowPageCommandBase.cs" />
-    <Compile Include="PartituraCommands\ShowPreviousPageCommand.cs" />
-    <Compile Include="Playing\IPartNavigator.cs" />
-    <Compile Include="Playing\IPlayerController.cs" />
-    <Compile Include="Playing\IPlayerViewFactory.cs" />
-    <Compile Include="Playing\IScrollingPanel.cs" />
-    <Compile Include="Playing\ISnippetManager.cs" />
-    <Compile Include="Playing\ISpeedManager.cs" />
-    <Compile Include="Playing\ITextureCache.cs" />
-    <Compile Include="Playing\IZoomManager.cs" />
-    <Compile Include="Playing\PartNavigator.cs" />
-    <Compile Include="Playing\PartPositionCalculator.cs" />
-    <Compile Include="Playing\PlayerController.cs" />
-    <Compile Include="Playing\ShowPlayerCommand.cs" />
-    <Compile Include="Playing\SnippetManager.cs" />
-    <Compile Include="Playing\SnippetMemento.cs" />
-    <Compile Include="Playing\SpeedManager.cs" />
-    <Compile Include="Playing\ZoomManager.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PlayTuningToneCommand.cs" />
+    <!-- Not part of the old project file, never compiled. -->
+    <Compile Remove="Playing\INavigationToolStrip.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>

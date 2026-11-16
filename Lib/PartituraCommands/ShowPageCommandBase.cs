@@ -1,6 +1,5 @@
 ﻿#region usings
 
-using System.Windows;
 using PartituraMagica.Lib.Domain;
 
 #endregion

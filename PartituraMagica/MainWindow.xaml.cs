@@ -154,7 +154,8 @@ namespace PartituraMagica.App
 
 		private void UpdateMousePosition(MouseEventArgs e)
 		{
-			Point currentPos = e.GetPosition(PageCanvas);
+			System.Windows.Point wpfPos = e.GetPosition(PageCanvas);
+			Point currentPos = new Point(wpfPos.X, wpfPos.Y);
 			if (CurrentMousePosition != null && CurrentMousePosition != currentPos)
 				PreviousMousePosition = CurrentMousePosition;
 			CurrentMousePosition = currentPos;

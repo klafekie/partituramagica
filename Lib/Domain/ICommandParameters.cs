@@ -1,6 +1,5 @@
 #region usings
 
-using System.Windows;
 
 #endregion
 

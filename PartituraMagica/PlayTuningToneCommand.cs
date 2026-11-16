@@ -5,7 +5,7 @@ using PartituraMagica.Lib.Domain;
 
 #endregion
 
-namespace PartituraMagica.Lib
+namespace PartituraMagica.App
 {
 	public class PlayTuningToneCommand : ICommand
 	{

@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Windows;
 using Lamar;
 using Moq;
 using NUnit.Framework;
@@ -24,6 +23,7 @@ namespace PartituraMagica.Test
 		public Mock<FakeFileSystem> fileSystem;
 		public Mock<IMainWindow> mainWindow;
 		public Mock<ITextureCache> textureCache;
+		public Mock<IApplicationConfiguration> applicationConfiguration;
 
 		public virtual void Setup()
 		{
@@ -36,14 +36,27 @@ namespace PartituraMagica.Test
 			fileSystem = new Mock<FakeFileSystem> {CallBase = true};
 			mainWindow = new Mock<IMainWindow>();
 			textureCache = new Mock<ITextureCache>();
+			applicationConfiguration = new Mock<IApplicationConfiguration>();
 
 			var container = new Container(new TestServiceRegistry(this));
 			Factory = new CommandFactory(container);
 		}
 
-		protected void Update(Shape type, double oldX, double oldY, double newX, double newY)
+		/// <summary>
+		/// The size of a newly added box. A box is higher than wide, because there must be room
+		/// for the centerY line (see <see cref="Box.MinDistanceY"/>).
+		/// </summary>
+		protected static double BoxW => Box.MinDistanceX;
+
+		protected static double BoxH => Box.MinDistanceY;
+
+		/// <param name="checkShape">
+		/// false: do not verify that the mouse is really over a shape of the given type. Needed for moving
+		/// a box of minimum height: such a box has no BoxContent area, only the centerY band.
+		/// </param>
+		protected void Update(Shape type, double oldX, double oldY, double newX, double newY, bool checkShape = true)
 		{
-			AssertShapeAt(oldX, oldY, type);
+			if (checkShape) AssertShapeAt(oldX, oldY, type);
 
 			mainWindow.Setup(w => w.CurrentMousePosition).Returns(new Point(newX, newY));
 			mainWindow.Setup(w => w.PreviousMousePosition).Returns(new Point(oldX, oldY));
@@ -72,9 +85,9 @@ namespace PartituraMagica.Test
 		}
 
 		protected bool CanUpdate(Shape type,
-			double oldX, double oldY, double newX, double newY)
+			double oldX, double oldY, double newX, double newY, bool checkShape = true)
 		{
-			AssertShapeAt(oldX, oldY, type);
+			if (checkShape) AssertShapeAt(oldX, oldY, type);
 			mainWindow.Setup(w => w.CurrentMousePosition).Returns(new Point(newX, newY));
 			mainWindow.Setup(w => w.PreviousMousePosition).Returns(new Point(oldX, oldY));
 			mainWindow.Setup(w => w.CurrentMouseShape).Returns(type);
@@ -103,8 +116,8 @@ namespace PartituraMagica.Test
 		protected void AssertShapeAt(double x, double y, Shape type)
 		{
 			Assert.AreEqual(
-				Active.CurrentPage.GetShapeTypeAt(new Point(x, y)),
-				type);
+				type,
+				Active.CurrentPage.GetShapeTypeAt(new Point(x, y)));
 		}
 
 		public IDrawingPanel Panel
@@ -120,6 +133,7 @@ namespace PartituraMagica.Test
 
 		public IMainWindow MainWindow => mainWindow.Object;
 		public ITextureCache TextureCache => textureCache.Object;
+		public IApplicationConfiguration ApplicationConfiguration => applicationConfiguration.Object;
 
 
 		public Shape GetShapeAt(Point currentPos)
@@ -141,6 +155,7 @@ namespace PartituraMagica.Test
 			For<ICommandParameters>().Use(utils).Singleton();
 			For<IGreyImage>().Use(x => x.GetInstance<ICommandParameters>().Panel.CurrentImage);
 			For<ITextureCache>().Use(utils.TextureCache).Singleton();
+			For<IApplicationConfiguration>().Use(utils.ApplicationConfiguration).Singleton();
 			Scan(_ =>
 			{
 				_.LookForRegistries();

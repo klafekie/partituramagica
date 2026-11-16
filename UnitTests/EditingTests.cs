@@ -1,6 +1,5 @@
 ﻿#region usings
 
-using System.Windows;
 using Moq;
 using NUnit.Framework;
 using PartituraMagica.Lib.Domain;
@@ -50,18 +49,20 @@ namespace PartituraMagica.Test
 		public void TestAddRemoveBoxes()
 		{
 			AssertShapeAt(50, 50, Shape.NothingSpecial);
-			//A new rect of size 10/10 is created with current pos
+			//A new rect of size BoxW/BoxH is created with current pos
 			//as lower right corner
 			//we assume a tolerance of 4.5 dots arround the border.
+			//The new box is the minimum box: it has no BoxContent area, only the centerY band.
 			CreateAddBoxCommand(new Point(50, 50)).Execute();
 			AssertShapeAt(35, 35, Shape.NothingSpecial);
 			AssertShapeAt(35.5, 35.5, Shape.BoxLeftTopCorner);
-			AssertShapeAt(44, 44, Shape.BoxLeftTopCorner);
-			AssertShapeAt(45, 45, Shape.BoxContent);
+			AssertShapeAt(44, 39, Shape.BoxLeftTopCorner);
+			AssertShapeAt(45, 39, Shape.BoxTopMargin);
+			AssertShapeAt(45, 45, Shape.BoxCenterY);
 			AssertShapeAt(46, 46, Shape.BoxRightBottomCorner);
 			AssertShapeAt(54.4, 54.4, Shape.BoxRightBottomCorner);
 			AssertShapeAt(55, 55, Shape.NothingSpecial);
-			Assert.True(panel.IsSelected(new Rect(40, 40, 10, 10)));
+			Assert.True(panel.IsSelected(new Rect(50 - BoxW, 50 - BoxH, BoxW, BoxH)));
 
 			//adding a box in the same "row" is not allowed
 			Assert.False(CreateAddBoxCommand(new Point(25, 45)).CanExecute());
@@ -113,7 +114,7 @@ namespace PartituraMagica.Test
 			CreateSplitBoxCommand(new Point(110, 135)).Execute();
 			CreateSplitBoxCommand(new Point(130, 135)).Execute();
 
-			AssertPanelContains(new Rect(90, 90, 20, 10), "A"); //implicit labelled
+			AssertPanelContains(new Rect(90, 100 - BoxH, 20, BoxH), "A"); //implicit labelled
 			//the implicit 'A' cannot be altered
 			CreateSelectItemCommand(new Point(90, 90)).Execute();
 			Assert.False(new LabelPartCommand(this).CanExecute());
@@ -127,28 +128,28 @@ namespace PartituraMagica.Test
 			LabelAt(102, 135);
 			LabelAt(136, 135);
 
-			AssertPanelContains(new Rect(90, 90, 20, 10), "A"); //first box on first page cannot be unlabelled
-			AssertPanelContains(new Rect(110, 90, 30, 10), "B");
-			AssertPanelContains(new Rect(90, 110, 10, 10), null); //no label
-			AssertPanelContains(new Rect(90, 130, 20, 10), "C");
-			AssertPanelContains(new Rect(110, 130, 20, 10), null);
-			AssertPanelContains(new Rect(130, 130, 10, 10), "D");
+			AssertPanelContains(new Rect(90, 100 - BoxH, 20, BoxH), "A"); //first box on first page cannot be unlabelled
+			AssertPanelContains(new Rect(110, 100 - BoxH, 30, BoxH), "B");
+			AssertPanelContains(new Rect(90, 120 - BoxH, BoxW, BoxH), null); //no label
+			AssertPanelContains(new Rect(90, 140 - BoxH, 20, BoxH), "C");
+			AssertPanelContains(new Rect(110, 140 - BoxH, 20, BoxH), null);
+			AssertPanelContains(new Rect(130, 140 - BoxH, BoxW, BoxH), "D");
 
 			//remove first box, second box must be labelled A			
 			CreateSelectItemCommand(new Point(90, 90)).Execute();
 			new RemoveBoxCommand(this).Execute();
-			AssertPanelContains(new Rect(90, 110, 10, 10), "A");
-			AssertPanelContains(new Rect(90, 130, 20, 10), "B");
-			AssertPanelContains(new Rect(110, 130, 20, 10), null);
-			AssertPanelContains(new Rect(130, 130, 10, 10), "C");
+			AssertPanelContains(new Rect(90, 120 - BoxH, BoxW, BoxH), "A");
+			AssertPanelContains(new Rect(90, 140 - BoxH, 20, BoxH), "B");
+			AssertPanelContains(new Rect(110, 140 - BoxH, 20, BoxH), null);
+			AssertPanelContains(new Rect(130, 140 - BoxH, BoxW, BoxH), "C");
 
 			//remove second box
 			CreateSelectItemCommand(new Point(90, 110)).Execute();
 			new RemoveBoxCommand(this).Execute();
 			Assert.AreEqual(3, panel.Rectangles.Count);
-			AssertPanelContains(new Rect(90, 130, 20, 10), "A");
-			AssertPanelContains(new Rect(110, 130, 20, 10), null);
-			AssertPanelContains(new Rect(130, 130, 10, 10), "B");
+			AssertPanelContains(new Rect(90, 140 - BoxH, 20, BoxH), "A");
+			AssertPanelContains(new Rect(110, 140 - BoxH, 20, BoxH), null);
+			AssertPanelContains(new Rect(130, 140 - BoxH, BoxW, BoxH), "B");
 		}
 
 		[Test]
@@ -157,8 +158,9 @@ namespace PartituraMagica.Test
 			CreateAddBoxCommand(new Point(100, 200)).Execute();
 
 			//try to move over left/top border
-			Update(Shape.BoxContent, 95, 195, -10, -10);
-			Assert.AreEqual(panel.LastRect, new Rect(0, 0, 10, 10));
+			//(a box of minimum height has no BoxContent area, so we cannot hit test it)
+			Update(Shape.BoxContent, 95, 195, -10, -10, checkShape: false);
+			Assert.AreEqual(new Rect(0, 0, BoxW, BoxH), panel.LastRect);
 		}
 
 		[Test]
@@ -167,8 +169,8 @@ namespace PartituraMagica.Test
 			CreateAddBoxCommand(new Point(100, 200)).Execute();
 
 			//try to move over right/bottom border
-			Update(Shape.BoxContent, 95, 195, 1005, 2005);
-			Assert.AreEqual(panel.LastRect, new Rect(990, 1990, 10, 10));
+			Update(Shape.BoxContent, 95, 195, 1005, 2005, checkShape: false);
+			Assert.AreEqual(new Rect(1000 - BoxW, 2000 - BoxH, BoxW, BoxH), panel.LastRect);
 		}
 
 
@@ -177,21 +179,25 @@ namespace PartituraMagica.Test
 		{
 			CreateAddBoxCommand(new Point(100, 200)).Execute();
 
-			//enlarge box to be 50 pixels wide.
-			Update(Shape.BoxRightBottomCorner, 100, 200, 140, 200);
-			CollectionAssert.Contains(panel.Rectangles.Values, new Rect(90, 190, 50, 10));
+			//enlarge box to be 50 pixels wide and Extra pixels higher,
+			//splitters can only be hit in the BoxContent area, which a minimum box doesn't have.
+			const double extra = 30;
+			double top = 200 - BoxH;
+			double height = BoxH + extra;
+			Update(Shape.BoxRightBottomCorner, 100, 200, 140, 200 + extra);
+			CollectionAssert.Contains(panel.Rectangles.Values, new Rect(90, top, 50, height));
 
 			CreateSplitBoxCommand(new Point(114, 200)).Execute();
 			CreateSplitBoxCommand(new Point(125, 200)).Execute();
-			AssertPanelContains(new Rect(90, 190, 24, 10));
-			AssertPanelContains(new Rect(114, 190, 11, 10));
-			AssertPanelContains(new Rect(125, 190, 15, 10));
+			AssertPanelContains(new Rect(90, top, 24, height));
+			AssertPanelContains(new Rect(114, top, 11, height));
+			AssertPanelContains(new Rect(125, top, 15, height));
 
 			//move first splitter to leftmost position (100)
 			Update(Shape.BoxSplitter, 110, 195, 110 - 14, 666);
-			AssertPanelContains(new Rect(90, 190, 10, 10));
-			AssertPanelContains(new Rect(100, 190, 25, 10));
-			AssertPanelContains(new Rect(125, 190, 15, 10));
+			AssertPanelContains(new Rect(90, top, 10, height));
+			AssertPanelContains(new Rect(100, top, 25, height));
+			AssertPanelContains(new Rect(125, top, 15, height));
 
 			//try to move over left box border
 			Assert.False(CanUpdate(Shape.BoxSplitter, 96, 195, 95, 195));
@@ -215,7 +221,9 @@ namespace PartituraMagica.Test
 
 			//try to resize over left/top border -> results in 0, 0
 			Update(Shape.BoxLeftTopCorner, 90, 190, -1, -1);
-			Assert.AreEqual(panel.LastRect, new Rect(0, 0, 100, 200));
+			//the centerY line stays where it was (absolute position), it is not centered again
+			var expected = new Rect(new Rect(0, 0, 100, 200), centerY: 200 - BoxH + BoxH / 2D);
+			Assert.AreEqual(expected, panel.LastRect);
 		}
 
 		[Test]
@@ -225,21 +233,24 @@ namespace PartituraMagica.Test
 			//since we have only a single box, update can be executed 
 			// everywhere within page borders
 			Assert.True(CanUpdate(Shape.BoxLeftTopCorner, 90, 190, 0, 0));
-			Assert.True(CanUpdate(Shape.BoxContent, 95, 195, 990, 1950));
+			Assert.True(CanUpdate(Shape.BoxContent, 95, 195, 990, 1950, checkShape: false));
 
-			Assert.False(CanUpdate(Shape.BoxLeftTopCorner, 94, 194, 95, 194),
+			Assert.False(CanUpdate(Shape.BoxLeftTopCorner, 94, 189, 95, 189),
+				"cannot reduce width, cause we're already at the min");
+
+			Assert.False(CanUpdate(Shape.BoxLeftTopCorner, 94, 189, 94, 190),
 				"cannot reduce height more, cause we're already at the minimum");
 
-			Assert.False(CanUpdate(Shape.BoxLeftTopCorner, 94, 194, 94, 195),
-				"Cannot reduce width, cause we're already at the min");
-
 			//enlarge by 2,3
-			Update(Shape.BoxLeftTopCorner, 94, 194, 92, 191);
-			Assert.AreEqual(panel.LastRect, new Rect(88, 187, 12, 13));
+			Update(Shape.BoxLeftTopCorner, 94, 189, 92, 186);
+			//the centerY line is pushed down by the top border, keeping its absolute position
+			var enlarged = new Rect(new Rect(90 - 2, 200 - BoxH - 3, BoxW + 2, BoxH + 3), centerY: BoxH / 2D + 3);
+			Assert.AreEqual(enlarged, panel.LastRect);
 
 			//move
-			Update(Shape.BoxContent, 95, 195, 115, 205);
-			Assert.AreEqual(panel.LastRect, new Rect(108, 197, 12, 13));
+			Update(Shape.BoxContent, 95, 195, 115, 205, checkShape: false);
+			Assert.AreEqual(new Rect(enlarged, enlarged.X + 20, enlarged.Y + 10, enlarged.Width, enlarged.Height),
+				panel.LastRect);
 		}
 
 		[Test]
@@ -249,76 +260,79 @@ namespace PartituraMagica.Test
 
 			//try to resize over the right/bottom corner
 			Update(Shape.BoxRightBottomCorner, 100, 200, 1005, 2005);
-			Assert.AreEqual(panel.LastRect, new Rect(90, 190, 1000 - 90, 2000 - 190));
+			//the centerY line is centered again
+			Assert.AreEqual(new Rect(90, 200 - BoxH, 1000 - 90, 2000 - (200 - BoxH)), panel.LastRect);
 		}
 
 		[Test]
 		public void TestSplitBox()
 		{
 			CreateAddBoxCommand(new Point(100, 200)).Execute();
+			double top = 200 - BoxH;
 
-			//enlarge second box to be 50 pixels wide (90,200,50,10)
+			//enlarge second box to be 50 pixels wide (90, top, 50, BoxH)
 			Update(Shape.BoxRightBottomCorner, 100, 200, 140, 200);
-			AssertPanelContains(new Rect(90, 190, 50, 10));
+			AssertPanelContains(new Rect(90, top, 50, BoxH));
 
 			CreateSplitBoxCommand(new Point(125, 200)).Execute();
-			AssertPanelContains(new Rect(90, 190, 35, 10));
-			AssertPanelContains(new Rect(125, 190, 15, 10));
+			AssertPanelContains(new Rect(90, top, 35, BoxH));
+			AssertPanelContains(new Rect(125, top, 15, BoxH));
 
 			//Split with point outside the second box, results in "middle" (115)
 			CreateSplitBoxCommand(new Point(100, 100)).Execute();
-			AssertPanelContains(new Rect(90, 190, 25, 10));
-			AssertPanelContains(new Rect(115, 190, 10, 10));
-			AssertPanelContains(new Rect(125, 190, 15, 10));
+			AssertPanelContains(new Rect(90, top, 25, BoxH));
+			AssertPanelContains(new Rect(115, top, 10, BoxH));
+			AssertPanelContains(new Rect(125, top, 15, BoxH));
 			Assert.AreEqual(3, panel.Rectangles.Count);
 
 			//splitting again at same location has no effect
 			CreateSplitBoxCommand(new Point(100, 100)).Execute();
-			AssertPanelContains(new Rect(90, 190, 25, 10));
-			AssertPanelContains(new Rect(115, 190, 10, 10));
-			AssertPanelContains(new Rect(125, 190, 15, 10));
+			AssertPanelContains(new Rect(90, top, 25, BoxH));
+			AssertPanelContains(new Rect(115, top, 10, BoxH));
+			AssertPanelContains(new Rect(125, top, 15, BoxH));
 			Assert.AreEqual(3, panel.Rectangles.Count);
 
 			//nothing happens, cause there is already a splitter at 115
 			CreateSplitBoxCommand(new Point(120, 200)).Execute();
-			AssertPanelContains(new Rect(90, 190, 25, 10));
-			AssertPanelContains(new Rect(115, 190, 10, 10));
-			AssertPanelContains(new Rect(125, 190, 15, 10));
+			AssertPanelContains(new Rect(90, top, 25, BoxH));
+			AssertPanelContains(new Rect(115, top, 10, BoxH));
+			AssertPanelContains(new Rect(125, top, 15, BoxH));
 			Assert.AreEqual(3, panel.Rectangles.Count);
 		}
 
 		[Test]
 		public void TestUpdateMultipleBoxes()
 		{
-			//overlapping on X axis assuming initial size of 10x10
+			//overlapping on X axis
 			CreateAddBoxCommand(new Point(105, 50)).Execute();
 			CreateAddBoxCommand(new Point(100, 100)).Execute();
 			//resize lower box into or over upper box
 			Assert.False(CanUpdate(Shape.BoxTopMargin, 95, 90, 95, 45));
 			Assert.False(CanUpdate(Shape.BoxTopMargin, 95, 90, 95, 5));
 			//move lower box into or over upper box
-			Assert.False(CanUpdate(Shape.BoxContent, 95, 95, 95, 45));
+			//(a box of minimum height has no BoxContent area, so we cannot hit test it)
+			Assert.False(CanUpdate(Shape.BoxContent, 95, 95, 95, 45, checkShape: false));
 			//moving over the upper box in a single step would work,
 			//but this will never happen when done with the mouse...
-			Assert.True(CanUpdate(Shape.BoxContent, 95, 95, 95, 5));
+			Assert.True(CanUpdate(Shape.BoxContent, 95, 95, 95, 5, checkShape: false));
 		}
 
 		[Test]
 		public void TestUpdateRightMargin()
 		{
 			CreateAddBoxCommand(new Point(100, 100)).Execute();
-			Assert.AreEqual(panel.LastRect, new Rect(90, 90, 10, 10));
+			Assert.AreEqual(new Rect(90, 100 - BoxH, BoxW, BoxH), panel.LastRect);
 
 			Assert.False(CanUpdate(Shape.BoxRightMargin, 104, 95, 103, 95),
 				"cannot reduce width more, cause we're already at the minimum");
 
 			//enlarge
 			Update(Shape.BoxRightMargin, 104, 95, 105, 9999);
-			Assert.AreEqual(panel.LastRect, new Rect(90, 90, 11, 10));
+			Assert.AreEqual(new Rect(90, 100 - BoxH, BoxW + 1, BoxH), panel.LastRect);
 
 			//move
-			Update(Shape.BoxContent, 95, 95, 10, 20);
-			Assert.AreEqual(panel.LastRect, new Rect(90 - 85, 90 - 75, 11, 10));
+			Update(Shape.BoxContent, 95, 95, 10, 20, checkShape: false);
+			Assert.AreEqual(new Rect(90 - 85, 100 - BoxH - 75, BoxW + 1, BoxH), panel.LastRect);
 		}
 
 		[Test]
@@ -326,46 +340,53 @@ namespace PartituraMagica.Test
 		{
 			CreateAddBoxCommand(new Point(100, 200)).Execute();
 
-			//enlarge box to be 50 pixels wide.
-			Update(Shape.BoxRightBottomCorner, 100, 200, 140, 200);
-			AssertPanelContains(new Rect(90, 190, 50, 10));
+			//enlarge box to be 50 pixels wide and 30 pixels higher,
+			//splitters can only be hit in the BoxContent area, which a minimum box doesn't have.
+			const double extra = 30;
+			double height = BoxH + extra;
+			Update(Shape.BoxRightBottomCorner, 100, 200, 140, 200 + extra);
+			AssertPanelContains(new Rect(90, 200 - BoxH, 50, height));
 
 			CreateSplitBoxCommand(new Point(120, 200)).Execute();
 			AssertShapeAt(120, 195, Shape.BoxSplitter);
-			AssertPanelContains(new Rect(90, 190, 30, 10));
-			AssertPanelContains(new Rect(120, 190, 20, 10));
+			AssertPanelContains(new Rect(90, 200 - BoxH, 30, height));
+			AssertPanelContains(new Rect(120, 200 - BoxH, 20, height));
 
 			//move the box by +10,+20
 			Update(Shape.BoxContent, 100, 195, 110, 215);
-			AssertPanelContains(new Rect(100, 210, 30, 10));
-			AssertPanelContains(new Rect(130, 210, 20, 10));
+			AssertPanelContains(new Rect(100, 220 - BoxH, 30, height));
+			AssertPanelContains(new Rect(130, 220 - BoxH, 20, height));
 			AssertShapeAt(130, 215, Shape.BoxSplitter);
 
 			//resize the box by 20,30 tearing at the left top corner
 			Update(Shape.BoxLeftTopCorner, 100, 210, 80, 180);
 			//the splitter moves with the left margin
 			AssertShapeAt(110, 215, Shape.BoxSplitter);
-			AssertPanelContains(new Rect(80, 180, 30, 40));
-			AssertPanelContains(new Rect(110, 180, 40, 40));
+			//the centerY line keeps its absolute position, so it is not centered anymore
+			double top = 220 - BoxH - 30;
+			double resizedHeight = height + 30;
+			double centerY = height / 2D + 30;
+			AssertPanelContains(new Rect(new Rect(80, top, 30, resizedHeight), centerY: centerY));
+			AssertPanelContains(new Rect(new Rect(110, top, 40, resizedHeight), centerY: centerY));
 
 			//try resize the box to less than rightmost splitter			
 			Assert.False(CanUpdate(Shape.BoxRightMargin,
 				80 + 70, 210, 80 + 70 - 41, 210));
 
-			//resize exactly to minimum
+			//resize the width exactly to minimum. Tearing at the corner centers the centerY line again.
 			Update(Shape.BoxRightBottomCorner,
-				80 + 70, 220, 80 + 70 - 30, 190);
-			AssertPanelContains(new Rect(80, 180, 30, 10));
-			AssertPanelContains(new Rect(110, 180, 10, 10));
-			AssertShapeAt(84, 185, Shape.BoxLeftMargin);
-			AssertShapeAt(85, 185, Shape.BoxContent);
-			AssertShapeAt(106, 185, Shape.BoxSplitter);
-			AssertShapeAt(107, 185, Shape.BoxSplitter);
-			AssertShapeAt(115, 185, Shape.BoxContent);
-			AssertShapeAt(116, 185, Shape.BoxRightMargin);
+				80 + 70, top + resizedHeight, 80 + 70 - 30, top + resizedHeight);
+			AssertPanelContains(new Rect(80, top, 30, resizedHeight));
+			AssertPanelContains(new Rect(110, top, 10, resizedHeight));
+			AssertShapeAt(84, 230, Shape.BoxLeftMargin);
+			AssertShapeAt(85, 230, Shape.BoxContent);
+			AssertShapeAt(106, 230, Shape.BoxSplitter);
+			AssertShapeAt(107, 230, Shape.BoxSplitter);
+			AssertShapeAt(115, 230, Shape.BoxContent);
+			AssertShapeAt(116, 230, Shape.BoxRightMargin);
 
 			Assert.False(CanUpdate(Shape.BoxLeftMargin,
-					80, 185, 81, 185),
+					80, 230, 81, 230),
 				"we cannot reduce size anymore now, even from leftmargin");
 		}
 	}

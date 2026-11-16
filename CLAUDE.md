@@ -10,7 +10,7 @@ PartituraMagica turns scanned sheet-music pages into a "playable" score: the use
 
 | Folder | What | Stack |
 |---|---|---|
-| `Lib/` | Core domain + commands + player logic, UI-agnostic | C# / .NET Framework 4.8 |
+| `Lib/` | Core domain + commands + player logic, UI-agnostic | C# / netstandard2.0 |
 | `PartituraMagica/` | WPF editor app (`PartituraMagica.App`), Direct3D player view | C#, WPF, SlimDX |
 | `UnitTests/` | NUnit + Moq + FluentAssertions tests for `Lib` | C# |
 | `PartituraFileConverter/` | Converts old binary `.partitura` to the JSON `.partitura2` format | C# |
@@ -24,13 +24,15 @@ Each of the active folders has its own `CLAUDE.md` with details.
 
 ## Commands
 
-C# solution (`PartituraMagica.sln`) is old-style .csproj with `packages/` restore and **only builds on Windows** (needs .NET Framework 4.8, WPF, SlimDX). It cannot be built or tested in the Linux cloud container; don't try.
+`Lib/` and `UnitTests/` are SDK-style projects (`netstandard2.0` / `net8.0`). The rest of `PartituraMagica.sln` is old-style .csproj with `packages/` restore and **only builds on Windows** (needs .NET Framework 4.8, WPF, SlimDX).
 
 ```bash
-# Windows: build and run all tests
+# Lib (netstandard2.0) and UnitTests (net8.0) are SDK-style and build/test anywhere
+dotnet test UnitTests/Test.csproj
+dotnet test UnitTests/Test.csproj --filter "FullyQualifiedName~SystemFinderTests"   # subset
+
+# Windows only: the full solution (WPF app etc.)
 msbuild PartituraMagica.sln /restore
-nunit3-console UnitTests/bin/Debug/Test.dll
-nunit3-console UnitTests/bin/Debug/Test.dll --where "test =~ SystemFinderTests"   # subset
 ```
 
 Web player (`WebPlayer/`, uses yarn, but a package-lock.json also exists):

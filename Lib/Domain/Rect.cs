@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using global::System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
-using System.Windows;
 using JetBrains.Annotations;
 using PartituraMagica.Lib.Domain;
 
@@ -23,7 +22,10 @@ namespace PartituraMagica
 	[Serializable]
 	public class Rect
 	{
-		private System.Windows.Rect r;
+		private readonly double _x;
+		private readonly double _y;
+		private readonly double _width;
+		private readonly double _height;
 
 		/** represents the position that should be vertically centered in player view.
 		 * the value is relative to current Y possition
@@ -43,7 +45,15 @@ namespace PartituraMagica
 
 		private Rect(double x, double y, double width, double height, double centerY, Rect outerRect)
 		{
-			r = new System.Windows.Rect(x, y, width, height);
+			if (width < 0D || height < 0D)
+			{
+				throw new ArgumentException("Width and Height cannot be negative.");
+			}
+
+			_x = x;
+			_y = y;
+			_width = width;
+			_height = height;
 			OuterRect = outerRect;
 			CenterY = centerY;
 		}
@@ -57,45 +67,47 @@ namespace PartituraMagica
 			}
 		}
 
-		public double X => r.X;
+		public double X => _x;
 		[JsonIgnore]
 		public int XInt => (int)Math.Round(this.X);
 
-		public double Y => r.Y;
+		public double Y => _y;
 		[JsonIgnore]
 		public int YInt => (int)Math.Round(this.Y);
 
-		public double Width => r.Width;
+		public double Width => _width;
 		[JsonIgnore]
 		public int WidthInt => (int)Math.Round(this.Width);
 
-		public double Height => r.Height;
+		public double Height => _height;
 		[JsonIgnore]
 		public int HeightInt => (int)Math.Round(Height);
 
 		[JsonIgnore]
-		public double Left => this.r.Left;
+		public double Left => _x;
 		[JsonIgnore]
 		public int LeftInt => (int)Math.Round(this.Left);
 
 		[JsonIgnore]
-		public double Right => this.r.Right;
+		public double Right => _x + _width;
 		[JsonIgnore]
 		public int RightInt => (int)Math.Round(this.Right);
 
 		[JsonIgnore]
-		public double Top => this.r.Top;
+		public double Top => _y;
 
 		[JsonIgnore]
-		public double Bottom => this.r.Bottom;
+		public double Bottom => _y + _height;
 
 		[JsonIgnore]
-		public Size Size => this.r.Size;
+		public Size Size => new Size(_width, _height);
 
 		[JsonIgnore]
-		public Point TopLeft => this.r.TopLeft;
+		public Point TopLeft => new Point(_x, _y);
 
-		public bool Contains(Point point) => this.r.Contains(point.X, point.Y);
+		//edges are inclusive
+		public bool Contains(Point point) =>
+			point.X >= Left && point.X <= Right && point.Y >= Top && point.Y <= Bottom;
 
 		//we intentionally dont check the outerRect/minSize here
 		public Rect Scale(double xFactor, double yFactor)
@@ -268,7 +280,8 @@ namespace PartituraMagica
 
 		public bool IntersectsWith(Rect rect)
 		{
-			return this.r.IntersectsWith(rect.r);
+			//touching rectangles intersect (edges are inclusive)
+			return rect.Left <= Right && rect.Right >= Left && rect.Top <= Bottom && rect.Bottom >= Top;
 		}
 
 		public override bool Equals(object o)
@@ -279,7 +292,8 @@ namespace PartituraMagica
 		public bool Equals(Rect value)
 		{
 			if (value == null) return false;
-			return this.r.Equals(value.r) && this.CenterY.Equals(value.CenterY);
+			return _x.Equals(value._x) && _y.Equals(value._y) && _width.Equals(value._width) && _height.Equals(value._height)
+				&& this.CenterY.Equals(value.CenterY);
 		}
 
 		public static bool operator !=(Rect rect1, Rect rect2)
@@ -295,7 +309,7 @@ namespace PartituraMagica
 
 		public override int GetHashCode()
 		{
-			return this.r.GetHashCode();
+			return unchecked(((_x.GetHashCode() * 397 ^ _y.GetHashCode()) * 397 ^ _width.GetHashCode()) * 397 ^ _height.GetHashCode());
 		}
 
 		public override string ToString()
