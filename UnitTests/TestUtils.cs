@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Lamar;
 using Moq;
 using NUnit.Framework;
+using PartituraMagica.Lib;
 using PartituraMagica.Lib.Domain;
 using PartituraMagica.Lib.PageEditing;
 using PartituraMagica.Lib.Playing;
