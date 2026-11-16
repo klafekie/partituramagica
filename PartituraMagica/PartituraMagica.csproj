@@ -145,6 +145,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FileSystem.cs" />
+    <Compile Include="PlayTuningToneCommand.cs" />
     <Compile Include="DrawingPanel.cs" />
     <Compile Include="EditingController.cs" />
     <Compile Include="GreyImage.cs" />

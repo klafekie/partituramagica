@@ -1,6 +1,5 @@
 ﻿#region usings
 
-using System.Windows;
 using Moq;
 using NUnit.Framework;
 using PartituraMagica.Lib.Domain;

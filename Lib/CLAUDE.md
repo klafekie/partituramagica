@@ -14,4 +14,4 @@ Adding a command: create `FooCommand : CommandBase` (or `ICommand`), keep the `C
 
 Changing a `*JsonMemento` property changes the `.partitura2` file format consumed by `WebPlayer/`; update `WebPlayer/src/Partitura.tsx` accordingly.
 
-.NET Framework 4.8, tabs for indentation, usings inside `#region usings`.
+SDK-style `netstandard2.0` project (assembly name stays `ClassLibrary1`, the Lamar scans use it). No `System.Windows`: use `PartituraMagica.Point`/`Size`/`Rect` from `Domain/`. Windows-only commands (e.g. `PlayTuningToneCommand`) live in the WPF project. Tabs for indentation, usings inside `#region usings`.

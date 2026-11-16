@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Windows;
 using Lamar;
 using Moq;
 using NUnit.Framework;
