@@ -161,13 +161,15 @@ namespace PartituraMagica
 			}
 
 
-			public void TrySplit(double splitterPos, int boxId, Size boxSize)
+			public int TrySplit(double splitterPos, int boxId, Size boxSize)
 			{
 				if (EnoughRoomForSplitterAt(splitterPos, -1, boxSize))
 				{
 					int splitterId = this.splitters.Count + 1000 * (boxId + 1);
 					splitters.Add(splitterPos, splitterId);
+					return splitterId;
 				}
+				return -1;
 			}
 
 			private bool EnoughRoomForSplitterAt(double desiredPos, int id, Size boxSize)
@@ -449,7 +451,11 @@ namespace PartituraMagica
 			{
 				desiredPos = this.coords.Left + (this.coords.Width / 2.0);
 			}
-			this.splitters.TrySplit(MakeRelative(desiredPos), this.id, this.coords.Size);
+			int splitterId = this.splitters.TrySplit(MakeRelative(desiredPos), this.id, this.coords.Size);
+			if (splitterId >= 0)
+			{
+				this.labelIds.Add(splitterId);
+			}
 		}
 
 		/** paint without changing the selection or the labelling */

@@ -120,36 +120,30 @@ namespace PartituraMagica.Test
 			Assert.False(new LabelPartCommand(this).CanExecute());
 			Assert.False(new UnLabelPartCommand(this).CanExecute());
 
-			//label second part of box1
-			LabelAt(120, 95);
-			//label second box
-			//LabelAt(100, 115);
-			//label first and last part of third box
-			LabelAt(102, 135);
-			LabelAt(136, 135);
+			// splits auto-label their right-hand side: no manual labelling needed
 
 			AssertPanelContains(new Rect(90, 100 - BoxH, 20, BoxH), "A"); //first box on first page cannot be unlabelled
-			AssertPanelContains(new Rect(110, 100 - BoxH, 30, BoxH), "B");
+			AssertPanelContains(new Rect(110, 100 - BoxH, 30, BoxH), "B"); //auto-labelled by split
 			AssertPanelContains(new Rect(90, 120 - BoxH, BoxW, BoxH), null); //no label
-			AssertPanelContains(new Rect(90, 140 - BoxH, 20, BoxH), "C");
-			AssertPanelContains(new Rect(110, 140 - BoxH, 20, BoxH), null);
-			AssertPanelContains(new Rect(130, 140 - BoxH, BoxW, BoxH), "D");
+			AssertPanelContains(new Rect(90, 140 - BoxH, 20, BoxH), null); //left of box3, not auto-labelled
+			AssertPanelContains(new Rect(110, 140 - BoxH, 20, BoxH), "C"); //auto-labelled by first split
+			AssertPanelContains(new Rect(130, 140 - BoxH, BoxW, BoxH), "D"); //auto-labelled by second split
 
-			//remove first box, second box must be labelled A			
+			//remove first box, second box must be labelled A
 			CreateSelectItemCommand(new Point(90, 90)).Execute();
 			new RemoveBoxCommand(this).Execute();
 			AssertPanelContains(new Rect(90, 120 - BoxH, BoxW, BoxH), "A");
-			AssertPanelContains(new Rect(90, 140 - BoxH, 20, BoxH), "B");
-			AssertPanelContains(new Rect(110, 140 - BoxH, 20, BoxH), null);
+			AssertPanelContains(new Rect(90, 140 - BoxH, 20, BoxH), null); //box3 left still unlabelled
+			AssertPanelContains(new Rect(110, 140 - BoxH, 20, BoxH), "B");
 			AssertPanelContains(new Rect(130, 140 - BoxH, BoxW, BoxH), "C");
 
 			//remove second box
 			CreateSelectItemCommand(new Point(90, 110)).Execute();
 			new RemoveBoxCommand(this).Execute();
 			Assert.AreEqual(3, panel.Rectangles.Count);
-			AssertPanelContains(new Rect(90, 140 - BoxH, 20, BoxH), "A");
-			AssertPanelContains(new Rect(110, 140 - BoxH, 20, BoxH), null);
-			AssertPanelContains(new Rect(130, 140 - BoxH, BoxW, BoxH), "B");
+			AssertPanelContains(new Rect(90, 140 - BoxH, 20, BoxH), "A"); //implicit, box3 left is first
+			AssertPanelContains(new Rect(110, 140 - BoxH, 20, BoxH), "B");
+			AssertPanelContains(new Rect(130, 140 - BoxH, BoxW, BoxH), "C");
 		}
 
 		[Test]

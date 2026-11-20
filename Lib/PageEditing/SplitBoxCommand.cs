@@ -32,7 +32,8 @@ namespace PartituraMagica.Lib.PageEditing
 		public void Execute()
 		{
 			Debug.Assert(CanExecute());
-			P.Active.CurrentPage.SplitSelectedBox(_mainWindow.CurrentMousePosition.Value, P.Panel);
+			P.Active.Partitura.SplitSelectedBox(P.Active.CurrentPageIndex,
+				_mainWindow.CurrentMousePosition.Value, P.Panel);
 		}
 	}
 }

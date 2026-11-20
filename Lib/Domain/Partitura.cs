@@ -143,6 +143,12 @@ namespace PartituraMagica
 			GetPage(pageIndex).RemoveSelectedBox(panel, this.labelProvider);
 		}
 
+		public void SplitSelectedBox(int pageIndex, Point pos, IDrawingPanel panel)
+		{
+			this.labelProvider.PageIndex = pageIndex;
+			GetPage(pageIndex).SplitSelectedBox(pos, panel, this.labelProvider);
+		}
+
 		public string PartPattern
 		{
 			get

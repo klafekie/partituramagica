@@ -221,11 +221,11 @@ namespace PartituraMagica
 			_hasChanges = false;
 		}
 
-		public void SplitSelectedBox(Point pos, IDrawingPanel panel)
+		public void SplitSelectedBox(Point pos, IDrawingPanel panel, ILabelProvider labelProvider = null)
 		{
 			_hasChanges = true;
 			SelectedBox.TrySplit(pos);
-			SelectedBox.Paint(panel);
+			PaintPage(panel, labelProvider);
 		}
 
 		public void SelectBoxAt(Point pos, IDrawingPanel panel)
