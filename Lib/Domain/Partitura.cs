@@ -10,12 +10,13 @@ using PartituraMagica.Lib.Playing;
 
 namespace PartituraMagica
 {
-	/** 
-     * Represents a musical piece to be displayed. 
+	/**
+     * Represents a musical piece to be displayed.
      * consists of a list of pages. Several boxes on each page.
      * boxes are grouped into Parts (according to the repetition structure
      * of the piece.
      */
+	// OpenHands integration test - dummy change
 	public class Partitura
 	{
 		private List<Page> pages;
