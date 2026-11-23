@@ -7,7 +7,7 @@ using System.Windows.Interop;
 using FontAwesome.Sharp;
 using PartituraMagica.Lib.Domain;
 using PartituraMagica.Lib.Playing;
-using SlimDX;
+using SharpGen.Runtime;
 using DialogResult = System.Windows.Forms.DialogResult;
 using IWin32Window = System.Windows.Forms.IWin32Window;
 
@@ -204,8 +204,9 @@ namespace PartituraMagica.App.Player
 
 		public bool IsExpectedError(Exception ex)
 		{
-			//Devoce Lost happens for example when user locks his computer while partitura is playing.
-			return ex is SlimDXException slimEx && slimEx.ResultCode.Name == "D3DERR_DEVICELOST";
+			//Device Lost happens for example when user locks his computer while partitura is playing.
+			const int D3DERR_DEVICELOST = unchecked((int)0x88760868);
+			return ex is SharpGenException sge && sge.ResultCode.Code == D3DERR_DEVICELOST;
 		}
 
 		private IconChar GetIconChar(int i)

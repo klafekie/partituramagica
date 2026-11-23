@@ -5,15 +5,14 @@ using System.Runtime.InteropServices;
 using PartituraMagica.Lib;
 using PartituraMagica.Lib.Domain;
 using PartituraMagica.Lib.Playing;
-using SlimDX;
-using SlimDX.Direct3D9;
+using Vortice.Direct3D9;
 
 #endregion
 
 namespace PartituraMagica.App
 {
-	/** 
-     * The Direct3D visual representation of a Clipping for use in the 
+	/**
+     * The Direct3D visual representation of a Clipping for use in the
      * PlayerViewD3D impl.
      */
 	internal class ClippingD3D : IDisposable
@@ -28,21 +27,16 @@ namespace PartituraMagica.App
 			public int Color;
 			public float Tu;
 			public float Tv;
-			public const VertexFormat Format = VertexFormat.Texture1 | VertexFormat.Position | VertexFormat.Diffuse;
+			public const VertexFormat Format = VertexFormat.Position | VertexFormat.Diffuse | VertexFormat.Texture1;
 		}
 
 		private readonly ITextureCache _cache;
-
 		private readonly IApplicationConfiguration _configuration;
 		private readonly Rect _coords;
 		private readonly IGreyImage _image;
 
-		/// <summary>
-		///   The D3D representation of the contents of this clipping, which can be 'scrolled' by the D3D rendering.
-		///   Is a mesh of type 'box', depth 0 so it's like a rectangle of paper.
-		///   The contents to be displayed gets set as the texture.
-		/// </summary>
-		private Mesh _mesh; // [renamed from 'box' jed 20150118]
+		// 4-vertex quad (triangle strip). Replaces the D3DX9 Mesh used in the net48 build.
+		private PositionedColoredTextured[] _vertices;
 
 		public float Width => (float)_coords.Width;
 
@@ -56,93 +50,67 @@ namespace PartituraMagica.App
 			_coords = new Rect(coords);
 		}
 
-		public void Dispose()
-		{
-			_mesh?.Dispose();
-		}
+		public void Dispose() { }
 
-		public void Init(Device dev, float offset)
+		public void Init(IDirect3DDevice9 dev, float offset)
 		{
-			_mesh = Mesh.CreateBox(dev, (float)_coords.Width, (float)_coords.Height, 0f);
-
 			XPos = offset;
 
-			// Replace _mesh by a clone of itself to set format
-			Mesh tempBox = _mesh.Clone(dev, _mesh.CreationOptions, PositionedColoredTextured.Format);
-			_mesh.Dispose();
-			_mesh = tempBox;
+			float imageWidth  = _image.Width  * 96F / (float)_image.DpiX;
+			float imageHeight = _image.Height * 96F / (float)_image.DpiY;
 
+			float uvLeft   = (float)_coords.X      / imageWidth;
+			float uvTop    = (float)_coords.Y      / imageHeight;
+			float uvRight  = (float)_coords.Right  / imageWidth;
+			float uvBottom = (float)_coords.Bottom / imageHeight;
+
+			// Reproduce original mesh vertex layout: box centered at (0,0), shifted by deltaY.
+			// Before shift: top Y = +halfH (Tv=top), bottom Y = -halfH (Tv=bottom).
+			float halfH  = (float)_coords.Height / 2F;
+			float deltaY = (float)(_coords.Height / 2D - _coords.CenterY);
+			float topY    = halfH - deltaY;
+			float bottomY = -halfH - deltaY;
+			float leftX  = offset;
+			float rightX = offset + (float)_coords.Width;
+
+			// Triangle strip order: TL, TR, BL, BR (CullMode=None so winding irrelevant)
+			_vertices = new PositionedColoredTextured[4];
+			_vertices[0] = new PositionedColoredTextured { X = leftX,  Y = topY,    Color = _configuration.Color, Tu = uvLeft,  Tv = uvTop    };
+			_vertices[1] = new PositionedColoredTextured { X = rightX, Y = topY,    Color = _configuration.Color, Tu = uvRight, Tv = uvTop    };
+			_vertices[2] = new PositionedColoredTextured { X = leftX,  Y = bottomY, Color = _configuration.Color, Tu = uvLeft,  Tv = uvBottom };
+			_vertices[3] = new PositionedColoredTextured { X = rightX, Y = bottomY, Color = _configuration.Color, Tu = uvRight, Tv = uvBottom };
+		}
+
+		public void Render(IDirect3DDevice9 dev)
+		{
+			if (_vertices == null) throw new Exception("vertices not initialized");
+
+			IDirect3DTexture9 texture = (IDirect3DTexture9)_cache.GetTexture(_image.Path);
+			if (texture == null) throw new Exception("Couldn't load texture");
+
+			dev.SetTexture(0, texture);
+
+			dev.SetTextureStageState(0, TextureStage.ColorOperation,
+				_configuration.InvertColors
+					? (int)TextureOperation.Subtract
+					: (int)TextureOperation.Modulate);
+			dev.SetTextureStageState(0, TextureStage.ColorArg1, (int)TextureArgument.Diffuse);
+			dev.SetTextureStageState(0, TextureStage.ColorArg2, (int)TextureArgument.Texture);
+			dev.SetTextureStageState(0, TextureStage.AlphaOperation, (int)TextureOperation.Disable);
+
+			dev.VertexFormat = PositionedColoredTextured.Format;
+
+			var gch = GCHandle.Alloc(_vertices, GCHandleType.Pinned);
 			try
 			{
-				//Debug.WriteLine("offset: " + offset.ToString());
-				DataStream stream = _mesh.LockVertexBuffer(LockFlags.None);
-
-				float imageWidth = _image.Width * 96F / (float)_image.DpiX;
-				float imageHeight = _image.Height * 96F / (float)_image.DpiY;
-
-				var vertices = new PositionedColoredTextured[_mesh.VertexCount];
-				for (int i = 0; i < _mesh.VertexCount; ++i)
-				{
-					vertices[i] = stream.Read<PositionedColoredTextured>();
-					var vertice = vertices[i];
-					//Trace.WriteLine($"{i}: ({vertice.X}; {vertice.Y}; {vertice.Z}) u:{vertice.Tu} v:{vertice.Tv}");
-				}
-
-				_mesh.UnlockVertexBuffer();
-				stream = _mesh.LockVertexBuffer(LockFlags.None);
-				float deltaY = (float)(_coords.Height / 2D - _coords.CenterY);
-				for (int i = 0; i < _mesh.VertexCount; ++i)
-				{
-					var vertice = vertices[i];
-					float left = (float)_coords.X / imageWidth;
-					float top = (float)_coords.Y / imageHeight;
-					float right = (float)_coords.Right / imageWidth;
-					float bottom = (float)_coords.Bottom / imageHeight;
-
-					vertice.Color = _configuration.Color;
-					vertice.Tu = vertice.X >= 0 ? right : left;
-					vertice.Tv = vertice.Y >= 0 ? top : bottom;
-					vertice.X += offset + (float)_coords.Width / 2F;
-					vertice.Y -= deltaY;
-
-					//Trace.WriteLine($"{i}: ({vertice.X}; {vertice.Y}; {vertice.Z}) u:{vertice.Tu} v:{vertice.Tv}");
-
-					stream.Write(vertice);
-				}
+				dev.DrawPrimitiveUP(PrimitiveType.TriangleStrip, 2,
+					gch.AddrOfPinnedObject(),
+					(uint)Marshal.SizeOf<PositionedColoredTextured>());
 			}
 			finally
 			{
-				_mesh.VertexBuffer.Unlock();
+				gch.Free();
 			}
-		}
-
-		public void Render(Device dev)
-		{
-			if (_mesh == null) throw new Exception("mesh not initialized");
-
-			Texture texture = (Texture)_cache.GetTexture(_image.Path);
-
-			if (texture == null) throw new Exception("Couldn't load texture");
-			dev.SetTexture(0, texture);
-
-			// Set the 'blending mode': how colors are mixed.
-			// Note: the following three calls (ColorOperation, ColorArg1, ColorArg2 belong together [according to
-			// http://msdn.microsoft.com/en-us/library/windows/desktop/bb204870%28v=vs.85%29.aspx]
-			/* Experiment with ColorArgs [jed 201412]:
-			 * - Doc found:
-			 *   - http://msdn.microsoft.com/en-us/library/windows/desktop/bb204870%28v=vs.85%29.aspx
-			 *   - http://msdn.microsoft.com/en-us/library/windows/desktop/bb172617%28v=vs.85%29.aspx
-			 * - ColorArg1 'Texture' gives no visible texture.
-			 * - Disabling the ColorArg2 line of setting the default (= .Current) explicitly gives no visible texture.
-			 */
-			dev.SetTextureStageState(0, TextureStage.ColorOperation,
-				_configuration.InvertColors
-					? TextureOperation.Subtract
-					: TextureOperation.Modulate);
-			dev.SetTextureStageState(0, TextureStage.ColorArg1, TextureArgument.Diffuse);
-			dev.SetTextureStageState(0, TextureStage.ColorArg2, TextureArgument.Texture); //??
-			dev.SetTextureStageState(0, TextureStage.AlphaOperation, TextureOperation.Disable);
-			_mesh.DrawSubset(0);
 		}
 	}
 }

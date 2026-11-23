@@ -1,16 +1,15 @@
-﻿#region usings
+#region usings
 
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
+using System.Numerics;
 using System.Windows.Forms;
 using PartituraMagica.Lib;
 using PartituraMagica.Lib.Domain;
 using PartituraMagica.Lib.Playing;
-using SlimDX;
-using SlimDX.Direct3D9;
+using Vortice.Direct3D9;
+using Vortice.Mathematics;
 
 #endregion
 
@@ -25,7 +24,7 @@ namespace PartituraMagica.App.Player
 		private readonly IPlayerController _playerController;
 		private readonly ITextureCache _textureCache;
 
-		private Device _device;
+		private IDirect3DDevice9 _device;
 
 		private bool _isRendering;
 
@@ -47,9 +46,8 @@ namespace PartituraMagica.App.Player
 
 		public void Init(IntPtr handle)
 		{
-			_device = (Device)_textureCache.CreateDevice(handle);
-			_device.Clear(ClearFlags.Target, _configuration.InvertColors ? Color.Black : Color.FromArgb(_configuration.Color),
-				1.0f, 0);
+			_device = (IDirect3DDevice9)_textureCache.CreateDevice(handle);
+			_device.Clear(ClearFlags.Target, BackgroundColor(), 1.0f, 0);
 		}
 
 		public void StartScrolling(IPlayedPartitura partitura)
@@ -97,18 +95,17 @@ namespace PartituraMagica.App.Player
 
 			try
 			{
-				_device.Clear(ClearFlags.Target,
-					_configuration.InvertColors ? Color.Black : Color.FromArgb(_configuration.Color), 1.0f, 0);
+				_device.Clear(ClearFlags.Target, BackgroundColor(), 1.0f, 0);
 
 				_device.BeginScene();
 
 				_playerController.GetNextZoomAndYPosition(out float zoomX, out float zoomY, out float yPosition);
 
-				_device.SetTransform(TransformState.World,
-					Matrix.Scaling(zoomX, zoomY, 1F) *
-					Matrix.Translation((float)-_playerController.XPos * zoomX, yPosition, 0));
+				var world = Matrix4x4.CreateScale(zoomX, zoomY, 1F) *
+					Matrix4x4.CreateTranslation((float)-_playerController.XPos * zoomX, yPosition, 0);
+				_device.SetTransform((TransformState)256, world);
 
-				var visibleClippings = _clippingD3Ds.Where(clip =>
+				var visibleClippings = System.Linq.Enumerable.Where(_clippingD3Ds, clip =>
 					clip.XPos >= _playerController.XPos - CLIPPING_LOAD_BUFFER &&
 					clip.XPos <= _playerController.XPos + CLIPPING_LOAD_BUFFER);
 				foreach (ClippingD3D clipping in visibleClippings)
@@ -122,6 +119,13 @@ namespace PartituraMagica.App.Player
 			_device.Present();
 
 			_playerController.ScrollForward();
+		}
+
+		private Color BackgroundColor()
+		{
+			if (_configuration.InvertColors) return new Color(0, 0, 0, 255);
+			var c = System.Drawing.Color.FromArgb(_configuration.Color);
+			return new Color(c.R, c.G, c.B, c.A);
 		}
 	}
 }
