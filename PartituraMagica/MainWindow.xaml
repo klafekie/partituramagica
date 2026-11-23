@@ -56,17 +56,17 @@
                      LostFocus="patternBox_LostFocus" PreviewKeyDown="patternBox_PreviewKeyDown" />
 		</Menu>
 		<ToolBar DockPanel.Dock="Top">
-			<fa:IconButton Icon="FolderOpen" Command="Open" ToolTip="Open" IconSize="16" />
-			<fa:IconButton Icon="Save" Command="Save" ToolTip="Save (Ctrl+S)" IconSize="16" />
+			<Button Command="Open" ToolTip="Open"><fa:IconImage Icon="FolderOpen" Height="16" Width="16"/></Button>
+			<Button Command="Save" ToolTip="Save (Ctrl+S)"><fa:IconImage Icon="Save" Height="16" Width="16"/></Button>
 			<Separator/>
-			<fa:IconButton Icon="ChevronLeft" Command="{x:Static app:MainWindow.ShowPreviousPage}" ToolTip="Previous Page" IconSize="16" />
-			<fa:IconButton Icon="ChevronRight" Command="{x:Static app:MainWindow.ShowNextPage}" ToolTip="Next Page" IconSize="16" />
+			<Button Command="{x:Static app:MainWindow.ShowPreviousPage}" ToolTip="Previous Page"><fa:IconImage Icon="ChevronLeft" Height="16" Width="16"/></Button>
+			<Button Command="{x:Static app:MainWindow.ShowNextPage}" ToolTip="Next Page"><fa:IconImage Icon="ChevronRight" Height="16" Width="16"/></Button>
 			<Separator/>
-			<fa:IconButton Icon="Tag" Command="{x:Static app:MainWindow.Label}" ToolTip="Label As New Part (Ctrl+L)" IconSize="16" />
-			<fa:IconButton Icon="TagSlash" Command="{x:Static app:MainWindow.UnLabel}" ToolTip="Remove Label" IconSize="16" />
-			<fa:IconButton Icon="Trash" Command="{x:Static app:MainWindow.RemoveBox}" ToolTip="Remove Box (Del)" IconSize="16" />
+			<Button Command="{x:Static app:MainWindow.Label}" ToolTip="Label As New Part (Ctrl+L)"><fa:IconImage Icon="Tag" Height="16" Width="16"/></Button>
+			<Button Command="{x:Static app:MainWindow.UnLabel}" ToolTip="Remove Label"><fa:IconImage Icon="TagSlash" Height="16" Width="16"/></Button>
+			<Button Command="{x:Static app:MainWindow.RemoveBox}" ToolTip="Remove Box (Del)"><fa:IconImage Icon="Trash" Height="16" Width="16"/></Button>
 			<Separator/>
-			<fa:IconButton Icon="Play" Command="{x:Static app:MainWindow.StartPlayer}" ToolTip="Start Player (Space)" IconSize="16" />
+			<Button Command="{x:Static app:MainWindow.StartPlayer}" ToolTip="Start Player (Space)"><fa:IconImage Icon="Play" Height="16" Width="16"/></Button>
 		</ToolBar>
 		<ScrollViewer HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible">
 			<Canvas Name="PageCanvas" MouseMove="PageCanvas_MouseMove"
