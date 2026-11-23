@@ -2,7 +2,8 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:app="clr-namespace:PartituraMagica.App"
-    Title="Partitura Magica - Let the Music Flow..."     
+    xmlns:fa="clr-namespace:FontAwesome.Sharp;assembly=FontAwesome.Sharp"
+    Title="Partitura Magica - Let the Music Flow..."
     WindowState="Maximized" Height="173" Width="478" Closing="WindowClosing" >
 	<Window.CommandBindings>
 		<CommandBinding Command="{x:Static app:MainWindow.NewPartitura}" CanExecute="CanExecute" Executed="Execute"/>
@@ -54,6 +55,19 @@
                      PreviewLostKeyboardFocus="patternBox_PreviewLostKeyboardFocus"
                      LostFocus="patternBox_LostFocus" PreviewKeyDown="patternBox_PreviewKeyDown" />
 		</Menu>
+		<ToolBar DockPanel.Dock="Top">
+			<fa:IconButton Icon="FolderOpen" Command="Open" ToolTip="Open" IconSize="16" />
+			<fa:IconButton Icon="Save" Command="Save" ToolTip="Save (Ctrl+S)" IconSize="16" />
+			<Separator/>
+			<fa:IconButton Icon="ChevronLeft" Command="{x:Static app:MainWindow.ShowPreviousPage}" ToolTip="Previous Page" IconSize="16" />
+			<fa:IconButton Icon="ChevronRight" Command="{x:Static app:MainWindow.ShowNextPage}" ToolTip="Next Page" IconSize="16" />
+			<Separator/>
+			<fa:IconButton Icon="Tag" Command="{x:Static app:MainWindow.Label}" ToolTip="Label As New Part (Ctrl+L)" IconSize="16" />
+			<fa:IconButton Icon="TagSlash" Command="{x:Static app:MainWindow.UnLabel}" ToolTip="Remove Label" IconSize="16" />
+			<fa:IconButton Icon="Trash" Command="{x:Static app:MainWindow.RemoveBox}" ToolTip="Remove Box (Del)" IconSize="16" />
+			<Separator/>
+			<fa:IconButton Icon="Play" Command="{x:Static app:MainWindow.StartPlayer}" ToolTip="Start Player (Space)" IconSize="16" />
+		</ToolBar>
 		<ScrollViewer HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible">
 			<Canvas Name="PageCanvas" MouseMove="PageCanvas_MouseMove"
                 MouseLeftButtonDown="PageCanvas_MouseDown" MouseLeftButtonUp="PageCanvas_MouseUp" />
