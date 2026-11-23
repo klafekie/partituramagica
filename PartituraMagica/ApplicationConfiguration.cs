@@ -3,7 +3,6 @@
 using System;
 using System.Configuration;
 using System.Linq;
-using System.Windows.Forms;
 using PartituraMagica.Lib;
 
 #endregion
@@ -36,8 +35,12 @@ namespace PartituraMagica.App
 
 		public void Save()
 		{
-			Configuration config = ConfigurationManager.OpenExeConfiguration(Application.ExecutablePath);
-			config.AppSettings.Settings[LASTPARTITURAPATH].Value = LastPartituraPath;
+			Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+			var settings = config.AppSettings.Settings;
+			if (settings[LASTPARTITURAPATH] == null)
+				settings.Add(LASTPARTITURAPATH, LastPartituraPath);
+			else
+				settings[LASTPARTITURAPATH].Value = LastPartituraPath;
 			config.Save();
 			ConfigurationManager.RefreshSection("appSettings");
 		}
