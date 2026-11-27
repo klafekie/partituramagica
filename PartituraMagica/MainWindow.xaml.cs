@@ -19,6 +19,7 @@ namespace PartituraMagica.App
 	{
 		private readonly ICommandFactory _commandFactory;
 		private readonly ICommandParameters _controller;
+		private bool _initialized;
 
 		public static RoutedUICommand AddPage { get; } = new
 			RoutedUICommand("Add ...", "AddPages", typeof(MainWindow));
@@ -86,6 +87,7 @@ namespace PartituraMagica.App
 
 			InitializeComponent();
 
+			_initialized = true;
 			_controller.Panel = new DrawingPanel(PageCanvas);
 			CurrentMouseShape = Shape.NothingSpecial;
 		}
@@ -142,6 +144,7 @@ namespace PartituraMagica.App
 
 		private void CanExecute(object sender, CanExecuteRoutedEventArgs e)
 		{
+			if (!_initialized) return;
 			string name = ((RoutedCommand) e.Command).Name;
 			e.CanExecute = _commandFactory.Create(name).CanExecute();
 		}

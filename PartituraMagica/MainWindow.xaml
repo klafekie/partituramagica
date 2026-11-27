@@ -56,6 +56,16 @@
                      LostFocus="patternBox_LostFocus" PreviewKeyDown="patternBox_PreviewKeyDown" />
 		</Menu>
 		<ToolBar DockPanel.Dock="Top">
+			<ToolBar.Resources>
+				<Style TargetType="fa:IconImage">
+					<Setter Property="Foreground" Value="#222222"/>
+					<Style.Triggers>
+						<DataTrigger Binding="{Binding IsEnabled, RelativeSource={RelativeSource AncestorType=Button}}" Value="False">
+							<Setter Property="Foreground" Value="#CCCCCC"/>
+						</DataTrigger>
+					</Style.Triggers>
+				</Style>
+			</ToolBar.Resources>
 			<Button Command="Open" ToolTip="Open"><fa:IconImage Icon="FolderOpen" Height="16" Width="16"/></Button>
 			<Button Command="Save" ToolTip="Save (Ctrl+S)"><fa:IconImage Icon="Save" Height="16" Width="16"/></Button>
 			<Separator/>
@@ -63,7 +73,7 @@
 			<Button Command="{x:Static app:MainWindow.ShowNextPage}" ToolTip="Next Page"><fa:IconImage Icon="ChevronRight" Height="16" Width="16"/></Button>
 			<Separator/>
 			<Button Command="{x:Static app:MainWindow.Label}" ToolTip="Label As New Part (Ctrl+L)"><fa:IconImage Icon="Tag" Height="16" Width="16"/></Button>
-			<Button Command="{x:Static app:MainWindow.UnLabel}" ToolTip="Remove Label"><fa:IconImage Icon="TagSlash" Height="16" Width="16"/></Button>
+			<Button Command="{x:Static app:MainWindow.UnLabel}" ToolTip="Remove Label"><fa:IconImage Icon="Eraser" Height="16" Width="16"/></Button>
 			<Button Command="{x:Static app:MainWindow.RemoveBox}" ToolTip="Remove Box (Del)"><fa:IconImage Icon="Trash" Height="16" Width="16"/></Button>
 			<Separator/>
 			<Button Command="{x:Static app:MainWindow.StartPlayer}" ToolTip="Start Player (Space)"><fa:IconImage Icon="Play" Height="16" Width="16"/></Button>
