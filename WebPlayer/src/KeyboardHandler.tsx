@@ -28,6 +28,14 @@ export const KeyboardHandler = () => {
 			player?.controller.pauseNow();
 			e.preventDefault();
 		}
+		if (e.code === "Escape") {
+			if (player?.pause.isPaused) {
+				window.close();
+			} else {
+				player?.controller.pauseNow();
+			}
+			e.preventDefault();
+		}
 	};
 	const onKeyUp = (e: any) => {
 		if (e.code === puaseKeyCode) {
